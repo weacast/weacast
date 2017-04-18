@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "commander": "^2.9.0",
+    "geo-pixel-stream": "^0.4.0"
+  }
+}
