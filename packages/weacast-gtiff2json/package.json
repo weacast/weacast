@@ -1,4 +1,25 @@
 {
+  "name": "gtiff2json",
+  "version": "0.0.1",
+  "description": "Converts GeoTIFF images to JSON array",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/weacast/gtiff2json"
+  },
+  "keywords": [
+    "geotiff",
+    "json"
+  ],
+  "author": "Luc Claustres <luc.claustres@orange.fr>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/weacast/gtiff2json/issues"
+  },
+  "homepage": "https://github.com/weacast/gtiff2json",
   "dependencies": {
     "commander": "^2.9.0",
     "geo-pixel-stream": "^0.4.0"
