@@ -8,11 +8,12 @@
 
 > ARPEGE weather forecast model plugin for Weacast
 
-**While it is a WIP and not yet pushed to NPM please clone this repository and use [npm link](https://docs.npmjs.com/cli/link).**
 ## Installation
 
 ```
 npm install weacast-arpege --save
+// Or with Yarn
+yarn add weacast-arpege
 ```
 
 ## Complete Example
@@ -32,6 +33,22 @@ module.exports = function() {
   // Set up our plugin services
   app.configure(arpegePlugin)
 }
+```
+## Development
+
+While it is a WIP and not yet pushed to NPM, or when developing this plugin, please clone this repository and use [npm link](https://docs.npmjs.com/cli/link):
+
+```bash
+// Clone and link the plugin
+git clone https://github.com/weacast/weacast-arpege.git
+cd weacast-arpege
+npm link
+// Clone and link plugin to weacast server
+cd ..
+git clone https://github.com/weacast/weacast.git
+cd weacast
+cd api
+npm link weacast-arpege
 ```
 
 ## License
