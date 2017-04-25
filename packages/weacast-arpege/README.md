@@ -8,42 +8,30 @@
 
 > ARPEGE weather forecast model plugin for Weacast
 
+**While it is a WIP and not yet pushed to NPM please clone this repository and use [npm link](https://docs.npmjs.com/cli/link).**
 ## Installation
 
 ```
 npm install weacast-arpege --save
 ```
 
-## Documentation
-
-Please refer to the [weacast-arpege documentation](http://docs.feathersjs.com/) for more details.
-
 ## Complete Example
 
-Here's an example of a Feathers server that uses `weacast-arpege`. 
+Here's an example of a Weacast server that uses `weacast-arpege`. 
 
 ```js
-const feathers = require('feathers');
-const rest = require('feathers-rest');
-const hooks = require('feathers-hooks');
-const bodyParser = require('body-parser');
-const errorHandler = require('feathers-errors/handler');
-const plugin = require('weacast-arpege');
+import createService from '../service'
+import arpegePlugin from 'weacast-arpege'
 
-// Initialize the application
-const app = feathers()
-  .configure(rest())
-  .configure(hooks())
-  // Needed for parsing bodies (login)
-  .use(bodyParser.json())
-  .use(bodyParser.urlencoded({ extended: true }))
-  // Initialize your feathers plugin
-  .use('/plugin', plugin())
-  .use(errorHandler());
+module.exports = function() {
+  const app = this
 
-app.listen(3030);
+  const users = createService('users', app)
+  const forecasts = createService('forecasts', app)
 
-console.log('Feathers app started on 127.0.0.1:3030');
+  // Set up our plugin services
+  app.configure(arpegePlugin)
+}
 ```
 
 ## License
