@@ -1,3 +1,4 @@
-module.exports = function (app, options) {
-  options.Model = app.db.collection('arpege');
+module.exports = function (element, app, options) {
+  options.name = element.name
+  options.Model = app.db.collection(element.name);
 };
