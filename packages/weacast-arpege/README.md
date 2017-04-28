@@ -51,8 +51,10 @@ cd api
 npm link weacast-arpege
 ```
 
+As this module also depends on [gtiff2json](https://github.com/weacast/gtiff2json) you have to do the same thing for it.
+
 ## License
 
-Copyright (c) 2016
+Copyright (c) 2017
 
 Licensed under the [MIT license](LICENSE).
