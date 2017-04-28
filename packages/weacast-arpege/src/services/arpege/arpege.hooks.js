@@ -1,20 +1,21 @@
-const { authenticate } = require('feathers-authentication').hooks;
+const { authenticate } = require('feathers-authentication').hooks
+import { marshall, unmarshall, nearestForecastTime } from '../../hooks'
 
 module.exports = {
   before: {
     all: [ authenticate('jwt') ],
-    find: [],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
+    find: [ nearestForecastTime ],
+    get: [ unmarshall ],
+    create: [ marshall ],
+    update: [ marshall ],
+    patch: [ marshall ],
     remove: []
   },
 
   after: {
     all: [],
-    find: [],
-    get: [],
+    find: [ unmarshall ],
+    get: [ unmarshall ],
     create: [],
     update: [],
     patch: [],

@@ -1,5 +1,5 @@
 module.exports = function (forecast, element, app, options) {
-  options.name = element.name
   options.Model = app.db.collection(forecast.name + '-' + element.name)
-  //options.id = 'runTimeOffset'
-};
+  options.Model.ensureIndex({ runTimeOffset: 1 }, { unique: true })
+  options.Model.ensureIndex({ forecastTime: -1 })
+}
