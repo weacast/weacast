@@ -14,7 +14,11 @@ import hooks from './services/arpege/arpege.hooks'
 function createService (forecast, element, app) {
   const configureModel = require(path.join(__dirname, 'models/arpege.model.' + app.db.adapter))
   const createService = require('feathers-' + app.db.adapter)
-  const options = {}
+  const paginate = app.get('paginate')
+  const options = {
+    name: forecast.name + '/' + element.name,
+    paginate
+  }
   configureModel(forecast, element, app, options)
   let service = createService(options)
 
@@ -42,7 +46,12 @@ export default function init () {
   for (let forecast of forecasts) {
     debug('Initializing ' + forecast.name + ' forecast')
     // Register the forecast model if not already done
-    forecastsService.find({ query: { name: forecast.name } })
+    forecastsService.find({
+      query: {
+        name: forecast.name,
+        $select: ['_id', 'runTime', 'runTimeOffset', 'forecastTime'] // We only need object ID
+      }
+    })
     .then(result => {
       if (result.data.length > 0) {
         forecastsService.patch(result.data[0]._id, forecast)
@@ -66,16 +75,8 @@ export default function init () {
       services.push(service)
     }
 
-    // Check for data on creation
+    // Setup the update process, will trigger the initial harvesting
     debug('Checking for up-to-date ' + forecast.name + ' forecast data')
-    services.forEach(service => service.refreshData(now))
-    // Then setup update process
-    debug('Scheduling update process for ' + forecast.name + ' forecast data')
-    setInterval( () => {
-      const now = moment.utc()
-      for (let service of services) {
-        service.refreshData(now)
-      }
-    }, 1000 * forecast.updateInterval)
+    services.forEach(service => service.updateForecastData())
   }
 }

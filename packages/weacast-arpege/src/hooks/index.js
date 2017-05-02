@@ -1,10 +1,11 @@
 import { marshall, unmarshall } from './marshall'
-import { nearestForecastTime } from './query'
+import { nearestForecastTime, marshallQuery } from './query'
 
 let hooks = {
   marshall,
   unmarshall,
-  nearestForecastTime
+  nearestForecastTime,
+  marshallQuery
 }
 
 export default hooks

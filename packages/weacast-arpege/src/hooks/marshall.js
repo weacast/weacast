@@ -5,7 +5,7 @@ export function marshall (hook) {
   let items = getItems(hook)
   items = (Array.isArray(items) ? items : [items])
 
-  items.forEach( item => {
+  items.forEach(item => {
     item.runTime = new Date(item.runTime.format())
     item.forecastTime = new Date(item.forecastTime.format())
   })
@@ -17,10 +17,10 @@ export function unmarshall (hook) {
   let items = getItems(hook)
   items = (Array.isArray(items) ? items : [items])
 
-  items.forEach( item => {
+  items.forEach(item => {
     // Take care to field selection that might remove some
-    if (item.runTime) item.runTime = moment(item.runTime.toISOString())
-    if (item.forecastTime) item.forecastTime = moment(item.forecastTime.toISOString())
+    if (item.runTime) item.runTime = moment.utc(item.runTime.toISOString())
+    if (item.forecastTime) item.forecastTime = moment.utc(item.forecastTime.toISOString())
   })
 
   replaceItems(hook, items)

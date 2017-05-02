@@ -14,14 +14,14 @@ export default {
       const convertedFilePath = path.join(path.dirname(filePath), path.basename(filePath, path.extname(filePath)) + '.json')
       if ( fs.existsSync(convertedFilePath) ) {
         logger.info('Already converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-        fs.readJson(convertedFilePath, 'utf8', (error, grid) => {
-          if (error) {
-            logger.error('Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-            debug('Input JSON file was : ' + convertedFilePath)
-            reject(error)
-          } else {
-            resolve(grid)
-          }
+        fs.readJson(convertedFilePath, 'utf8')
+        .then( grid => {
+          resolve(grid)
+        })
+        .catch( error => {
+          logger.error('Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+          debug('Input JSON file was : ' + convertedFilePath)
+          reject(error)
         })
         return
       }
@@ -30,15 +30,15 @@ export default {
       .then( grid => {
         logger.info('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         // Change extension from tiff to json
-        fs.outputJson(convertedFilePath, grid, 'utf8', error => {
-          if (error) {
-            logger.error('Cannot write converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-            debug('Output JSON file was : ' + convertedFilePath)
-            reject(error)
-          } else {
-            logger.info('Written ' + this.forecast.name + '/' + this.element.name + ' converted forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-            resolve(grid)
-          }
+        fs.outputJson(convertedFilePath, grid, 'utf8')
+        .then( _ => {
+          logger.info('Written ' + this.forecast.name + '/' + this.element.name + ' converted forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+          resolve(grid)
+        })
+        .catch( error => {
+          logger.error('Cannot write converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+          debug('Output JSON file was : ' + convertedFilePath)
+          reject(error)
         })
       })
       .catch( error => {
@@ -51,7 +51,7 @@ export default {
 
   downloadForecastTime (runTime, forecastTime) {
     let promise = new Promise((resolve, reject) => {
-      const filePath = path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name, forecastTime.format('YYYY-MM-DD[_]HH-mm-ss') + '.tiff')
+      const filePath = path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name, runTime.format('YYYY-MM-DD[_]HH-mm-ss') + '_' + forecastTime.format('YYYY-MM-DD[_]HH-mm-ss') + '.tiff')
       if ( fs.existsSync(filePath) ) {
         logger.info('Already downloaded ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         resolve(filePath)
@@ -94,7 +94,7 @@ export default {
           let file = fs.createWriteStream(filePath)
           response.pipe(file)
           file.on('finish', _ => {
-            file.close();
+            file.close()
             logger.info('Written ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
             resolve(filePath)
           })
@@ -110,7 +110,7 @@ export default {
     return promise
   },
 
-  processForecastTime (runTime, forecastTime, timeOffset, createOrPatch) {
+  processForecastTime (runTime, forecastTime) {
     return this.downloadForecastTime(runTime, forecastTime)
     .then( file => {
       return this.convertForecastTime(runTime, forecastTime, file)
@@ -118,45 +118,53 @@ export default {
     .then( grid => {
       return {
         runTime: runTime,
-        runTimeOffset: timeOffset,
         forecastTime: forecastTime,
         data: grid
       }
     })
   },
 
-  updateForecastTime (data, previousData) {
+  updateForecastTimeInDatabase (data, previousData) {
     // Test if we have to patch existing data or create new one
     if (previousData) {
-      return this.patch(previousData._id, data)
+      return this.update(previousData._id, data)
     }
     else {
       return this.create(data)
     }
   },
 
-  refreshForecastTime (datetime, runTime, timeOffset, forecastTime) {
+  refreshForecastTime (datetime, runTime, forecastTime) {
     let promise = new Promise((resolve, reject) => {
       // Retrieve last available forecast if any
-      this.find({ query: { runTimeOffset: timeOffset } })
+      this.find({
+        query: {
+          $select: ['_id', 'runTime', 'forecastTime'], // We only need object ID
+          forecastTime: forecastTime
+        }
+      })
       .then(result => {
-        let previousData = result.length > 0 ? result[0] : null
+        let previousData = (result.data.length > 0 ? result.data[0] : null)
         // Check if we are already up-to-date
         if (previousData && runTime.isSame(previousData.runTime)) {
           logger.info('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')
-          resolve()
+          resolve(previousData)
           return
         }
         // Otherwise download and process data
-        this.processForecastTime(runTime, forecastTime, timeOffset)
-        .then( data => this.updateForecastTime(data, previousData) )
-        .then( _ => {
-          logger.info('Updated ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          resolve()   
+        this.processForecastTime(runTime, forecastTime)
+        .then( data => {
+          this.updateForecastTimeInDatabase(data, previousData)
+          .then( data => {
+            logger.info((previousData ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+            resolve(data)
+          })
+          .catch( error => {
+            reject(error)
+          })
         })
-        .catch( _ => {
-          logger.info('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          reject()
+        .catch( error => {
+          reject(error)
         })
       })
     })
@@ -164,47 +172,56 @@ export default {
     return promise
   },
 
-  harvestForecastTime (datetime, runTime, timeOffset) {
+  harvestForecastTime (datetime, runTime, forecastTime) {
     let promise = new Promise((resolve, reject) => {
-      // When data for current time is not available we might try previous data
-      // check here that we go back until the configured limit limit
-      // because otherwise this mean there is a real problem with the provider and/or we will have outdated data
-      if (datetime.diff(runTime, 'hours') > this.forecast.oldestRunInterval / 3600) {
-        reject()
-        return
-      }
-      let forecastTime = runTime.clone().add({ hours: timeOffset / 3600 })
-      this.refreshForecastTime(datetime, runTime, timeOffset, forecastTime)      
+      this.refreshForecastTime(datetime, runTime, forecastTime)      
       .then( data => {
-        resolve()   
+        resolve(data)   
       })
-      .catch( _ => {
+      .catch( error => {
+        logger.info('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         let previousRunTime = runTime.clone().subtract({ hours: this.forecast.runInterval / 3600 })
-        this.harvestForecastTime(datetime, previousRunTime, timeOffset)
-        .then( _ => {
-          resolve()   
-        })
-        .catch( _ => {
-          reject()
-        })
+        // When data for current time is not available we might try previous data
+        // check here that we go back until the configured limit
+        // because otherwise this means there is a real problem with the provider and/or we will have outdated data
+        if (datetime.diff(previousRunTime, 'hours') > this.forecast.oldestRunInterval / 3600) {
+          logger.info('Hit oldest run time limit ' + runTime.format() + ' on ' + this.forecast.name + '/' + this.element.name + ', there is a too much big gap in data from the provider')
+          reject(error)
+          return
+        }
+
+        logger.info('Harvesting further run time ' + previousRunTime.format() + ' on ' + this.forecast.name + '/' + this.element.name)
+        resolve(this.harvestForecastTime(datetime, previousRunTime, forecastTime))
       })
     })
 
     return promise
   },
 
-  async refreshData (datetime) {
+  async refreshForecastData (datetime) {
     // Compute nearest run T0
     let runTime = this.getNearestRunTime(datetime)
     // Check for each forecast step if update is required
     for (let timeOffset = 0; timeOffset <= this.forecast.limit; timeOffset += this.forecast.interval) {
+      let forecastTime = runTime.clone().add({ hours: timeOffset / 3600 })
       try {
-        await this.harvestForecastTime(datetime, runTime, timeOffset)
+        await this.harvestForecastTime(datetime, runTime, forecastTime)
       }
       catch (error) {
-        logger.info('Hit oldest run time limit ' + runTime.format() + ' on ' + this.forecast.name + '/' + this.element.name + ' for offset ' + timeOffset +
-          ', there is a too much big gap in data from the provider')
+        // This catch does not rethrow the error so that the update process will not stop and tray again at next refresh
       }
+    }
+  },
+
+  async updateForecastData() {
+    const now = moment.utc()
+    try {
+      // Try data refresh for current time
+      await this.refreshForecastData(now)
+      // Then plan next update according to provided update interval
+      await setTimeout(_ => this.updateForecastData(), 1000 * this.forecast.updateInterval)
+    }
+    catch (error) {
     }
   }
 }
