@@ -3,7 +3,7 @@ const ps = require('geo-pixel-stream')
       program = require('commander')
 
 function readGeoTiff(filePath, verbose) {
-  return new Promise(function(resolve, reject) {
+  let promise = new Promise(function(resolve, reject) {
     let readers = ps.createReadStreams(filePath)
     let blocks = []
 
@@ -13,7 +13,7 @@ function readGeoTiff(filePath, verbose) {
     }
 
     readers[0].on('data', function(data) {
-      var blockPoints = [],
+      let blockPoints = [],
           blockLen = data.blockSize.x * data.blockSize.y
       
       for (let i=0; i<blockLen; i++)
@@ -22,27 +22,34 @@ function readGeoTiff(filePath, verbose) {
     })
 
     readers[0].on('end', function() {
+      // Force closing underlying GDAL dataset immediately (not waiting for GC) as it might be large
+      readers[0]._src.close()
       resolve({ blocks: blocks, metadata: readers[0].metadata })
     })
   })
+
+  return promise
 }
 
-function linearize(blocks, block_width, blocks_per_row, verbose) {
+function linearize(blocks, block_width, blocks_per_row, block_height, blocks_per_col, verbose) {
   let points = []
   if (verbose) {
     console.log('Found ' + blocks.length + ' blocks of ' + blocks[0].length + ' points')
+    console.log('Linearize ' + blocks_per_row + ' blocks per row of width ' + block_width)
   }
   
-  for (let i=0; i<blocks.length * blocks[0].length; i++) {
-    let col = i % (block_width * blocks_per_row), row = Math.floor(i / (block_width * blocks_per_row))
-    let block = Math.floor(col / block_width) + Math.floor(row / block_width) * blocks_per_row
+  for (let row=0; row<block_height * blocks_per_col; row++) {
+    for (let col=0; col<block_width * blocks_per_row; col++) {
+      //let col = i % (block_width * blocks_per_row), row = Math.floor(i / (block_height * blocks_per_col))
+      let block = Math.floor(col / block_width) + Math.floor(row / block_height) * blocks_per_row
 
-    let colInBlock = col % block_width
-    let rowInBlock = row % block_width
+      let colInBlock = col % block_width
+      let rowInBlock = row % block_height
 
-    //console.log(row, col, block, colInBlock, rowInBlock)
+      //console.log(row, col, block, colInBlock, rowInBlock)
 
-    points[i] = blocks[block][colInBlock + rowInBlock * block_width]
+      points[col + row * block_width * blocks_per_row] = blocks[block][colInBlock + rowInBlock * block_width]
+    }
   }
 
   if (verbose) {
@@ -80,9 +87,10 @@ function compressRLE(points, round, verbose) {
 }
 
 var gtiff2json = function(filePath, compress, round, verbose) {
-  return new Promise(function(resolve, reject) {
+  let promise = new Promise(function(resolve, reject) {
     readGeoTiff(filePath, verbose).then(function(data) {
-      return linearize(data.blocks, data.metadata.blockSize.x, Math.max(1, data.metadata.width / data.metadata.blockSize.x), verbose)
+      return linearize(data.blocks, data.metadata.blockSize.x, Math.max(1, data.metadata.width / data.metadata.blockSize.x),
+                       data.metadata.blockSize.y, Math.max(1, data.metadata.height / data.metadata.blockSize.y), verbose)
     })
     .then(function(points) {
       if (!compress) {
@@ -95,6 +103,8 @@ var gtiff2json = function(filePath, compress, round, verbose) {
       reject(err)
     })
   })
+
+  return promise
 }
 
 if (require.main === module) {
