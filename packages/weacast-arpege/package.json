@@ -1,12 +1,12 @@
 {
   "name": "weacast-arpege",
   "description": "ARPEGE weather forecast model plugin for Weacast",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "homepage": "https://github.com/weacast/weacast-arpege",
   "main": "lib/",
   "keywords": [
-    "feathers",
-    "feathers-plugin"
+    "weacast",
+    "weacast-plugin"
   ],
   "license": "MIT",
   "repository": {
@@ -14,9 +14,8 @@
     "url": "git://github.com/weacast/weacast-arpege.git"
   },
   "author": {
-    "name": "Feathers contributors",
-    "email": "hello@feathersjs.com",
-    "url": "https://feathersjs.com"
+    "name": "Weacast contributors",
+    "url": "https://github.com/weacast"
   },
   "contributors": [],
   "bugs": {
