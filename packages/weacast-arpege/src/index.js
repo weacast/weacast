@@ -40,7 +40,6 @@ export default function init () {
   }
 
   debug('Initializing weacast-arpege plugin')
-  const now = moment.utc()
   const forecastsService = app.service('forecasts')
   // Iterate over configured forecast models
   for (let forecast of forecasts) {
