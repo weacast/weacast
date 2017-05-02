@@ -1,6 +1,7 @@
 import moment from 'moment'
 import { getItems, replaceItems } from 'feathers-hooks-common'
 
+// Need to convert from server side types (moment dates) to basic JS types when "writing" to DB adapters
 export function marshall (hook) {
   let items = getItems(hook)
   items = (Array.isArray(items) ? items : [items])
@@ -13,6 +14,7 @@ export function marshall (hook) {
   replaceItems(hook, items)
 }
 
+// Need to convert back to server side types (moment dates) from basic JS types when "reading" from DB adapters
 export function unmarshall (hook) {
   let items = getItems(hook)
   items = (Array.isArray(items) ? items : [items])
