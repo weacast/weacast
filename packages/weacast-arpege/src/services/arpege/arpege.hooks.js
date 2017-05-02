@@ -1,19 +1,19 @@
+import { hooks } from 'weacast-core'
 const { authenticate } = require('feathers-authentication').hooks
-import { marshall, unmarshall, nearestForecastTime, marshallQuery } from '../../hooks'
 
 module.exports = {
   before: {
     all: [ authenticate('jwt') ],
-    find: [ marshallQuery, nearestForecastTime ],
+    find: [ hooks.marshallQuery, hooks.nearestForecastTime ],
     get: [],
-    create: [ marshall ],
-    update: [ marshall ],
-    patch: [ marshallQuery, marshall ],
-    remove: [ marshallQuery ]
+    create: [ hooks.marshall ],
+    update: [ hooks.marshall ],
+    patch: [ hooks.marshallQuery, hooks.marshall ],
+    remove: [ hooks.marshallQuery ]
   },
 
   after: {
-    all: [ unmarshall ],
+    all: [ hooks.unmarshall ],
     find: [],
     get: [],
     create: [],
