@@ -7,8 +7,8 @@ export function marshall (hook) {
   items = (Array.isArray(items) ? items : [items])
 
   items.forEach(item => {
-    item.runTime = new Date(item.runTime.format())
-    item.forecastTime = new Date(item.forecastTime.format())
+    if (item.runTime) item.runTime = new Date(item.runTime.format())
+    if (item.forecastTime) item.forecastTime = new Date(item.forecastTime.format())
   })
 
   replaceItems(hook, items)

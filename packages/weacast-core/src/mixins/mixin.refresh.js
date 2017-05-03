@@ -72,7 +72,13 @@ export default {
   updateForecastTimeInDatabase (data, previousData) {
     // Test if we have to patch existing data or create new one
     if (previousData) {
-      return this.update(previousData._id, data)
+      // The simplest and most efficient way is to update existing forecast
+      // However there is a bug in this case, it seems that the input data is mutated
+      // Just before inserting it in the DB (_id is reported to be null by the adapter)
+      //this.update(previousData._id, data)
+      // For now we use a remove/create workaround 
+      return this.remove(previousData._id)
+      .then(_ => this.create(data))
     }
     else {
       return this.create(data)
@@ -91,7 +97,7 @@ export default {
       .then(result => {
         let previousData = (result.data.length > 0 ? result.data[0] : null)
         // Check if we are already up-to-date
-        if (previousData && runTime.isSame(previousData.runTime)) {
+        if (previousData && runTime.isSameOrBefore(previousData.runTime)) {
           logger.info('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')
           resolve(previousData)
           return
@@ -160,6 +166,8 @@ export default {
 
   async updateForecastData() {
     logger.info('Checking for up-to-date forecast data on ' + this.forecast.name + '/' + this.element.name)
+    // Make sure we've got somewhere to put data and clean it up
+    fs.emptyDirSync(path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name))
     const now = moment.utc()
     try {
       // Try data refresh for current time

@@ -4,6 +4,7 @@ import levelup from 'levelup'
 import leveldown from 'leveldown'
 import sublevel from 'sublevelup'
 import mongodb from 'mongodb'
+import logger from 'winston'
 import errors from 'feathers-errors'
 
 export class Database {

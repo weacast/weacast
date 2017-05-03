@@ -1,5 +1,4 @@
 import path from 'path'
-import fs from 'fs-extra'
 import logger from 'winston'
 import makeDebug from 'debug'
 import errors from 'feathers-errors'
@@ -35,18 +34,12 @@ export default function initializePlugin (app, name, servicesPath) {
     })
 
     // Then generate services of the right type for each forecast element
-    let services = []
     for (let element of forecast.elements) {
-      // Make sure we've got somewhere to put data and clean it up
-      fs.emptyDirSync(path.join(app.get('forecastPath'), forecast.name, element.name))
       let service = createElementService(forecast, element, app, servicesPath)
-      // Keep reference
-      services.push(service)
+      // Setup the update process, will trigger the initial harvesting
+      debug('Launching update process for forecast data on ' + forecast.name + '/' + element.name)
+      service.updateForecastData()
     }
-
-    // Setup the update process, will trigger the initial harvesting
-    debug('Launching update process for ' + forecast.name + ' forecast data')
-    services.forEach(service => service.updateForecastData())
   }
 }
 
