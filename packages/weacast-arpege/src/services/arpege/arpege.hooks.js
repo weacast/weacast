@@ -1,5 +1,6 @@
 import { hooks } from 'weacast-core'
-const { authenticate } = require('feathers-authentication').hooks
+import authentication from 'feathers-authentication'
+const authenticate = authentication.hooks.authenticate
 
 module.exports = {
   before: {
@@ -13,7 +14,8 @@ module.exports = {
   },
 
   after: {
-    all: [ hooks.unmarshall ],
+    // By default do not response with data if not explicitely asked for
+    all: [ hooks.discardData, hooks.unmarshall ],
     find: [],
     get: [],
     create: [],
