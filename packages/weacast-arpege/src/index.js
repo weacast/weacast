@@ -1,4 +1,7 @@
 import path from 'path'
+import filters from './services/arpege/arpege.filters'
+import hooks from './services/arpege/arpege.hooks'
+import service from './services/arpege/arpege.service'
 import { initializePlugin } from 'weacast-core'
 
 export default function init () {
@@ -6,3 +9,10 @@ export default function init () {
 
   initializePlugin(app, 'arpege', path.join(__dirname, 'services'))
 }
+
+// Sub-exports
+Object.assign(init, {
+    filters,
+    hooks,
+    service
+})
