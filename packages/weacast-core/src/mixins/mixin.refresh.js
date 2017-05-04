@@ -153,7 +153,7 @@ export default {
     // Compute nearest run T0
     let runTime = this.getNearestRunTime(datetime)
     // Check for each forecast step if update is required
-    for (let timeOffset = 0; timeOffset <= this.forecast.limit; timeOffset += this.forecast.interval) {
+    for (let timeOffset = this.forecast.lowerLimit; timeOffset <= this.forecast.upperLimit; timeOffset += this.forecast.interval) {
       let forecastTime = runTime.clone().add({ hours: timeOffset / 3600 })
       try {
         await this.harvestForecastTime(datetime, runTime, forecastTime)
