@@ -46,7 +46,7 @@ export function nearestForecastTime(hook) {
 export function discardData(hook) {
     let query = hook.params.query
     // Only discard if not explicitely asked by $select
-    if (!query || !query.$select || !query.$select.data) {
+    if (!query || !query.$select || !query.$select.includes('data')) {
       discardDataField(hook)
     }
 }
