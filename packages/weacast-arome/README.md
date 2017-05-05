@@ -21,14 +21,10 @@ yarn add weacast-arome
 Here's an example of a Weacast server that uses `weacast-arome`. 
 
 ```js
-import createService from '../service'
 import aromePlugin from 'weacast-arome'
 
 module.exports = function() {
   const app = this
-
-  const users = createService('users', app)
-  const forecasts = createService('forecasts', app)
 
   // Set up our plugin services
   app.configure(aromePlugin)
