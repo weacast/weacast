@@ -1,6 +1,12 @@
 gtiff2json
 ==========
 
+[![Build Status](https://travis-ci.org/weacast/gtiff2json.png?branch=master)](https://travis-ci.org/weacast/gtiff2json)
+[![Code Climate](https://codeclimate.com/github/weacast/gtiff2json/badges/gpa.svg)](https://codeclimate.com/github/weacast/gtiff2json)
+[![Test Coverage](https://codeclimate.com/github/weacast/gtiff2json/badges/coverage.svg)](https://codeclimate.com/github/weacast/gtiff2json/coverage)
+[![Dependency Status](https://img.shields.io/david/weacast/gtiff2json.svg?style=flat-square)](https://david-dm.org/weacast/gtiff2json)
+[![Download Status](https://img.shields.io/npm/dm/gtiff2json.svg?style=flat-square)](https://www.npmjs.com/package/gtiff2json)
+
 A command line utility that decodes [GeoTIFF](https://en.wikipedia.org/wiki/GeoTIFF) files as JSON.
 
 This utility uses the native [GDAL](http://www.gdal.org/) binding for [Node.js](http://nodejs.org) : [node-gdal](https://github.com/naturalatlas/node-gdal).
