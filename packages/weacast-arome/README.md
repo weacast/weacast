@@ -51,7 +51,7 @@ cd api
 npm link weacast-arome
 ```
 
-As this module also depends on [weacast-core](https://github.com/weacast/weacast-core) and [gtiff2json](https://github.com/weacast/gtiff2json) you have to do the same thing for them.
+As this module also depends on [weacast-core](https://github.com/weacast/weacast-core), [weacast-arpege](https://github.com/weacast/weacast-arpege) and [gtiff2json](https://github.com/weacast/gtiff2json) you have to do the same thing for them.
 
 ## License
 
