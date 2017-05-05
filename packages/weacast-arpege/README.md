@@ -21,15 +21,11 @@ yarn add weacast-arpege
 Here's an example of a Weacast server that uses `weacast-arpege`. 
 
 ```js
-import createService from '../service'
 import arpegePlugin from 'weacast-arpege'
 
 module.exports = function() {
   const app = this
-
-  const users = createService('users', app)
-  const forecasts = createService('forecasts', app)
-
+  
   // Set up our plugin services
   app.configure(arpegePlugin)
 }
