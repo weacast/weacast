@@ -10,8 +10,8 @@ export * from './plugin'
 */
 // However for now we face a bug in babel so that transform-runtime with export * from 'x' generates import statements in transpiled code
 // Tracked here : https://github.com/babel/babel/issues/2877
-import { marshall, unmarshall, nearestForecastTime, marshallQuery, discardData } from './hooks'
-export let hooks = { marshall, unmarshall, nearestForecastTime, marshallQuery, discardData }
+import { marshall, unmarshall, processForecastTime, marshallQuery, processData } from './hooks'
+export let hooks = { marshall, unmarshall, processForecastTime, marshallQuery, processData }
 export { createService, createElementService } from './service'
 export { Database } from './db'
 export initializePlugin from './plugin'

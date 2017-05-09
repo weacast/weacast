@@ -1,6 +1,12 @@
 import moment from 'moment'
-import { discard } from 'feathers-hooks-common'
+import fs from 'fs-extra'
+import logger from 'winston'
+import makeDebug from 'debug'
+const debug = makeDebug('weacast:weacast-core')
+import { getItems, replaceItems, discard } from 'feathers-hooks-common'
 const discardDataField = discard('data')
+const discardFilepathField = discard('filePath')
+const discardConvertedFilepathField = discard('convertedFilePath')
 
 export function marshallQuery(hook) {
     let query = hook.params.query
@@ -16,10 +22,14 @@ export function marshallQuery(hook) {
       } else if (moment.isMoment(query.forecastTime)) {
         query.forecastTime = new Date(query.forecastTime.format())
       }
+      // In this case take care that we always internally require the file path, it will be removed for the client by another hook
+      if (query.$select && this.element.dataStore === 'fs') {
+        query.$select.push('convertedFilePath')
+      }
     }
 }
 
-export function nearestForecastTime(hook) {
+export function processForecastTime(hook) {
     let query = hook.params.query
     if (query && query.time) {
       // Find nearest forecast time corresponding to request time
@@ -43,10 +53,54 @@ export function nearestForecastTime(hook) {
     }
 }
 
-export function discardData(hook) {
+export function processData(hook) {
     let query = hook.params.query
-    // Only discard if not explicitely asked by $select
-    if (!query || !query.$select || !query.$select.includes('data')) {
-      discardDataField(hook)
+    // If we use a file based storage we have to load data on demand
+    if (this.element.dataStore === 'fs') {
+      // Process data files when required
+      if (query && query.$select && query.$select.includes('data')) {
+        return new Promise((resolve, reject) => {
+          let items = getItems(hook)
+          items = (Array.isArray(items) ? items : [items])
+
+          let dataPromises = []
+          items.forEach(item => {
+            dataPromises.push(
+              fs.readJson(item.convertedFilePath, 'utf8')
+              .then( grid => {
+                item.data = grid
+                return item
+              })
+              .catch( error => {
+                let errorMessage = 'Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast'
+                if (item.forecastTime) errorMessage += ' at ' + item.forecastTime.format()
+                if (item.runTime) errorMessage += ' for run ' + item.runTime.format()
+                logger.error(errorMessage)
+                debug('Input JSON file was : ' + item.convertedFilePath)
+                reject(error)
+              }))
+          })
+
+          Promise.all(dataPromises).then(_ => {
+            // Remove as well any sensitive information about file path on the client side
+            // Must be done second as we need this information first to read data
+            discardFilepathField(hook)
+            discardConvertedFilepathField(hook)
+            replaceItems(hook, items)
+            resolve(hook)
+          })
+        })
+      }
+      else {
+        // Remove any sensitive information about file path on the client side
+        discardFilepathField(hook)
+        discardConvertedFilepathField(hook)
+      }
+    }
+    else {
+      // Only discard if not explicitely asked by $select
+      if (!query || !query.$select || !query.$select.includes('data')) {
+        discardDataField(hook)
+      }
     }
 }

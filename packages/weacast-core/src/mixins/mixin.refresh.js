@@ -8,6 +8,12 @@ const debug = makeDebug('weacast:weacast-core')
 
 export default {
 
+  // Generate file name to store temporary output (i.e. converted) data, assume by default a similar name than getForecastTimeFilePath() with a json extension
+  getForecastTimeConvertedFilePath (runTime, forecastTime) {
+    let filePath = this.getForecastTimeFilePath(runTime, forecastTime)
+    return path.join(path.dirname(filePath), path.basename(filePath, path.extname(filePath)) + '.json')
+  },
+
   downloadForecastTime (runTime, forecastTime) {
     let promise = new Promise((resolve, reject) => {
       const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
@@ -58,13 +64,32 @@ export default {
   processForecastTime (runTime, forecastTime) {
     return this.downloadForecastTime(runTime, forecastTime)
     .then( file => {
-      return this.convertForecastTime(runTime, forecastTime, file)
+      return this.convertForecastTime(runTime, forecastTime)
     })
     .then( grid => {
-      return {
+      // Compute min/max values
+      let min = grid[0], max = grid[0]
+      for (let i = 1; i < this.forecast.size[0] * this.forecast.size[1]; i++) {
+        min = Math.min(min, grid[i])
+        max = Math.max(max, grid[i])
+      }
+      let forecast = {
         runTime: runTime,
         forecastTime: forecastTime,
-        data: grid
+        minValue: min,
+        maxValue: max
+      }
+      // Depending if we keep file as data storage include a link to files or data directly in the object
+      if (this.element.dataStore === 'fs') {
+        return Object.assign(forecast, {
+          filePath: this.getForecastTimeFilePath(runTime, forecastTime),
+          convertedFilePath : this.getForecastTimeConvertedFilePath(runTime, forecastTime)
+        })
+      }
+      else {
+        return Object.assign(forecast, {
+          data: grid
+        })
       }
     })
   },
@@ -130,7 +155,8 @@ export default {
         resolve(data)   
       })
       .catch( error => {
-        logger.info('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        logger.error(error.message)
         let previousRunTime = runTime.clone().subtract({ hours: this.forecast.runInterval / 3600 })
         // When data for current time is not available we might try previous data
         // check here that we go back until the configured limit
@@ -166,8 +192,13 @@ export default {
 
   async updateForecastData() {
     logger.info('Checking for up-to-date forecast data on ' + this.forecast.name + '/' + this.element.name)
-    // Make sure we've got somewhere to put data and clean it up
-    fs.emptyDirSync(path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name))
+    // Make sure we've got somewhere to put data and clean it up if we only use file as a temporary data store
+    if (this.element.dataStore === 'fs') {
+      fs.ensureDirSync(path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name))
+    }
+    else {
+      fs.emptyDirSync(path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name))
+    }
     const now = moment.utc()
     try {
       // Try data refresh for current time
