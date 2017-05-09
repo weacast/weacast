@@ -2,10 +2,11 @@ import { hooks } from 'weacast-core'
 import authentication from 'feathers-authentication'
 const authenticate = authentication.hooks.authenticate
 
+// Marshall/Unmarshall should be always first so that we have a consistent data format in other hooks
 module.exports = {
   before: {
     all: [ authenticate('jwt') ],
-    find: [ hooks.marshallQuery, hooks.nearestForecastTime ],
+    find: [ hooks.marshallQuery, hooks.processForecastTime ],
     get: [],
     create: [ hooks.marshall ],
     update: [ hooks.marshall ],
@@ -15,7 +16,7 @@ module.exports = {
 
   after: {
     // By default do not response with data if not explicitely asked for
-    all: [ hooks.discardData, hooks.unmarshall ],
+    all: [ hooks.unmarshall, hooks.processData ],
     find: [],
     get: [],
     create: [],

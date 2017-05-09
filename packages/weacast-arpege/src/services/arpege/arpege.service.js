@@ -8,9 +8,10 @@ const debug = makeDebug('weacast:weacast-arpege')
 export default {
 
   // Perform conversion from input TIFF to JSON
-  convertForecastTime (runTime, forecastTime, filePath) {
+  convertForecastTime (runTime, forecastTime) {
     let promise = new Promise((resolve, reject) => {
-      const convertedFilePath = path.join(path.dirname(filePath), path.basename(filePath, path.extname(filePath)) + '.json')
+      const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
+      const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
       if ( fs.existsSync(convertedFilePath) ) {
         logger.info('Already converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         fs.readJson(convertedFilePath, 'utf8')
@@ -62,9 +63,11 @@ export default {
       coverageid: this.element.coverageid + '___' + runTime.format(),
       subset: []
     }
-    Object.entries(this.element.subsets).forEach(subset => {
-      queryParameters.subset.push(subset[0] + '(' + subset[1] + ')')
-    })
+    if (this.element.subsets) {
+      Object.entries(this.element.subsets).forEach(subset => {
+        queryParameters.subset.push(subset[0] + '(' + subset[1] + ')')
+      })
+    }
     queryParameters.subset.push('time(' + forecastTime.format() + ')')
     return {
       url: this.forecast.wcsBaseUrl,
