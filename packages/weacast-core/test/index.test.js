@@ -23,6 +23,6 @@ describe('weacast-core', () => {
   it('registers the forecast service', () => {
     expect(typeof plugin).to.equal('function', 'It worked')
     app.configure(plugin)
-    expect(app.service('forecasts')).to.not.equal.undefined
+    expect(app.service('forecasts')).not.to.be.undefined
   })
 })
