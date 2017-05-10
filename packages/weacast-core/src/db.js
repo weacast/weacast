@@ -8,26 +8,25 @@ import logger from 'winston'
 import errors from 'feathers-errors'
 
 export class Database {
-  constructor(app) {
+  constructor (app) {
     try {
       this._adapter = app.get('db').adapter
-    }
-    catch (error) {
+    } catch (error) {
       throw new errors.GeneralError('Cannot find database adapter configuration in application')
     }
-    this._collections = new Map
+    this._collections = new Map()
   }
 
-  get adapter() {
+  get adapter () {
     return this._adapter
   }
 
-  async connect() {
+  async connect () {
     // Default implementation
     return null
   }
 
-  static create(app) {
+  static create (app) {
     switch (app.get('db').adapter) {
       case 'levelup':
         return new LevelupDatabase(app)
@@ -41,24 +40,23 @@ export class Database {
 }
 
 export class LevelupDatabase extends Database {
-  constructor(app) {
+  constructor (app) {
     super(app)
     try {
       this._db = sublevel(levelup(app.get('db').path, {
         valueEncoding: 'json',
         db: leveldown
       }))
-    }
-    catch (error) {
+    } catch (error) {
       throw new errors.GeneralError('Cannot find database path configuration in application')
     }
   }
 
-  async connect() {
+  async connect () {
     return this._db
   }
 
-  collection(name) {
+  collection (name) {
     // Initializes the `collection` on sublevel `collection`
     if (!this._collections.has(name)) {
       this._collections.set(name, this._db.sublevel(name))
@@ -68,21 +66,20 @@ export class LevelupDatabase extends Database {
 }
 
 export class NeDatabase extends Database {
-  constructor(app) {
+  constructor (app) {
     super(app)
     try {
       this._path = app.get('db').path
-    }
-    catch (error) {
+    } catch (error) {
       throw new errors.GeneralError('Cannot find database path configuration in application')
     }
   }
 
-  async connect() {
+  async connect () {
     return null
   }
 
-  collection(name) {
+  collection (name) {
     // Initializes the `collection` on file `collection`
     if (!this._collections.has(name)) {
       this._collections.set(name, new NeDB({
@@ -95,26 +92,24 @@ export class NeDatabase extends Database {
 }
 
 export class MongoDatabase extends Database {
-  constructor(app) {
+  constructor (app) {
     super(app)
     try {
       this._dbUrl = app.get('db').url
-    }
-    catch (error) {
+    } catch (error) {
       throw new errors.GeneralError('Cannot find database connection URL in application')
     }
   }
 
-  async connect() {
+  async connect () {
     try {
       this._db = await mongodb.connect(this._dbUrl)
-    }
-    catch (error) {
+    } catch (error) {
       logger.error('Could not connect to ' + this.app.get('db').adapter + ' database, please check your configuration')
     }
   }
 
-  collection(name) {
+  collection (name) {
     // Initializes the `collection` on sublevel `collection`
     if (!this._collections.has(name)) {
       this._collections.set(name, this._db.collection(name))

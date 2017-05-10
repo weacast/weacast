@@ -1,5 +1,3 @@
-import path from 'path'
-import logger from 'winston'
 import makeDebug from 'debug'
 import errors from 'feathers-errors'
 import { createElementService } from './service'
@@ -27,8 +25,7 @@ export default function initializePlugin (app, name, servicesPath) {
     .then(result => {
       if (result.data.length > 0) {
         forecastsService.patch(result.data[0]._id, forecast)
-      }
-      else {
+      } else {
         forecastsService.create(forecast)
       }
     })
@@ -42,4 +39,3 @@ export default function initializePlugin (app, name, servicesPath) {
     }
   }
 }
-

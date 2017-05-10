@@ -2,14 +2,14 @@ import path from 'path'
 import proto from 'uberproto'
 import elementMixins from './mixins'
 
-function declareService(name, app, service) {
+function declareService (name, app, service) {
   // Initialize our service
   app.use('/' + name, service)
-  
+
   return app.service(name)
 }
 
-function configureService(name, service, servicesPath) {
+function configureService (name, service, servicesPath) {
   const hooks = require(path.join(servicesPath, name, name + '.hooks'))
   service.hooks(hooks)
 
@@ -21,10 +21,10 @@ function configureService(name, service, servicesPath) {
   return service
 }
 
-export function createService (name, app, modelsPath, servicesPath,) {
+export function createService (name, app, modelsPath, servicesPath) {
   const createFeathersService = require('feathers-' + app.db.adapter)
   const configureModel = require(path.join(modelsPath, name + '.model.' + app.db.adapter))
-  
+
   const paginate = app.get('paginate')
   const serviceOptions = {
     name: name,
@@ -44,7 +44,7 @@ export function createElementService (forecast, element, app, servicesPath) {
   const createFeathersService = require('feathers-' + app.db.adapter)
   const configureModel = require(path.join(__dirname, 'models', 'elements.model.' + app.db.adapter))
   let serviceName = forecast.name + '/' + element.name
-  
+
   const paginate = app.get('paginate')
   const serviceOptions = {
     name: serviceName,
@@ -58,7 +58,7 @@ export function createElementService (forecast, element, app, servicesPath) {
   service = declareService(serviceName, app, service)
   // Register hooks and filters
   service = configureService(forecast.model, service, servicesPath)
-  
+
   // Apply all element mixins
   elementMixins.forEach(mixin => { proto.mixin(mixin, service) })
   // Apply specific model service mixin
@@ -71,4 +71,3 @@ export function createElementService (forecast, element, app, servicesPath) {
 
   return service
 }
-

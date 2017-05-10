@@ -18,5 +18,5 @@ export default {
     let offsetDateTime = datetime.clone().add({ seconds: 0.5 * this.forecast.interval })
     return datetime.clone().hours(roundHours(offsetDateTime.hours(), this.forecast.interval / 3600)).minutes(0).seconds(0).milliseconds(0)
   }
-  
+
 }

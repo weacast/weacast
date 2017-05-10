@@ -1,6 +1,5 @@
-import logger from 'winston'
 import makeDebug from 'debug'
-const debug = makeDebug('weacast:weacast-core')
+import services from './services'
 // A shorter version of all of this should be the following
 /*
 export * as hooks from './hooks'
@@ -14,8 +13,9 @@ import { marshall, unmarshall, processForecastTime, marshallQuery, processData }
 export let hooks = { marshall, unmarshall, processForecastTime, marshallQuery, processData }
 export { createService, createElementService } from './service'
 export { Database } from './db'
-export initializePlugin from './plugin'
-import services from './services'
+export { initializePlugin } from './plugin'
+
+const debug = makeDebug('weacast:weacast-core')
 
 export default function init () {
   const app = this

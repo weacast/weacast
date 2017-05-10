@@ -1,6 +1,6 @@
 
 export class Grid {
-  constructor(minLon, minLat, dLon, dLat, nx, ny, data) {
+  constructor (minLon, minLat, dLon, dLat, nx, ny, data) {
     this.minLon = minLon
     this.minLat = minLat  // the grid's origin (e.g., 0.0E, 90.0N)
     this.dLon = dLon
@@ -10,14 +10,13 @@ export class Grid {
     this.data = data
   }
 
-  getValue(i, j) {
+  getValue (i, j) {
     if (!this.data) return 0
 
     let index = i + j * this.ni
-    if ( index < this.data.length ) {
+    if (index < this.data.length) {
       return this.data[i + j * this.ni]
-    }
-    else {
+    } else {
       return null
     }
   }
@@ -26,7 +25,10 @@ export class Grid {
   bilinearInterpolateVector (x, y, g00, g10, g01, g11) {
     let rx = (1 - x)
     let ry = (1 - y)
-    let a = rx * ry,  b = x * ry,  c = rx * y,  d = x * y
+    let a = rx * ry
+    let b = x * ry
+    let c = rx * y
+    let d = x * y
     return g00[0] * a + g10[0] * b + g01[0] * c + g11[0] * d
   }
 
@@ -37,25 +39,25 @@ export class Grid {
    * @returns {Object}
    */
   interpolate (lon, lat) {
-
     if (!this.data) return null
 
     let i = this.floorMod(lon - this.minLon, 360) / this.dLon  // calculate longitude index in wrapped range [0, 360)
     let j = (this.minLat - lat) / this.dLat               // calculate latitude index in direction +90 to -90
 
-    let fi = Math.floor(i), ci = fi + 1
-    let fj = Math.floor(j), cj = fj + 1
+    let fi = Math.floor(i)
+    let ci = fi + 1
+    let fj = Math.floor(j)
+    let cj = fj + 1
 
     let g00 = this.getValue(fi, fj)
     let g10 = this.getValue(ci, fj)
     let g01 = this.getValue(ci, cj)
     let g11 = this.getValue(ci, cj)
-     
+
     // All four points found, so interpolate the value
-    if ( this.isValue(g00) && this.isValue(g10) && this.isValue(g01) && this.isValue(g11) ) {
+    if (this.isValue(g00) && this.isValue(g10) && this.isValue(g01) && this.isValue(g11)) {
       return this.bilinearInterpolateVector(i - fi, j - fj, g00, g10, g01, g11)
-    }
-    else {
+    } else {
       return null
     }
   }
