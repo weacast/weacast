@@ -19,7 +19,7 @@ This work is highly inspired from [geotiff2json](https://github.com/avgp/geotiff
 Here's an example that converts `file.tif` into a JSON array and writes it to disk as `data.json`:
 
 ```javascript
-    var geotiff2json = require('gtiff2json'),
+    var geotiff2json = require('weacast-gtiff2json'),
     fs = require('fs')
     
     geotiff2json('file.tif').then(function(data) {
@@ -34,7 +34,7 @@ Here's an example that converts `file.tif` into a JSON array and writes it to di
 Here's an example that converts `file.tif` into an RLE value array and writes it to disk as `data.json`:
 
 ```javascript
-    var geotiff2json = require('gtiff2json'),
+    var geotiff2json = require('weacast-gtiff2json'),
     fs = require('fs')
     
     geotiff2json('file.tif', true).then(function(data) {
