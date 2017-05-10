@@ -1,8 +1,3 @@
-import moment from 'moment'
-import logger from 'winston'
-import makeDebug from 'debug'
-const debug = makeDebug('weacast:weacast-core')
-
 /*
   Round hours to expected interval, e.g. we're currently using 6 hourly interval i.e. 00 || 06 || 12 || 18
   @return {string}

@@ -36,7 +36,7 @@ export default {
         reject(err)
       })
       .on('response', response => {
-        if (response.statusCode != 200) {
+        if (response.statusCode !== 200) {
           errorMessage += ', provider responded with HTTP code ' + response.statusCode
           logger.error(errorMessage)
           reject(new Error(errorMessage))
@@ -68,7 +68,8 @@ export default {
     })
     .then( grid => {
       // Compute min/max values
-      let min = grid[0], max = grid[0]
+      let min = grid[0]
+      let max = grid[0]
       for (let i = 1; i < this.forecast.size[0] * this.forecast.size[1]; i++) {
         min = Math.min(min, grid[i])
         max = Math.max(max, grid[i])

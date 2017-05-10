@@ -2,8 +2,9 @@ import moment from 'moment'
 import fs from 'fs-extra'
 import logger from 'winston'
 import makeDebug from 'debug'
-const debug = makeDebug('weacast:weacast-core')
 import { getItems, replaceItems, discard } from 'feathers-hooks-common'
+
+const debug = makeDebug('weacast:weacast-core')
 const discardDataField = discard('data')
 const discardFilepathField = discard('filePath')
 const discardConvertedFilepathField = discard('convertedFilePath')
