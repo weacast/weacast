@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs-extra'
-import gtiff2json from 'gtiff2json'
+import gtiff2json from 'weacast-gtiff2json'
 import logger from 'winston'
 import makeDebug from 'debug'
 const debug = makeDebug('weacast:weacast-arpege')
@@ -12,13 +12,13 @@ export default {
     let promise = new Promise((resolve, reject) => {
       const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
       const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
-      if ( fs.existsSync(convertedFilePath) ) {
+      if (fs.existsSync(convertedFilePath)) {
         logger.info('Already converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         fs.readJson(convertedFilePath, 'utf8')
-        .then( grid => {
+        .then(grid => {
           resolve(grid)
         })
-        .catch( error => {
+        .catch(error => {
           logger.error('Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
           debug('Input JSON file was : ' + convertedFilePath)
           reject(error)
@@ -27,21 +27,21 @@ export default {
       }
 
       gtiff2json(filePath)
-      .then( grid => {
+      .then(grid => {
         logger.info('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         // Change extension from tiff to json
         fs.outputJson(convertedFilePath, grid, 'utf8')
-        .then( _ => {
+        .then(_ => {
           logger.info('Written ' + this.forecast.name + '/' + this.element.name + ' converted forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
           resolve(grid)
         })
-        .catch( error => {
+        .catch(error => {
           logger.error('Cannot write converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
           debug('Output JSON file was : ' + convertedFilePath)
           reject(error)
         })
       })
-      .catch( error => {
+      .catch(error => {
         reject(error)
       })
     })

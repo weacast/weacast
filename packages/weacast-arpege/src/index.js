@@ -12,7 +12,7 @@ export default function init () {
 
 // Sub-exports
 Object.assign(init, {
-    filters,
-    hooks,
-    service
+  filters,
+  hooks,
+  service
 })
