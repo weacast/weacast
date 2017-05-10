@@ -1,14 +1,16 @@
 import feathers from 'feathers'
 import configuration from 'feathers-configuration'
 import hooks from 'feathers-hooks'
-import { expect } from 'chai'
-import { Database } from '../src'
-import plugin from '../src'
+import chai, { util, expect } from 'chai'
+import chailint from 'chai-lint'
+import core, { Database } from '../src'
 
 describe('weacast-core', () => {
   let app
 
   before(() => {
+    chailint(chai, util)
+
     app = feathers()
     app.configure(configuration())
     app.configure(hooks())
@@ -17,12 +19,13 @@ describe('weacast-core', () => {
   })
 
   it('is CommonJS compatible', () => {
-    expect(typeof plugin).to.equal('function')
+    expect(typeof core).to.equal('function')
   })
 
   it('registers the forecast service', () => {
-    expect(typeof plugin).to.equal('function', 'It worked')
-    app.configure(plugin)
-    expect(app.service('forecasts')).not.to.be.undefined
+    expect(typeof core).to.equal('function')
+    app.configure(core)
+    let service = app.service('forecasts')
+    expect(service).toExist()
   })
 })
