@@ -1,5 +1,4 @@
-gtiff2json
-==========
+# weacast-gtiff2json
 
 [![Build Status](https://travis-ci.org/weacast/gtiff2json.png?branch=master)](https://travis-ci.org/weacast/gtiff2json)
 [![Code Climate](https://codeclimate.com/github/weacast/gtiff2json/badges/gpa.svg)](https://codeclimate.com/github/weacast/gtiff2json)
@@ -68,7 +67,7 @@ So in the example above, the y-value `100` shall be repeated `10` times, the y-v
 
 ## Contribute
 
-If you find a bug or a problem or data that doesn't parse correctly, even though it should, please [report an issue here](https://github.com/weacast/gtiff2json/issues/new].
+If you find a bug or a problem or data that doesn't parse correctly, even though it should, please [report an issue here](https://github.com/weacast/weacast-gtiff2json/issues/new].
 
 In case you found a GeoTIFF that doesn't parse correctly, please attach a link to the file or attach it to the issue directly.
 
