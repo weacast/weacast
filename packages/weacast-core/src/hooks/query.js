@@ -26,6 +26,13 @@ export function marshallQuery(hook) {
       if (query.$select && this.element.dataStore === 'fs') {
         query.$select.push('convertedFilePath')
       }
+      // When listing available forecast we might want to disable pagination
+      // However disabling or changing the default pagination is not available in the client in Feathers by default,
+      // this is the reason of this specific hook
+      if (query.$paginate === 'false' || query.$paginate === false) {
+        hook.params.paginate = false
+        delete query.$paginate
+      }
     }
 }
 
