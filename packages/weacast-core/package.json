@@ -81,5 +81,10 @@
     "mocha": "^3.2.0",
     "semistandard": "^11.0.0",
     "shx": "^0.2.2"
+  },
+  "peerDependencies": {
+    "leaflet-heatmap": "^1.0.0",
+    "leaflet-timedimension": "^1.0.6",
+    "leaflet-velocity": "^1.1.0"
   }
 }
