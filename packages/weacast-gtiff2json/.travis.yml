@@ -1,11 +1,11 @@
 language: node_js
 node_js:
   - 'node'
+  - '7'
   - '6'
-  - '4'
 addons:
   code_climate:
-    repo_token: 'zhWrNkUZxkSZxyVWhKGw'
+    repo_token: '06db6a195347ba32fb93b68f51eff1dcc15da943fd155486ee68597da466eb76'
 notifications:
   email: false
 before_script:

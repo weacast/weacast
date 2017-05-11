@@ -4,7 +4,21 @@
   "description": "Converts GeoTIFF images to JSON array",
   "main": "index.js",
   "scripts": {
-    "test": "node test/tests.js"
+    "publish": "git push origin --tags && npm run changelog && git push origin",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish",
+    "changelog": "github_changelog_generator && git add CHANGELOG.md && git commit -am \"Updating changelog\"",
+    "lint": "standard *.js test/*.js --fix",
+    "mocha": "mocha --opts mocha.opts",
+    "coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --opts mocha.opts",
+    "test": "npm run lint && npm run coverage"
+  },
+  "standard": {
+    "sourceType": "module",
+    "env": [
+      "mocha"
+    ]
   },
   "repository": {
     "type": "git",
@@ -23,5 +37,12 @@
   "dependencies": {
     "commander": "^2.9.0",
     "geo-pixel-stream": "^0.4.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-lint": "^0.1.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.3.0",
+    "standard": "^10.0.2"
   }
 }
