@@ -71,8 +71,6 @@ export class Grid {
     let fj = Math.floor(j)
     let cj = clamp(fj + 1, 0, this.size[1] - 1)
 
-    console.log(i, j, fi, ci, fj, cj)
-
     let g00 = this.getValue(fi, fj)
     let g10 = this.getValue(ci, fj)
     let g01 = this.getValue(fi, cj)
