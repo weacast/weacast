@@ -6,7 +6,7 @@
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-arome.svg?style=flat-square)](https://david-dm.org/weacast/weacast-arome)
 [![Download Status](https://img.shields.io/npm/dm/weacast-arome.svg?style=flat-square)](https://www.npmjs.com/package/weacast-arome)
 
-> ARPEGE weather forecast model plugin for Weacast
+> AROME weather forecast model plugin for Weacast
 
 ## Installation
 
