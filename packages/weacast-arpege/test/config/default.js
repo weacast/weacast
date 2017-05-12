@@ -1,4 +1,5 @@
 var path = require('path')
+var containerized = require('containerized')()
 
 module.exports = {
   port: process.env.PORT || 8081,
@@ -22,7 +23,7 @@ module.exports = {
   db: {
     adapter: 'mongodb',
     path: path.join(__dirname, '../db-data'),
-    url: 'mongodb://127.0.0.1:27017/weacast'
+    url: (containerized ? 'mongodb://mongodb:27017/weacast-test' : 'mongodb://127.0.0.1:27017/weacast-test')
   },
   forecastPath: path.join(__dirname, '../forecast-data'),
   forecasts: [
@@ -42,25 +43,9 @@ module.exports = {
       oldestRunInterval: 24 * 3600,   // Don't go back in time older than 1 day
       interval: 3 * 3600,             // Steps of 3h
       lowerLimit: 0,                  // From T0
-      upperLimit: 102 * 3600,           // Up to T0+102
-      updateInterval: 15 * 60,        // Check for update every 15 minutes
+      upperLimit: 6 * 3600,           // Up to T0+6
+      updateInterval: 0,              // We will check for update manually for testing
       elements: [
-        {
-          name: 'u-wind',
-          // Use 'db' (or remove this property as it is default) to store data directly as JSON object in DB instead of files
-          // dataStore: 'fs',
-          coverageid: 'U_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-          subsets: {
-            height: 10
-          }
-        },
-        {
-          name: 'v-wind',
-          coverageid: 'V_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-          subsets: {
-            height: 10
-          }
-        },
         {
           name: 'temperature',
           coverageid: 'TEMPERATURE__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',

@@ -1,3 +1,5 @@
+import path from 'path'
+import fs from 'fs-extra'
 import feathers from 'feathers'
 import configuration from 'feathers-configuration'
 import hooks from 'feathers-hooks'
@@ -7,7 +9,7 @@ import core, { Database } from 'weacast-core'
 import arpege from '../src'
 
 describe('weacast-arpege', () => {
-  let app
+  let app, service
 
   before(() => {
     chailint(chai, util)
@@ -27,8 +29,29 @@ describe('weacast-arpege', () => {
     expect(typeof arpege).to.equal('function')
     app.configure(core)
     app.configure(arpege)
-    expect(app.service('arpege-world/u-wind')).toExist()
-    expect(app.service('arpege-world/v-wind')).toExist()
-    expect(app.service('arpege-world/temperature')).toExist()
+    service = app.service('arpege-world/temperature')
+    expect(service).toExist()
+  })
+
+  it('performs the element download process', () => {
+    // Clear any previous data
+    service.Model.remove()
+    fs.emptyDirSync(app.get('forecastPath'))
+
+    return service.updateForecastData('once')
+    .then( _ => {
+      let files = fs.readdirSync(service.getDataDirectory())
+      expect(files.length).to.equal(6)
+      expect(files.filter(item => path.extname(item) === '.json').length).to.equal(3)
+      expect(files.filter(item => path.extname(item) === '.tiff').length).to.equal(3)
+    })
+  })
+  // Let enough time to download a couple of data
+  .timeout(60000)
+
+  // Cleanup
+  after(() => {
+    service.Model.drop()
+    fs.removeSync(app.get('forecastPath'))
   })
 })
