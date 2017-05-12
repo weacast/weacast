@@ -1,4 +1,5 @@
 var path = require('path')
+var containerized = require('containerized')()
 
 module.exports = {
   port: process.env.PORT || 8081,
@@ -22,6 +23,7 @@ module.exports = {
   db: {
     adapter: 'mongodb',
     path: path.join(__dirname, '../db-data'),
-    url: 'mongodb://127.0.0.1:27017/weacast'
-  }
+    url: (containerized ? 'mongodb://mongodb:27017/weacast' : 'mongodb://127.0.0.1:27017/weacast')
+  },
+  forecastPath: path.join(__dirname, '../forecast-data')
 }

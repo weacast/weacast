@@ -1,35 +1,56 @@
+/**
+ * @returns {Boolean} true if the specified value is not null and not undefined.
+ */
+function isValue (x) {
+  return x !== null && x !== undefined
+}
+
+/**
+ * @returns {Number} returns remainder of floored division, i.e., floor(a / n). Useful for consistent modulo
+ *          of negative numbers. See http://en.wikipedia.org/wiki/Modulo_operation.
+ */
+function floorMod (a, n) {
+  return a - n * Math.floor(a / n)
+}
+
+/**
+ * @returns {Number} the value x clamped to the range [low, high].
+ */
+function clamp (x, min, max) {
+  return Math.max(min, Math.min(x, max))
+}
 
 export class Grid {
-  constructor (minLon, minLat, dLon, dLat, nx, ny, data) {
-    this.minLon = minLon
-    this.minLat = minLat  // the grid's origin (e.g., 0.0E, 90.0N)
-    this.dLon = dLon
-    this.dLat = dLat      // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
-    this.ni = nx
-    this.nj = ny          // number of grid points W-E and N-S (e.g., 144 x 73)
-    this.data = data
+  // Options are similar to those defining the forecast model + a data json array for grid point values
+  // (bounds e.g. [-180, -90, 180, 90], e.g. origin: [-180, 90], e.g. size: [720, 361], e.g. resolution: [0.5, 0.5])
+  constructor (options) {
+    Object.assign(this, options)
+
+    // Depending on the model longitude/latitude increases/decreases according to grid scanning
+    this.lonDirection = (this.origin[0] === this.bounds[0] ? 1 : -1)
+    this.latDirection = (this.origin[1] === this.bounds[1] ? 1 : -1)
   }
 
   getValue (i, j) {
     if (!this.data) return 0
 
-    let index = i + j * this.ni
+    let index = i + j * this.size[0]
     if (index < this.data.length) {
-      return this.data[i + j * this.ni]
+      return this.data[index]
     } else {
       return null
     }
   }
 
-  // interpolation for vectors like wind (u,v,m)
-  bilinearInterpolateVector (x, y, g00, g10, g01, g11) {
+  // bilinear interpolation
+  bilinearInterpolate (x, y, g00, g10, g01, g11) {
     let rx = (1 - x)
     let ry = (1 - y)
     let a = rx * ry
     let b = x * ry
     let c = rx * y
     let d = x * y
-    return g00[0] * a + g10[0] * b + g01[0] * c + g11[0] * d
+    return g00 * a + g10 * b + g01 * c + g11 * d
   }
 
   /**
@@ -41,45 +62,27 @@ export class Grid {
   interpolate (lon, lat) {
     if (!this.data) return null
 
-    let i = this.floorMod(lon - this.minLon, 360) / this.dLon  // calculate longitude index in wrapped range [0, 360)
-    let j = (this.minLat - lat) / this.dLat               // calculate latitude index in direction +90 to -90
-
+    let i = this.lonDirection * floorMod(lon - this.origin[0], 360) / this.resolution[0] - 0.5     // calculate longitude index in wrapped range [0, 360)
+    let j = this.latDirection * (lat - this.origin[1]) / this.resolution[1] - 0.5                       // calculate latitude index in direction +90 to -90
+    i = clamp(i, 0, this.size[0] - 1)
+    j = clamp(j, 0, this.size[1] - 1)
     let fi = Math.floor(i)
-    let ci = fi + 1
+    let ci = clamp(fi + 1, 0, this.size[0] - 1)
     let fj = Math.floor(j)
-    let cj = fj + 1
+    let cj = clamp(fj + 1, 0, this.size[1] - 1)
+
+    console.log(i, j, fi, ci, fj, cj)
 
     let g00 = this.getValue(fi, fj)
     let g10 = this.getValue(ci, fj)
-    let g01 = this.getValue(ci, cj)
+    let g01 = this.getValue(fi, cj)
     let g11 = this.getValue(ci, cj)
 
     // All four points found, so interpolate the value
-    if (this.isValue(g00) && this.isValue(g10) && this.isValue(g01) && this.isValue(g11)) {
-      return this.bilinearInterpolateVector(i - fi, j - fj, g00, g10, g01, g11)
+    if (isValue(g00) && isValue(g10) && isValue(g01) && isValue(g11)) {
+      return this.bilinearInterpolate(i - fi, j - fj, g00, g10, g01, g11)
     } else {
       return null
     }
-  }
-  /**
-   * @returns {Boolean} true if the specified value is not null and not undefined.
-   */
-  isValue (x) {
-    return x !== null && x !== undefined
-  }
-
-  /**
-   * @returns {Number} returns remainder of floored division, i.e., floor(a / n). Useful for consistent modulo
-   *          of negative numbers. See http://en.wikipedia.org/wiki/Modulo_operation.
-   */
-  floorMod (a, n) {
-    return a - n * Math.floor(a / n)
-  }
-
-  /**
-   * @returns {Number} the value x clamped to the range [low, high].
-   */
-  clamp (x, range) {
-    return Math.max(range[0], Math.min(x, range[1]))
   }
 }

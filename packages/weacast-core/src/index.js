@@ -14,6 +14,7 @@ import initializePlugin from './plugin'
 export let hooks = { marshall, unmarshall, processForecastTime, marshallQuery, processData }
 export { createService, createElementService } from './service'
 export { Database } from './db'
+export { Grid } from './grid'
 export { initializePlugin }
 
 const debug = makeDebug('weacast:weacast-core')

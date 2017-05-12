@@ -67,8 +67,8 @@ export default {
     })
     .then(grid => {
       // Compute min/max values
-      let min = grid[0]
-      let max = grid[0]
+      let min = (grid && grid.length > 0 ? grid[0] : Number.NEGATIVE_INFINITY)
+      let max = (grid && grid.length > 0 ? grid[0] : Number.POSITIVE_INFINITY)
       for (let i = 1; i < this.forecast.size[0] * this.forecast.size[1]; i++) {
         min = Math.min(min, grid[i])
         max = Math.max(max, grid[i])
@@ -190,10 +190,11 @@ export default {
   async updateForecastData () {
     logger.info('Checking for up-to-date forecast data on ' + this.forecast.name + '/' + this.element.name)
     // Make sure we've got somewhere to put data and clean it up if we only use file as a temporary data store
+    let dataDir = path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name)
     if (this.element.dataStore === 'fs') {
-      fs.ensureDirSync(path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name))
+      fs.ensureDirSync(dataDir)
     } else {
-      fs.emptyDirSync(path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name))
+      fs.emptyDirSync(dataDir)
     }
     const now = moment.utc()
     try {

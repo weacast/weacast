@@ -23,7 +23,6 @@ describe('weacast-core', () => {
   })
 
   it('registers the forecasts service', () => {
-    expect(typeof core).to.equal('function')
     app.configure(core)
     let service = app.service('forecasts')
     expect(service).toExist()
