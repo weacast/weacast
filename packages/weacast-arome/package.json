@@ -76,6 +76,7 @@
     "babel-preset-es2017-node7": "^0.5.2",
     "chai": "^3.5.0",
     "chai-lint": "^0.1.1",
+    "containerized": "^1.0.2",
     "cross-env": "^4.0.0",
     "feathers": "^2.1.2",
     "feathers-configuration": "^0.4.1",

@@ -1,3 +1,5 @@
+import path from 'path'
+import fs from 'fs-extra'
 import feathers from 'feathers'
 import configuration from 'feathers-configuration'
 import hooks from 'feathers-hooks'
@@ -7,7 +9,7 @@ import core, { Database } from 'weacast-core'
 import arome from '../src'
 
 describe('weacast-arome', () => {
-  let app
+  let app, service
 
   before(() => {
     chailint(chai, util)
@@ -27,8 +29,29 @@ describe('weacast-arome', () => {
     expect(typeof arome).to.equal('function')
     app.configure(core)
     app.configure(arome)
-    expect(app.service('arome-france/u-wind')).toExist()
-    expect(app.service('arome-france/v-wind')).toExist()
-    expect(app.service('arome-france/temperature')).toExist()
+    service = app.service('arome-france/temperature')
+    expect(service).toExist()
+  })
+
+  it('performs the element download process', () => {
+    // Clear any previous data
+    service.Model.remove()
+    fs.emptyDirSync(app.get('forecastPath'))
+
+    return service.updateForecastData('once')
+    .then( _ => {
+      let files = fs.readdirSync(service.getDataDirectory())
+      expect(files.length).to.equal(8)
+      expect(files.filter(item => path.extname(item) === '.json').length).to.equal(4)
+      expect(files.filter(item => path.extname(item) === '.tiff').length).to.equal(4)
+    })
+  })
+  // Let enough time to download a couple of data
+  .timeout(60000)
+
+  // Cleanup
+  after(() => {
+    service.Model.drop()
+    fs.removeSync(app.get('forecastPath'))
   })
 })
