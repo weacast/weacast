@@ -2,6 +2,7 @@ import makeDebug from 'debug'
 import errors from 'feathers-errors'
 import { createElementService } from './service'
 
+// Create all element services
 export default function initializePlugin (app, name, servicesPath) {
   const debug = makeDebug('weacast:weacast-' + name)
 
@@ -34,8 +35,28 @@ export default function initializePlugin (app, name, servicesPath) {
     for (let element of forecast.elements) {
       let service = createElementService(forecast, element, app, servicesPath)
       // Setup the update process, will trigger the initial harvesting
-      debug('Launching update process for forecast data on ' + forecast.name + '/' + element.name)
-      service.updateForecastData()
+      if (forecast.updateInterval > 0) {
+        debug('Launching update process for forecast data on ' + forecast.name + '/' + element.name)
+        service.updateForecastData('interval')
+      }
     }
   }
+}
+
+// Get all element services
+export function getPluginElementServices (app, name) {
+  const forecasts = app.get('forecasts') ? app.get('forecasts').filter(forecast => forecast.model === name) : null
+  if (!forecasts.length) {
+    throw new errors.GeneralError('Cannot find valid ' + name + ' plugin configuration in application')
+  }
+
+  // Iterate over configured forecast models
+  let services = []
+  for (let forecast of forecasts) {
+    for (let element of forecast.elements) {
+      let serviceName = forecast.name + '/' + element.name
+      services.push(app.service(serviceName))
+    }
+  }
+  return services
 }
