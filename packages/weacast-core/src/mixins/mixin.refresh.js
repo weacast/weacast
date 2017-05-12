@@ -8,6 +8,11 @@ const debug = makeDebug('weacast:weacast-core')
 
 export default {
 
+  // Retrieve the path where downloaded/persited data are
+  getDataDirectory() {
+    return path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name)
+  },
+
   // Generate file name to store temporary output (i.e. converted) data, assume by default a similar name than getForecastTimeFilePath() with a json extension
   getForecastTimeConvertedFilePath (runTime, forecastTime) {
     let filePath = this.getForecastTimeFilePath(runTime, forecastTime)
@@ -187,10 +192,10 @@ export default {
     }
   },
 
-  async updateForecastData () {
+  async updateForecastData (mode = 'interval') {
     logger.info('Checking for up-to-date forecast data on ' + this.forecast.name + '/' + this.element.name)
     // Make sure we've got somewhere to put data and clean it up if we only use file as a temporary data store
-    let dataDir = path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name)
+    let dataDir = this.getDataDirectory()
     if (this.element.dataStore === 'fs') {
       fs.ensureDirSync(dataDir)
     } else {
@@ -200,10 +205,13 @@ export default {
     try {
       // Try data refresh for current time
       await this.refreshForecastData(now)
-      // Then plan next update according to provided update interval
-      await setTimeout(_ => this.updateForecastData(), 1000 * this.forecast.updateInterval)
       logger.info('Completed forecast data update on ' + this.forecast.name + '/' + this.element.name)
-    } catch (error) {
+      // Then plan next update according to provided update interval if required
+      if (mode === 'interval') {
+        await setTimeout(_ => this.updateForecastData('interval'), 1000 * this.forecast.updateInterval)
+      }
+    }
+    catch (error) {
     }
   }
 }

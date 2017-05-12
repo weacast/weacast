@@ -8,7 +8,7 @@ import chailint from 'chai-lint'
 import core, { Database, createElementService } from '../src'
 
 describe('weacast-core', () => {
-  let app, service, dataDir
+  let app, service
   let forecast = {
     name: 'test-forecast',
     model: 'test-model',
@@ -40,7 +40,6 @@ describe('weacast-core', () => {
 
   it('registers the element service', () => {
     app.configure(core)
-    dataDir = path.join(app.get('forecastPath'), forecast.name, element.name)
     service = createElementService(forecast, element, app, path.join(__dirname, 'test-services'))
     expect(service).toExist()
     // Test as well if correctly registered into app
@@ -51,11 +50,11 @@ describe('weacast-core', () => {
   it('performs the element download process', () => {
     // Clear any previous data
     service.Model.remove()
-    fs.emptyDirSync(dataDir)
+    fs.emptyDirSync(service.getDataDirectory())
 
     return service.updateForecastData()
     .then( _ => {
-      let files = fs.readdirSync(dataDir)
+      let files = fs.readdirSync(service.getDataDirectory())
       expect(files.length).to.equal(6)
       expect(files.filter(item => path.extname(item) === '.json').length).to.equal(3)
       expect(files.filter(item => path.extname(item) === '.html').length).to.equal(3)
