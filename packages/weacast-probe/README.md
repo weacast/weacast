@@ -1,33 +1,33 @@
-# weacast-arpege
+# weacast-probe
 
-[![Build Status](https://travis-ci.org/weacast/weacast-arpege.png?branch=master)](https://travis-ci.org/weacast/weacast-arpege)
-[![Code Climate](https://codeclimate.com/github/weacast/weacast-arpege/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-arpege)
-[![Test Coverage](https://codeclimate.com/github/weacast/weacast-arpege/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-arpege/coverage)
-[![Dependency Status](https://img.shields.io/david/weacast/weacast-arpege.svg?style=flat-square)](https://david-dm.org/weacast/weacast-arpege)
-[![Download Status](https://img.shields.io/npm/dm/weacast-arpege.svg?style=flat-square)](https://www.npmjs.com/package/weacast-arpege)
+[![Build Status](https://travis-ci.org/weacast/weacast-probe.png?branch=master)](https://travis-ci.org/weacast/weacast-probe)
+[![Code Climate](https://codeclimate.com/github/weacast/weacast-probe/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-probe)
+[![Test Coverage](https://codeclimate.com/github/weacast/weacast-probe/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-probe/coverage)
+[![Dependency Status](https://img.shields.io/david/weacast/weacast-probe.svg?style=flat-square)](https://david-dm.org/weacast/weacast-probe)
+[![Download Status](https://img.shields.io/npm/dm/weacast-probe.svg?style=flat-square)](https://www.npmjs.com/package/weacast-probe)
 
 > ARPEGE weather forecast model plugin for Weacast
 
 ## Installation
 
 ```
-npm install weacast-arpege --save
+npm install weacast-probe --save
 // Or with Yarn
-yarn add weacast-arpege
+yarn add weacast-probe
 ```
 
 ## Complete Example
 
-Here's an example of a Weacast server that uses `weacast-arpege`. 
+Here's an example of a Weacast server that uses `weacast-probe`. 
 
 ```js
-import arpegePlugin from 'weacast-arpege'
+import probePlugin from 'weacast-probe'
 
 module.exports = function() {
   const app = this
   
   // Set up our plugin services
-  app.configure(arpegePlugin)
+  app.configure(probePlugin)
 }
 ```
 ## Development
@@ -36,18 +36,18 @@ While it is a WIP and not yet pushed to NPM, or when developing this plugin, ple
 
 ```bash
 // Clone and link the plugin
-git clone https://github.com/weacast/weacast-arpege.git
-cd weacast-arpege
+git clone https://github.com/weacast/weacast-probe.git
+cd weacast-probe
 npm link
 // Clone and link plugin to weacast server
 cd ..
 git clone https://github.com/weacast/weacast.git
 cd weacast
 cd api
-npm link weacast-arpege
+npm link weacast-probe
 ```
 
-As this module also depends on [weacast-core](https://github.com/weacast/weacast-core) and [gtiff2json](https://github.com/weacast/gtiff2json) you have to do the same thing for them.
+As this module also depends on [weacast-core](https://github.com/weacast/weacast-core) you have to do the same thing for it.
 
 ## License
 
