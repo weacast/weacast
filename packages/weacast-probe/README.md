@@ -6,7 +6,7 @@
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-probe.svg?style=flat-square)](https://david-dm.org/weacast/weacast-probe)
 [![Download Status](https://img.shields.io/npm/dm/weacast-probe.svg?style=flat-square)](https://www.npmjs.com/package/weacast-probe)
 
-> ARPEGE weather forecast model plugin for Weacast
+> Probing forecast model plugin for Weacast
 
 ## Installation
 
