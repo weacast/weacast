@@ -1,10 +1,12 @@
 var path = require('path')
 var containerized = require('containerized')()
 
+var API_PREFIX = '/api'
+
 module.exports = {
   port: process.env.PORT || 8081,
 
-  apiPath: '/api',
+  apiPath: API_PREFIX,
 
   host: 'localhost',
   paginate: {
@@ -17,8 +19,8 @@ module.exports = {
       'jwt',
       'local'
     ],
-    path: '/authentication',
-    service: 'users'
+    path: API_PREFIX + '/authentication',
+    service: API_PREFIX + '/users'
   },
   db: {
     adapter: 'mongodb',

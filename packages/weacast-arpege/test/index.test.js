@@ -5,7 +5,7 @@ import configuration from 'feathers-configuration'
 import hooks from 'feathers-hooks'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import core, { Database } from 'weacast-core'
+import core, { weacast, Database } from 'weacast-core'
 import arpege from '../src'
 
 describe('weacast-arpege', () => {
@@ -14,9 +14,7 @@ describe('weacast-arpege', () => {
   before(() => {
     chailint(chai, util)
 
-    app = feathers()
-    app.configure(configuration())
-    app.configure(hooks())
+    app = weacast()
     app.db = Database.create(app)
     return app.db.connect()
   })
@@ -29,7 +27,7 @@ describe('weacast-arpege', () => {
     expect(typeof arpege).to.equal('function')
     app.configure(core)
     app.configure(arpege)
-    service = app.service('arpege-world/temperature')
+    service = app.getService('arpege-world/temperature')
     expect(service).toExist()
   })
 
