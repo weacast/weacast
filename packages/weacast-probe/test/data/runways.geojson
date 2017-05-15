@@ -1,0 +1,104 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "Airport": "AYMH",
+        "Ident": "RW12",
+        "RevCode": "1",
+        "TrueNorth": "M",
+        "MagBearing": "116.00",
+        "Length": 7185,
+        "Latitude": "S05-49-22.84",
+        "Longitude": "E144-17-27.29",
+        "ThrDisp": 0,
+        "Elevation": 5370,
+        "ILS Navaid": null,
+        "ILS Cat": 0,
+        "ILS LBearing": null,
+        "ILS2 Navaid": null,
+        "ILS2 Cat": 0,
+        "ILS2 LBearing": null,
+        "ThrCrossHeight": 46.000000,
+        "VFR": " ",
+        "Width": 100
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.29091388888889,
+          -5.823011111111111
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Airport": "AYMH",
+        "Ident": "RW12",
+        "RevCode": "2",
+        "TrueNorth": "M",
+        "MagBearing": "116.00",
+        "Length": 7185,
+        "Latitude": "S05-49-22.76",
+        "Longitude": "E144-17-27.37",
+        "ThrDisp": 0,
+        "Elevation": 5390,
+        "ILS Navaid": null,
+        "ILS Cat": 0,
+        "ILS LBearing": null,
+        "ILS2 Navaid": null,
+        "ILS2 Cat": 0,
+        "ILS2 LBearing": null,
+        "ThrCrossHeight": 50.000000,
+        "VFR": " ",
+        "Width": 100
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.29093611111111,
+          -5.822988888888889
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Airport": "AYMH",
+        "Ident": "RW30",
+        "RevCode": "1",
+        "TrueNorth": "M",
+        "MagBearing": "296.00",
+        "Length": 7185,
+        "Latitude": "S05-50-00.00",
+        "Longitude": "E144-18-27.93",
+        "ThrDisp": 0,
+        "Elevation": 5370,
+        "ILS Navaid": null,
+        "ILS Cat": 0,
+        "ILS LBearing": null,
+        "ILS2 Navaid": null,
+        "ILS2 Cat": 0,
+        "ILS2 LBearing": null,
+        "ThrCrossHeight": 50.000000,
+        "VFR": " ",
+        "Width": 100
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          144.30775833333334,
+          -5.833333333333333
+        ]
+      }
+    }
+  ]
+}
