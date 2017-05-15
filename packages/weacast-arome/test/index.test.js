@@ -5,7 +5,7 @@ import configuration from 'feathers-configuration'
 import hooks from 'feathers-hooks'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import core, { Database } from 'weacast-core'
+import core, { weacast, Database } from 'weacast-core'
 import arome from '../src'
 
 describe('weacast-arome', () => {
@@ -14,9 +14,7 @@ describe('weacast-arome', () => {
   before(() => {
     chailint(chai, util)
 
-    app = feathers()
-    app.configure(configuration())
-    app.configure(hooks())
+    app = weacast()
     app.db = Database.create(app)
     return app.db.connect()
   })
@@ -29,7 +27,7 @@ describe('weacast-arome', () => {
     expect(typeof arome).to.equal('function')
     app.configure(core)
     app.configure(arome)
-    service = app.service('arome-france/temperature')
+    service = app.getService('arome-france/temperature')
     expect(service).toExist()
   })
 
