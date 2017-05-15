@@ -3,10 +3,11 @@ import proto from 'uberproto'
 import elementMixins from './mixins'
 
 function declareService (name, app, service) {
+  const path = app.get('apiPath') + '/' + name
   // Initialize our service
-  app.use('/' + name, service)
+  app.use(path, service)
 
-  return app.service(name)
+  return app.getService(name)
 }
 
 function configureService (name, service, servicesPath) {

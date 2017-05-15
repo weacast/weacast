@@ -67,7 +67,7 @@ let HeatLayer = L.TimeDimension.Layer.extend({
   },
 
   fetchAvailableTimes () {
-    return api.service('/' + this.forecastModel.name + '/' + this.options.element).find({
+    return api.getService(this.forecastModel.name + '/' + this.options.element).find({
       query: {
         $paginate: false,
         $select: ['forecastTime']
@@ -94,7 +94,7 @@ let HeatLayer = L.TimeDimension.Layer.extend({
       }
     }
 
-    api.service('/' + this.forecastModel.name + '/' + this.options.element).find(query)
+    api.getService(this.forecastModel.name + '/' + this.options.element).find(query)
     .then(response => {
       // Keep track of downloaded data
       this.downloadedForecastTime = new Date(response.data[0].forecastTime)

@@ -63,7 +63,7 @@ let FlowLayer = L.TimeDimension.Layer.extend({
   },
 
   fetchAvailableTimes () {
-    return api.service('/' + this.forecastModel.name + '/' + this.options.uElement).find({
+    return api.getService(this.forecastModel.name + '/' + this.options.uElement).find({
       query: {
         $paginate: false,
         $select: ['forecastTime']
@@ -90,12 +90,12 @@ let FlowLayer = L.TimeDimension.Layer.extend({
       }
     }
 
-    api.service('/' + this.forecastModel.name + '/' + this.options.uElement).find(query)
+    api.getService(this.forecastModel.name + '/' + this.options.uElement).find(query)
     .then(response => {
       // Keep track of downloaded data
       console.log(response)
       this.uFlow.data = response.data[0].data
-      return api.service('/' + this.forecastModel.name + '/' + this.options.vElement).find(query)
+      return api.getService(this.forecastModel.name + '/' + this.options.vElement).find(query)
     })
     .then(response => {
       // Keep track of downloaded data

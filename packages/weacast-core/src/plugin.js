@@ -12,7 +12,7 @@ export default function initializePlugin (app, name, servicesPath) {
   }
 
   debug('Initializing weacast-' + name + ' plugin')
-  const forecastsService = app.service('forecasts')
+  const forecastsService = app.getService('forecasts')
   // Iterate over configured forecast models
   for (let forecast of forecasts) {
     debug('Initializing ' + forecast.name + ' forecast')
@@ -54,8 +54,8 @@ export function getPluginElementServices (app, name) {
   let services = []
   for (let forecast of forecasts) {
     for (let element of forecast.elements) {
-      let serviceName = forecast.name + '/' + element.name
-      services.push(app.service(serviceName))
+      let servicePath = forecast.name + '/' + element.name
+      services.push(app.getService(servicePath))
     }
   }
   return services

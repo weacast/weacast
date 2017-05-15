@@ -13,6 +13,7 @@ import { marshall, unmarshall, processForecastTime, marshallQuery, processData }
 import initializePlugin from './plugin'
 export let hooks = { marshall, unmarshall, processForecastTime, marshallQuery, processData }
 export { createService, createElementService } from './service'
+export weacast from './application'
 export { Database } from './db'
 export { Grid } from './grid'
 export { initializePlugin }
