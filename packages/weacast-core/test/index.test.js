@@ -3,7 +3,7 @@ import configuration from 'feathers-configuration'
 import hooks from 'feathers-hooks'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import core, { Database } from '../src'
+import core, { weacast, Database } from '../src'
 
 describe('weacast-core', () => {
   let app
@@ -11,9 +11,7 @@ describe('weacast-core', () => {
   before(() => {
     chailint(chai, util)
 
-    app = feathers()
-    app.configure(configuration())
-    app.configure(hooks())
+    app = weacast()
     app.db = Database.create(app)
     return app.db.connect()
   })
@@ -24,7 +22,7 @@ describe('weacast-core', () => {
 
   it('registers the forecasts service', () => {
     app.configure(core)
-    let service = app.service('forecasts')
+    let service = app.getService('forecasts')
     expect(service).toExist()
   })
 })

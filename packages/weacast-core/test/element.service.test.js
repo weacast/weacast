@@ -5,7 +5,7 @@ import configuration from 'feathers-configuration'
 import hooks from 'feathers-hooks'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import core, { Database, createElementService } from '../src'
+import core, { weacast, Database, createElementService } from '../src'
 
 describe('weacast-core', () => {
   let app, service
@@ -27,9 +27,7 @@ describe('weacast-core', () => {
   before(() => {
     chailint(chai, util)
 
-    app = feathers()
-    app.configure(configuration())
-    app.configure(hooks())
+    app = weacast()
     app.db = Database.create(app)
     return app.db.connect()
   })
@@ -43,7 +41,7 @@ describe('weacast-core', () => {
     service = createElementService(forecast, element, app, path.join(__dirname, 'test-services'))
     expect(service).toExist()
     // Test as well if correctly registered into app
-    service = app.service('test-forecast/test-element')
+    service = app.getService('test-forecast/test-element')
     expect(service).toExist()
   })
 
