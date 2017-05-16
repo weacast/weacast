@@ -35,12 +35,36 @@ function auth() {
   })
 }
 
+// Get all element services
+function getElementServices (app, name) {
+  let forecasts = app.get('forecasts');
+  if (name) {
+    forecasts = forecasts.filter(forecast => forecast.name === name)
+  }
+  
+  // Iterate over configured forecast models
+  let services = []
+  for (let forecast of forecasts) {
+    for (let element of forecast.elements) {
+      let service = app.getService(forecast.name + '/' + element.name)
+      if (service) {
+        services.push(service)
+      }
+    }
+  }
+  return services
+}
+
 export default function weacast () {
   let app = feathers()
   
   // This avoid managing the API path before each service name
   app.getService = function (path) {
     return app.service(app.get('apiPath') + '/' + path)
+  }
+  // This is used to retrieve all registered element plugins
+  app.getElementServices = function (name) {
+    return getElementServices(app, name)
   }
   
   // Load app configuration

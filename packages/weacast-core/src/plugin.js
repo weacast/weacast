@@ -43,20 +43,3 @@ export default function initializePlugin (app, name, servicesPath) {
   }
 }
 
-// Get all element services
-export function getPluginElementServices (app, name) {
-  const forecasts = app.get('forecasts') ? app.get('forecasts').filter(forecast => forecast.model === name) : null
-  if (!forecasts.length) {
-    throw new errors.GeneralError('Cannot find valid ' + name + ' plugin configuration in application')
-  }
-
-  // Iterate over configured forecast models
-  let services = []
-  for (let forecast of forecasts) {
-    for (let element of forecast.elements) {
-      let servicePath = forecast.name + '/' + element.name
-      services.push(app.getService(servicePath))
-    }
-  }
-  return services
-}

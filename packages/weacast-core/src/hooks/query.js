@@ -69,42 +69,44 @@ export function processData (hook) {
     if (query && query.$select && query.$select.includes('data')) {
       return new Promise((resolve, reject) => {
         let items = getItems(hook)
-        items = (Array.isArray(items) ? items : [items])
+        const isArray = Array.isArray(items)
+        items = (isArray ? items : [items])
 
         let dataPromises = []
         items.forEach(item => {
           dataPromises.push(
-              fs.readJson(item.convertedFilePath, 'utf8')
-              .then(grid => {
-                item.data = grid
-                return item
-              })
-              .catch(error => {
-                let errorMessage = 'Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast'
-                if (item.forecastTime) errorMessage += ' at ' + item.forecastTime.format()
-                if (item.runTime) errorMessage += ' for run ' + item.runTime.format()
-                logger.error(errorMessage)
-                debug('Input JSON file was : ' + item.convertedFilePath)
-                reject(error)
-              }))
+            fs.readJson(item.convertedFilePath, 'utf8')
+            .then(grid => {
+              item.data = grid
+              return item
+            })
+            .catch(error => {
+              let errorMessage = 'Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast'
+              if (item.forecastTime) errorMessage += ' at ' + item.forecastTime.format()
+              if (item.runTime) errorMessage += ' for run ' + item.runTime.format()
+              logger.error(errorMessage)
+              debug('Input JSON file was : ' + item.convertedFilePath)
+              reject(error)
+            })
+          )
         })
 
         Promise.all(dataPromises).then(_ => {
-            // Remove as well any sensitive information about file path on the client side
-            // Must be done second as we need this information first to read data
+          // Remove as well any sensitive information about file path on the client side
+          // Must be done second as we need this information first to read data
           discardFilepathField(hook)
           discardConvertedFilepathField(hook)
-          replaceItems(hook, items)
+          replaceItems(hook, isArray ? items : items[0])
           resolve(hook)
         })
       })
     } else {
-        // Remove any sensitive information about file path on the client side
+      // Remove any sensitive information about file path on the client side
       discardFilepathField(hook)
       discardConvertedFilepathField(hook)
     }
   } else {
-      // Only discard if not explicitely asked by $select
+    // Only discard if not explicitely asked by $select
     if (!query || !query.$select || !query.$select.includes('data')) {
       discardDataField(hook)
     }

@@ -38,7 +38,19 @@ export function createService (name, app, modelsPath, servicesPath) {
   // Get our initialized service so that we can register hooks and filters
   service = declareService(name, app, service)
   // Register hooks and filters
-  return configureService(name, service, servicesPath)
+  service = configureService(name, service, servicesPath)
+  // Optionnally a specific service mixin can be provided, apply it
+  try {
+    const serviceMixin = require(path.join(servicesPath, name, name + '.service'))
+    proto.mixin(serviceMixin, service)
+  } catch (error) {
+    // As this is optionnal this require has to fail silently
+  }
+  // Then configuration
+  service.name = name
+  service.app = app
+  
+  return service
 }
 
 export function createElementService (forecast, element, app, servicesPath) {
@@ -67,6 +79,7 @@ export function createElementService (forecast, element, app, servicesPath) {
   proto.mixin(serviceMixin, service)
   // Then configuration
   service.app = app
+  service.name = serviceName
   service.forecast = forecast
   service.element = element
 

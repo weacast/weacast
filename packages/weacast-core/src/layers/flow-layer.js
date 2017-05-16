@@ -93,7 +93,6 @@ let FlowLayer = L.TimeDimension.Layer.extend({
     api.getService(this.forecastModel.name + '/' + this.options.uElement).find(query)
     .then(response => {
       // Keep track of downloaded data
-      console.log(response)
       this.uFlow.data = response.data[0].data
       return api.getService(this.forecastModel.name + '/' + this.options.vElement).find(query)
     })
