@@ -30,7 +30,7 @@ describe('weacast-probe', () => {
     probeService = app.getService('probes')
     expect(probeService).toExist()
   })
-
+  
   it('performs element download process', () => {
     // Clear any previous data
     elementService.Model.remove()
@@ -40,15 +40,24 @@ describe('weacast-probe', () => {
   })
   // Let enough time to download a couple of data
   .timeout(60000)
+  
 
   it('performs probing element', () => {
     let geojson = fs.readJsonSync(path.join(__dirname, 'data', 'runways.geojson'))
     geojson.properties = {
       elements: ['temperature']
     }
-    return probeService.create({
-      layer: geojson
+    return probeService.create(geojson)
+    .then(data => {
+      data.features.forEach(feature => {
+        expect(feature.properties[elementService.name]).toExist()
+      })
     })
+    /* For debug purpose only
+    .then(data => {
+      fs.outputJsonSync(path.join(__dirname, 'data', 'runways-probe.geojson'), data.layer)
+    })
+    */
   })
 
   // Cleanup

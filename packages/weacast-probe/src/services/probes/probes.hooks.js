@@ -1,10 +1,12 @@
 import authentication from 'feathers-authentication'
+import { getItems, replaceItems } from 'feathers-hooks-common'
+import { performProbing } from '../../hooks'
 const authenticate = authentication.hooks.authenticate
 
 module.exports = {
   before: {
     all: [ authenticate('jwt') ],
-    find: [ ],
+    find: [],
     get: [],
     create: [],
     update: [],
@@ -16,7 +18,8 @@ module.exports = {
     all: [],
     find: [],
     get: [],
-    create: [],
+    // Perform probing on insert
+    create: [ performProbing ],
     update: [],
     patch: [],
     remove: []

@@ -1,5 +1,8 @@
+import path from 'path'
+import fs from 'fs-extra'
 // import logger from 'winston'
 // import makeDebug from 'debug'
+import moment from 'moment'
 import errors from 'feathers-errors'
 import { Grid } from 'weacast-core'
 
@@ -28,7 +31,7 @@ export default {
       if (!feature.properties[service.name]) {
         feature.properties[service.name] = {}
       }
-      feature.properties[service.name][forecastTime] = grid.interpolate(feature.geometry.coordinates[0], feature.geometry.coordinates[1])
+      feature.properties[service.name][forecastTime.format()] = grid.interpolate(feature.geometry.coordinates[0], feature.geometry.coordinates[1])
     })
   },
 
@@ -39,18 +42,25 @@ export default {
     if (!layer.properties || !layer.properties.elements || layer.properties.elements.length === 0) {
       return Promise.reject(new errors.BadRequest('Target forecast element not specified'))
     }
-    // Retrieve target elements
-    let services = this.app.getElementServices().filter(service => {
-      return layer.properties.elements.reduce((contains, element) => service.name.includes(element), false)
+    // Retrieve target elements for all models or specified one
+    let services = this.app.getElementServices(layer.properties.forecast)
+    services = services.filter(service => {
+      return layer.properties.elements.reduce((contains, element) => contains || service.name.includes(element), false)
     })
     // Then setup all probes
     let probes = []
     services.forEach(service => {
+      // Get all available forecast times or selected one
+      let options = {
+        paginate: false
+      }
+      if (layer.properties.time) {
+        options.query = {
+          time: moment.utc(layer.properties.time)
+        }
+      }
       probes.push(
-        // Get all available forecast times
-        service.find({
-          paginate: false
-        })
+        service.find(options)
         .then(async response => {
           // For each forecast time perform computation
           // WARNING : Can't use forEach with async otherwise when the loop finishes async calls are not done,
@@ -63,17 +73,5 @@ export default {
     })
     // Run probing
     await Promise.all(probes)
-  },
-
-  create (data, params) {
-    // FIXME : don't know exactly why but this._super is undefined if used directly in the promise callback...
-    let superCreate = this._super
-    // Perform probing on insert
-    let layer = data.layer
-    // Run probing and save result into DB
-    return this.probe(layer)
-    .then(_ => {
-      return superCreate.apply(this, [data, params])
-    })
   }
 }
