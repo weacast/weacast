@@ -45,7 +45,7 @@ module.exports = {
       oldestRunInterval: 24 * 3600,   // Don't go back in time older than 1 day
       interval: 3 * 3600,             // Steps of 3h
       lowerLimit: 0,                  // From T0
-      upperLimit: 6 * 3600,           // Up to T0+6
+      upperLimit: 3 * 3600,           // Up to T0+3
       updateInterval: 0,              // We will check for update manually for testing
       elements: [
         {

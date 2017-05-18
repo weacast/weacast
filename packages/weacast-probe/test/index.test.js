@@ -2,18 +2,19 @@ import path from 'path'
 import fs from 'fs-extra'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import core, { weacast, Database } from 'weacast-core'
+import spies from 'chai-spies'
+import core, { weacast } from 'weacast-core'
 import arpege from 'weacast-arpege'
 import probe from '../src'
 
 describe('weacast-probe', () => {
-  let app, elementService, probeService
+  let app, elementService, probeService, probeResultService
 
   before(() => {
     chailint(chai, util)
+    chai.use(spies)
 
     app = weacast()
-    app.db = Database.create(app)
     return app.db.connect()
   })
 
@@ -29,6 +30,8 @@ describe('weacast-probe', () => {
     app.configure(probe)
     probeService = app.getService('probes')
     expect(probeService).toExist()
+    probeResultService = app.getService('probe-results')
+    expect(probeResultService).toExist()
   })
   
   it('performs element download process', () => {
@@ -39,18 +42,28 @@ describe('weacast-probe', () => {
     return elementService.updateForecastData('once')
   })
   // Let enough time to download a couple of data
-  .timeout(60000)
+  .timeout(30000)
   
 
   it('performs probing element', () => {
     let geojson = fs.readJsonSync(path.join(__dirname, 'data', 'runways.geojson'))
-    geojson.properties = {
+    Object.assign(geojson, {
+      forecast: 'arpege-world',
       elements: ['temperature']
-    }
+    })
     return probeService.create(geojson)
     .then(data => {
-      data.features.forEach(feature => {
-        expect(feature.properties[elementService.name]).toExist()
+      return probeResultService.find({
+        query: {
+          'forecast': 'arpege-world'
+        }
+      })
+      .then(response => {
+        response.data.forEach(result => {
+          result.features.forEach(feature => {
+            expect(feature.properties[elementService.element.name]).toExist()
+          })
+        })
       })
     })
     /* For debug purpose only
@@ -59,10 +72,31 @@ describe('weacast-probe', () => {
     })
     */
   })
+  // Let enough time to download a couple of data
+  .timeout(10000)
+
+  it('performs probing element on forecast update', () => {
+    let spy = chai.spy.on(probeService, 'probeForecastTime')
+    return elementService.Model.drop()
+    .then(_ => {
+      return elementService.updateForecastData('once')
+    })
+    .then(data => {
+      expect(spy).to.have.been.called()
+    })
+    /* For debug purpose only
+    .then(data => {
+      fs.outputJsonSync(path.join(__dirname, 'data', 'runways-probe.geojson'), data.layer)
+    })
+    */
+  })
+  // Let enough time to download a couple of data
+  .timeout(30000)
 
   // Cleanup
   after(() => {
     probeService.Model.drop()
+    probeResultService.Model.drop()
     elementService.Model.drop()
     fs.removeSync(app.get('forecastPath'))
   })
