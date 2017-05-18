@@ -25,7 +25,7 @@ export function marshallQuery (hook) {
       query.forecastTime = new Date(query.forecastTime.format())
     }
       // In this case take care that we always internally require the file path, it will be removed for the client by another hook
-    if (query.$select && this.element.dataStore === 'fs') {
+    if (query.$select && this.element && this.element.dataStore === 'fs') {
       query.$select.push('convertedFilePath')
     }
     // When listing available forecast we might want to disable pagination
