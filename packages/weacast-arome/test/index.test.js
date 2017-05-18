@@ -1,11 +1,8 @@
 import path from 'path'
 import fs from 'fs-extra'
-import feathers from 'feathers'
-import configuration from 'feathers-configuration'
-import hooks from 'feathers-hooks'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import core, { weacast, Database } from 'weacast-core'
+import core, { weacast } from 'weacast-core'
 import arome from '../src'
 
 describe('weacast-arome', () => {
@@ -15,7 +12,6 @@ describe('weacast-arome', () => {
     chailint(chai, util)
 
     app = weacast()
-    app.db = Database.create(app)
     return app.db.connect()
   })
 
@@ -37,7 +33,7 @@ describe('weacast-arome', () => {
     fs.emptyDirSync(app.get('forecastPath'))
 
     return service.updateForecastData('once')
-    .then( _ => {
+    .then(_ => {
       let files = fs.readdirSync(service.getDataDirectory())
       expect(files.length).to.equal(8)
       expect(files.filter(item => path.extname(item) === '.json').length).to.equal(4)
