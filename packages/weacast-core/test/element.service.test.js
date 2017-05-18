@@ -5,7 +5,7 @@ import configuration from 'feathers-configuration'
 import hooks from 'feathers-hooks'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import core, { weacast, Database, createElementService } from '../src'
+import core, { weacast, Database } from '../src'
 
 describe('weacast-core', () => {
   let app, service
@@ -33,12 +33,12 @@ describe('weacast-core', () => {
   })
 
   it('is CommonJS compatible', () => {
-    expect(typeof createElementService).to.equal('function')
+    expect(typeof app.createElementService).to.equal('function')
   })
 
   it('registers the element service', () => {
     app.configure(core)
-    service = createElementService(forecast, element, app, path.join(__dirname, 'test-services'))
+    service = app.createElementService(forecast, element, path.join(__dirname, 'test-services'))
     expect(service).toExist()
     // Test as well if correctly registered into app
     service = app.getService('test-forecast/test-element')

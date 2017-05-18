@@ -1,6 +1,5 @@
 import makeDebug from 'debug'
 import errors from 'feathers-errors'
-import { createElementService } from './service'
 
 // Create all element services
 export default function initializePlugin (app, name, servicesPath) {
@@ -33,7 +32,7 @@ export default function initializePlugin (app, name, servicesPath) {
 
     // Then generate services of the right type for each forecast element
     for (let element of forecast.elements) {
-      let service = createElementService(forecast, element, app, servicesPath)
+      let service = app.createElementService(forecast, element, servicesPath)
       // Setup the update process, will trigger the initial harvesting
       if (forecast.updateInterval > 0) {
         debug('Launching update process for forecast data on ' + forecast.name + '/' + element.name)

@@ -3,6 +3,7 @@ import fs from 'fs-extra'
 import logger from 'winston'
 import makeDebug from 'debug'
 import { getItems, replaceItems, discard } from 'feathers-hooks-common'
+import { Grid } from '../grid'
 
 const debug = makeDebug('weacast:weacast-core')
 const discardDataField = discard('data')
@@ -27,12 +28,28 @@ export function marshallQuery (hook) {
     if (query.$select && this.element.dataStore === 'fs') {
       query.$select.push('convertedFilePath')
     }
-      // When listing available forecast we might want to disable pagination
-      // However disabling or changing the default pagination is not available in the client in Feathers by default,
-      // this is the reason of this specific hook
+    // When listing available forecast we might want to disable pagination
+    // However disabling or changing the default pagination is not available in the client in Feathers by default,
+    // this is the reason of this specific hook
     if (query.$paginate === 'false' || query.$paginate === false) {
       hook.params.paginate = false
       delete query.$paginate
+    }
+    // Resampling is used by hooks only, do not send it to DB
+    if (query.oLon && query.oLat && query.sLon && query.sLat && query.dLon && query.dLat) {
+      // convert when required from query strings
+      hook.params.oLat = Number.isFinite(query.oLat) ? query.oLat : parseFloat(query.oLat)
+      hook.params.oLon = Number.isFinite(query.oLon) ? query.oLon : parseFloat(query.oLon)
+      hook.params.sLat = Number.isFinite(query.sLat) ? query.sLat : parseFloat(query.sLat)
+      hook.params.sLon = Number.isFinite(query.sLon) ? query.sLon : parseFloat(query.sLon)
+      hook.params.dLat = Number.isFinite(query.dLat) ? query.dLat : parseFloat(query.dLat)
+      hook.params.dLon = Number.isFinite(query.dLon) ? query.dLon : parseFloat(query.dLon)
+      delete query.oLat
+      delete query.oLon
+      delete query.sLat
+      delete query.sLon
+      delete query.dLat
+      delete query.dLon
     }
   }
 }
@@ -62,16 +79,17 @@ export function processForecastTime (hook) {
 }
 
 export function processData (hook) {
-  let query = hook.params.query
+  let params = hook.params
+  let query = params.query
+  let items = getItems(hook)
+  const isArray = Array.isArray(items)
+  items = (isArray ? items : [items])
+
     // If we use a file based storage we have to load data on demand
   if (this.element.dataStore === 'fs') {
       // Process data files when required
     if (query && query.$select && query.$select.includes('data')) {
       return new Promise((resolve, reject) => {
-        let items = getItems(hook)
-        const isArray = Array.isArray(items)
-        items = (isArray ? items : [items])
-
         let dataPromises = []
         items.forEach(item => {
           dataPromises.push(
@@ -109,6 +127,21 @@ export function processData (hook) {
     // Only discard if not explicitely asked by $select
     if (!query || !query.$select || !query.$select.includes('data')) {
       discardDataField(hook)
+    } else {
+      // Check for resampling on returned data
+      if (params.oLon && params.oLat && params.sLon && params.sLat && params.dLon && params.dLat) {
+        items.forEach(item => {
+          let grid = new Grid({
+            bounds: hook.service.forecast.bounds,
+            origin: hook.service.forecast.origin,
+            size: hook.service.forecast.size,
+            resolution: hook.service.forecast.resolution,
+            data: item.data
+          })
+          item.data = grid.resample([params.oLon, params.oLat], [params.dLon, params.dLat], [params.sLon, params.sLat])
+        })
+        replaceItems(hook, isArray ? items : items[0])
+      }
     }
   }
 }

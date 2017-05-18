@@ -83,4 +83,25 @@ export class Grid {
       return null
     }
   }
+
+  /**
+   * Get a resampled version of the grid based on interpolated values
+   * @param origin {Array} Origin in longitude/latitude of the new data
+   * @param resolution {Array} Resolution in longitude/latitude of the new data
+   * @param size {Array} Grid size in longitude/latitude of the new data
+   * @returns {Array}
+   */
+   resample(origin, resolution, size) {
+    let data = []
+    for (let j = 0; j < size[1]; j++) {
+      for (let i = 0; i < size[0]; i++) {
+        // Offset by pixel center
+        let lon = origin[0] + this.lonDirection * (i * resolution[0] + 0.5 * resolution[0])
+        let lat = origin[1] + this.latDirection * (j * resolution[1] + 0.5 * resolution[1])
+        let value = this.interpolate(lon, lat)
+        data.push(value)
+      }
+    }
+    return data
+   }
 }

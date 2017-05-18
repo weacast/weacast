@@ -2,8 +2,7 @@ import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
 import { Grid } from '../src'
 
-describe('weacast-core', () => {
-  let data = [0, 1, 1, 0]
+describe('weacast-grid', () => {
   let grid
 
   before(() => {
@@ -18,20 +17,22 @@ describe('weacast-core', () => {
     grid = new Grid({
       bounds: [-180, -90, 180, 90],
       origin: [-180, 90],
-      size: [2, 2],
-      resolution: [180, 90],
-      data
+      size: [4, 2],
+      resolution: [90, 90],
+      data: [0, 1, 1, 0, 1, 0, 0, 1]
     })
     expect(grid.getValue(0,0)).to.equal(0)
     expect(grid.getValue(1,0)).to.equal(1)
+    expect(grid.getValue(0,1)).to.equal(1)
+    expect(grid.getValue(1,1)).to.equal(0)
   })
 
   it('interpolates grid values', () => {
     // Pixel center values
-    expect(grid.interpolate(-90, 45), 'top-left pixel center').to.equal(0)
-    expect(grid.interpolate(-90, -45), 'bottom-left pixel center').to.equal(1)
-    expect(grid.interpolate(90, 45), 'top-right pixel center').to.equal(1)
-    expect(grid.interpolate(90, -45), 'bottom-right pixel center').to.equal(0)
+    expect(grid.interpolate(-90, 45), 'top-left pixel center').to.equal(0.5)
+    expect(grid.interpolate(-90, -45), 'bottom-left pixel center').to.equal(0.5)
+    expect(grid.interpolate(90, 45), 'top-right pixel center').to.equal(0.5)
+    expect(grid.interpolate(90, -45), 'bottom-right pixel center').to.equal(0.5)
     // Ensure it is fine on borders as well
     expect(grid.interpolate(-180, 90), 'top-left border').to.equal(0)
     expect(grid.interpolate(-180, -90), 'bottom-left border').to.equal(1)
@@ -40,5 +41,19 @@ describe('weacast-core', () => {
     expect(grid.interpolate(180, -90), 'bottom-right border').to.equal(1)
     // Then test interpolation
     expect(grid.interpolate(0, 0)).to.equal(0.5)
+  })
+
+  it('resamples grid values', () => {
+    grid = new Grid({
+      bounds: [-180, -90, 180, 90],
+      origin: [-180, 90],
+      size: [4, 2],
+      resolution: [90, 90],
+      data: [0, 1, 1, 0, 1, 0, 0, 1]
+    })
+    let resampled = grid.resample([-180, 90], [180, 180], [2, 1])
+    // Then test interpolation
+    expect(resampled[0]).to.equal(0.5)
+    expect(resampled[1]).to.equal(0.5)
   })
 })
