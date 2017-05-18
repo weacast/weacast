@@ -41,4 +41,3 @@ export default function initializePlugin (app, name, servicesPath) {
     }
   }
 }
-

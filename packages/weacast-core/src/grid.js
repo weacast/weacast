@@ -91,7 +91,7 @@ export class Grid {
    * @param size {Array} Grid size in longitude/latitude of the new data
    * @returns {Array}
    */
-   resample(origin, resolution, size) {
+  resample (origin, resolution, size) {
     let data = []
     for (let j = 0; j < size[1]; j++) {
       for (let i = 0; i < size[0]; i++) {
@@ -103,5 +103,5 @@ export class Grid {
       }
     }
     return data
-   }
+  }
 }

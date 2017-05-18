@@ -5,5 +5,4 @@ module.exports = function (forecast, element, app, options) {
   // previous forecast <----- previous validity -----> forecast.interval / 2 <----- next validity ------> next forecast
   // Nota : adding a unique constraint on the field causes TTL not to work
   options.Model.ensureIndex({ forecastTime: 1 }, { expireAfterSeconds: 0.5 * forecast.interval })
-  //options.Model.ensureIndex({ runTime: 1 })
 }

@@ -1,9 +1,6 @@
-import feathers from 'feathers'
-import configuration from 'feathers-configuration'
-import hooks from 'feathers-hooks'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import core, { weacast, Database } from '../src'
+import core, { weacast } from '../src'
 
 describe('weacast-core', () => {
   let app
@@ -12,7 +9,6 @@ describe('weacast-core', () => {
     chailint(chai, util)
 
     app = weacast()
-    app.db = Database.create(app)
     return app.db.connect()
   })
 

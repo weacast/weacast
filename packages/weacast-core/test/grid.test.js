@@ -21,10 +21,10 @@ describe('weacast-grid', () => {
       resolution: [90, 90],
       data: [0, 1, 1, 0, 1, 0, 0, 1]
     })
-    expect(grid.getValue(0,0)).to.equal(0)
-    expect(grid.getValue(1,0)).to.equal(1)
-    expect(grid.getValue(0,1)).to.equal(1)
-    expect(grid.getValue(1,1)).to.equal(0)
+    expect(grid.getValue(0, 0)).to.equal(0)
+    expect(grid.getValue(1, 0)).to.equal(1)
+    expect(grid.getValue(0, 1)).to.equal(1)
+    expect(grid.getValue(1, 1)).to.equal(0)
   })
 
   it('interpolates grid values', () => {

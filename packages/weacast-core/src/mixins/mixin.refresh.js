@@ -9,7 +9,7 @@ const debug = makeDebug('weacast:weacast-core')
 export default {
 
   // Retrieve the path where downloaded/persited data are
-  getDataDirectory() {
+  getDataDirectory () {
     return path.join(this.app.get('forecastPath'), this.forecast.name, this.element.name)
   },
 
@@ -210,8 +210,7 @@ export default {
       if (mode === 'interval') {
         await setTimeout(_ => this.updateForecastData('interval'), 1000 * this.forecast.updateInterval)
       }
-    }
-    catch (error) {
+    } catch (error) {
     }
   }
 }

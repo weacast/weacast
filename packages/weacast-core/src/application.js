@@ -58,15 +58,15 @@ function configureService (name, service, servicesPath) {
   return service
 }
 
-export function createService (name, app, modelsPath, servicesPath) {
+export function createService (name, app, modelsPath, servicesPath, options) {
   const createFeathersService = require('feathers-' + app.db.adapter)
   const configureModel = require(path.join(modelsPath, name + '.model.' + app.db.adapter))
 
   const paginate = app.get('paginate')
-  const serviceOptions = {
+  const serviceOptions = Object.assign({
     name: name,
     paginate
-  }
+  }, options || {})
   configureModel(app, serviceOptions)
 
   // Initialize our service with any options it requires
@@ -85,20 +85,20 @@ export function createService (name, app, modelsPath, servicesPath) {
   // Then configuration
   service.name = name
   service.app = app
-  
+
   return service
 }
 
-export function createElementService (forecast, element, app, servicesPath) {
+export function createElementService (forecast, element, app, servicesPath, options) {
   const createFeathersService = require('feathers-' + app.db.adapter)
   const configureModel = require(path.join(__dirname, 'models', 'elements.model.' + app.db.adapter))
   let serviceName = forecast.name + '/' + element.name
 
   const paginate = app.get('paginate')
-  const serviceOptions = {
+  const serviceOptions = Object.assign({
     name: serviceName,
     paginate
-  }
+  }, options || {})
   configureModel(forecast, element, app, serviceOptions)
 
   // Initialize our service with any options it requires
@@ -124,11 +124,11 @@ export function createElementService (forecast, element, app, servicesPath) {
 
 // Get all element services
 function getElementServices (app, name) {
-  let forecasts = app.get('forecasts');
+  let forecasts = app.get('forecasts')
   if (name) {
     forecasts = forecasts.filter(forecast => forecast.name === name)
   }
-  
+
   // Iterate over configured forecast models
   let services = []
   for (let forecast of forecasts) {
@@ -144,7 +144,7 @@ function getElementServices (app, name) {
 
 export default function weacast () {
   let app = feathers()
-  
+
   // This avoid managing the API path before each service name
   app.getService = function (path) {
     return app.service(app.get('apiPath') + '/' + path)
@@ -161,10 +161,10 @@ export default function weacast () {
   app.createElementService = function (forecast, element, servicesPath) {
     return createElementService(forecast, element, app, servicesPath)
   }
-  
+
   // Load app configuration
   app.configure(configuration())
-  
+
   // Enable CORS, security, compression, and body parsing
   app.use(cors())
   app.use(helmet())

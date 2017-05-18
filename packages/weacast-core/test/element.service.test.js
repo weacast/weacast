@@ -1,11 +1,8 @@
 import path from 'path'
 import fs from 'fs-extra'
-import feathers from 'feathers'
-import configuration from 'feathers-configuration'
-import hooks from 'feathers-hooks'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import core, { weacast, Database } from '../src'
+import core, { weacast } from '../src'
 
 describe('weacast-core', () => {
   let app, service
@@ -17,7 +14,7 @@ describe('weacast-core', () => {
     oldestRunInterval: 6 * 3600,    // Don't go back in time older than 6h
     interval: 3 * 3600,             // Steps of 3h
     lowerLimit: 0 * 3600,           // From T0+3h
-    upperLimit: 6 * 3600,           // Up to T0+6h
+    upperLimit: 6 * 3600           // Up to T0+6h
   }
   let element = {
     name: 'test-element',
@@ -28,7 +25,6 @@ describe('weacast-core', () => {
     chailint(chai, util)
 
     app = weacast()
-    app.db = Database.create(app)
     return app.db.connect()
   })
 
@@ -51,7 +47,7 @@ describe('weacast-core', () => {
     fs.emptyDirSync(service.getDataDirectory())
 
     return service.updateForecastData()
-    .then( _ => {
+    .then(_ => {
       let files = fs.readdirSync(service.getDataDirectory())
       expect(files.length).to.equal(6)
       expect(files.filter(item => path.extname(item) === '.json').length).to.equal(3)
@@ -61,7 +57,7 @@ describe('weacast-core', () => {
 
   it('stores element in DB', () => {
     return service.find()
-    .then( response => {
+    .then(response => {
       expect(response.data.length).to.equal(3)
       // Ensure correct data filtering
       expect(response.data[0].runTime).toExist()
@@ -79,7 +75,7 @@ describe('weacast-core', () => {
         $select: ['forecastTime', 'data', 'minValue', 'maxValue']
       }
     })
-    .then( response => {
+    .then(response => {
       expect(response.data.length).to.equal(1)
       expect(response.data[0].data.length).to.equal(4)
       expect(response.data[0].minValue).to.equal(0)

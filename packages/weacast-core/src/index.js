@@ -11,8 +11,9 @@ export * from './plugin'
 // Tracked here : https://github.com/babel/babel/issues/2877
 import { marshall, unmarshall, processForecastTime, marshallQuery, processData } from './hooks'
 import initializePlugin from './plugin'
+import weacast from './application'
 export let hooks = { marshall, unmarshall, processForecastTime, marshallQuery, processData }
-export weacast from './application'
+export { weacast }
 export { Database } from './db'
 export { Grid } from './grid'
 export { initializePlugin }
