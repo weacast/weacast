@@ -13,7 +13,7 @@ export default {
       const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
       const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
       if (fs.existsSync(convertedFilePath)) {
-        logger.info('Already converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        logger.verbose('Already converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         fs.readJson(convertedFilePath, 'utf8')
         .then(grid => {
           resolve(grid)
@@ -28,11 +28,11 @@ export default {
 
       gtiff2json(filePath)
       .then(grid => {
-        logger.info('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        logger.verbose('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         // Change extension from tiff to json
         fs.outputJson(convertedFilePath, grid, 'utf8')
         .then(_ => {
-          logger.info('Written ' + this.forecast.name + '/' + this.element.name + ' converted forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+          logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' converted forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
           resolve(grid)
         })
         .catch(error => {
