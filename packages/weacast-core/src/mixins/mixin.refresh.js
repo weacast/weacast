@@ -23,12 +23,12 @@ export default {
     let promise = new Promise((resolve, reject) => {
       const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
       if (fs.existsSync(filePath)) {
-        logger.info('Already downloaded ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        logger.verbose('Already downloaded ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         resolve(filePath)
         return
       }
       // Get request options
-      logger.info('Downloading ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+      logger.verbose('Downloading ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
       let errorMessage = 'Could not download ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format()
       // Get request options
       request.get(this.getForecastTimeRequest(runTime, forecastTime))
@@ -50,7 +50,7 @@ export default {
           response.pipe(file)
           file.on('finish', _ => {
             file.close()
-            logger.info('Written ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+            logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
             resolve(filePath)
           })
           .on('error', err => {
@@ -126,7 +126,7 @@ export default {
         let previousData = (result.data.length > 0 ? result.data[0] : null)
         // Check if we are already up-to-date
         if (previousData && runTime.isSameOrBefore(previousData.runTime)) {
-          logger.info('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')
+          logger.verbose('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')
           resolve(previousData)
           return
         }
@@ -135,7 +135,7 @@ export default {
         .then(data => {
           this.updateForecastTimeInDatabase(data, previousData)
           .then(data => {
-            logger.info((previousData ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+            logger.verbose((previousData ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
             resolve(data)
           })
           .catch(error => {
@@ -159,18 +159,17 @@ export default {
       })
       .catch(error => {
         logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-        logger.error(error.message)
-        let previousRunTime = runTime.clone().subtract({ hours: this.forecast.runInterval / 3600 })
+        let previousRunTime = runTime.clone().subtract({ seconds: this.forecast.runInterval })
         // When data for current time is not available we might try previous data
         // check here that we go back until the configured limit
         // because otherwise this means there is a real problem with the provider and/or we will have outdated data
-        if (datetime.diff(previousRunTime, 'hours') > this.forecast.oldestRunInterval / 3600) {
-          logger.info('Hit oldest run time limit ' + runTime.format() + ' on ' + this.forecast.name + '/' + this.element.name + ', there is a too much big gap in data from the provider')
+        if (datetime.diff(previousRunTime, 'seconds') > this.forecast.oldestRunInterval) {
+          logger.verbose('Hit oldest run time limit ' + runTime.format() + ' on ' + this.forecast.name + '/' + this.element.name + ', there is a too much big gap in data from the provider')
           reject(error)
           return
         }
 
-        logger.info('Harvesting further run time ' + previousRunTime.format() + ' on ' + this.forecast.name + '/' + this.element.name)
+        logger.verbose('Harvesting further run time ' + previousRunTime.format() + ' on ' + this.forecast.name + '/' + this.element.name)
         resolve(this.harvestForecastTime(datetime, previousRunTime, forecastTime))
       })
     })
@@ -181,13 +180,21 @@ export default {
   async refreshForecastData (datetime) {
     // Compute nearest run T0
     let runTime = this.getNearestRunTime(datetime)
+    // We don't care about the past, however a forecast is still potentially valid at least until we reach the next one
+    let lowerTime = datetime.clone().subtract({ seconds: this.forecast.interval })
     // Check for each forecast step if update is required
     for (let timeOffset = this.forecast.lowerLimit; timeOffset <= this.forecast.upperLimit; timeOffset += this.forecast.interval) {
-      let forecastTime = runTime.clone().add({ hours: timeOffset / 3600 })
-      try {
-        await this.harvestForecastTime(datetime, runTime, forecastTime)
-      } catch (error) {
-        // This catch does not rethrow the error so that the update process will not stop and tray again at next refresh
+      let forecastTime = runTime.clone().add({ seconds: timeOffset })
+      let discard = false
+      if (this.forecast.discardPastForecasts) {
+        discard = forecastTime.isSameOrAfter(lowerTime)
+      }
+      if (!discard) {
+        try {
+          await this.harvestForecastTime(datetime, runTime, forecastTime)
+        } catch (error) {
+          // This catch does not rethrow the error so that the update process will not stop and tray again at next refresh
+        }
       }
     }
   },
@@ -210,7 +217,8 @@ export default {
       if (mode === 'interval') {
         await setTimeout(_ => this.updateForecastData('interval'), 1000 * this.forecast.updateInterval)
       }
-    } catch (error) {
+    }
+    catch (error) {
     }
   }
 }

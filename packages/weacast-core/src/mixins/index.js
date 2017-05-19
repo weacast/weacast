@@ -5,3 +5,5 @@ export default [
   elementMixin,
   refreshMixin
 ]
+
+export { elementMixin, refreshMixin }
