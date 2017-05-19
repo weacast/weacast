@@ -9,5 +9,4 @@ import errors from 'feathers-errors'
 
 export default {
 
-  
 }

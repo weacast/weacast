@@ -47,12 +47,20 @@ module.exports = {
       lowerLimit: 0,                  // From T0
       upperLimit: 3 * 3600,           // Up to T0+3
       updateInterval: 0,              // We will check for update manually for testing
+      discardPastForecasts: false,    // We will keep past forecast times so that the number of forecasts is predictable for tests
       elements: [
         {
-          name: 'temperature',
-          coverageid: 'TEMPERATURE__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
+          name: 'u-wind',
+          coverageid: 'U_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
           subsets: {
-            height: 2
+            height: 10
+          }
+        },
+        {
+          name: 'v-wind',
+          coverageid: 'V_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
+          subsets: {
+            height: 10
           }
         }
       ]

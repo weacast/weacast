@@ -1,6 +1,6 @@
 import authentication from 'feathers-authentication'
 import { getItems, replaceItems } from 'feathers-hooks-common'
-import { performProbing } from '../../hooks'
+import { performProbing, removeResults } from '../../hooks'
 const authenticate = authentication.hooks.authenticate
 
 module.exports = {
@@ -22,7 +22,8 @@ module.exports = {
     create: [ performProbing ],
     update: [],
     patch: [],
-    remove: []
+    // Perform results removing on delete
+    remove: [ removeResults ]
   },
 
   error: {

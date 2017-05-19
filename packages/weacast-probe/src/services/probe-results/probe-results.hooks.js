@@ -1,13 +1,14 @@
 import authentication from 'feathers-authentication'
 import { getItems, replaceItems } from 'feathers-hooks-common'
 import { hooks } from 'weacast-core'
+import { marshallResultQuery } from '../../hooks'
 const authenticate = authentication.hooks.authenticate
 
 // Marshall/Unmarshall should be always first so that we have a consistent data format in other hooks
 module.exports = {
   before: {
     all: [ authenticate('jwt') ],
-    find: [ hooks.marshallQuery, hooks.processForecastTime ],
+    find: [ marshallResultQuery, hooks.marshallQuery ],
     get: [],
     create: [ hooks.marshall ],
     update: [ hooks.marshall ],
