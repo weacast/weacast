@@ -45,6 +45,7 @@ describe('weacast-arpege', () => {
 
   // Cleanup
   after(() => {
+    app.getService('forecasts').Model.drop()
     service.Model.drop()
     fs.removeSync(app.get('forecastPath'))
   })
