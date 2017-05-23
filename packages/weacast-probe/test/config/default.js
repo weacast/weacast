@@ -47,7 +47,7 @@ module.exports = {
       lowerLimit: 0,                  // From T0
       upperLimit: 3 * 3600,           // Up to T0+3
       updateInterval: 0,              // We will check for update manually for testing
-      discardPastForecasts: false,    // We will keep past forecast times so that the number of forecasts is predictable for tests
+      keepPastForecasts: true,        // We will keep past forecast times so that the number of forecasts is predictable for tests
       elements: [
         {
           name: 'u-wind',

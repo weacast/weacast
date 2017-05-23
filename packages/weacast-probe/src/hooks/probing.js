@@ -1,9 +1,10 @@
 // import logger from 'winston'
 // import makeDebug from 'debug'
-import { getItems, replaceItems } from 'feathers-hooks-common'
+import { getItems, replaceItems, discard } from 'feathers-hooks-common'
 import { ObjectID } from 'mongodb'
 
 // const debug = makeDebug('weacast:weacast-core')
+const discardFeaturesField = discard('features')
 
 export function marshallResultQuery (hook) {
   let query = hook.params.query
@@ -34,6 +35,8 @@ export function marshallResultQuery (hook) {
 }
 
 export function performProbing (hook) {
+  let query = hook.params.query
+
   return new Promise((resolve, reject) => {
     let items = getItems(hook)
     const isArray = Array.isArray(items)
@@ -41,7 +44,7 @@ export function performProbing (hook) {
 
     let probePromises = []
     items.forEach(item => {
-      probePromises.push(hook.service.probe(item))
+      probePromises.push(hook.service.probe(item, query ? query.forecastTime : null))
     })
 
     Promise.all(probePromises).then(_ => {
@@ -60,6 +63,9 @@ export function removeResults (hook) {
 
     let removePromises = []
     items.forEach(item => {
+      // We have to remove listeners for results update first
+      hook.service.unregisterForecastUpdates(item)
+      // Then result objects
       removePromises.push(resultService.remove(null, {
         query: {
           probeId: item._id
@@ -72,3 +78,15 @@ export function removeResults (hook) {
     })
   })
 }
+
+export function removeFeatures (hook) {
+  let params = hook.params
+  let query = params.query
+  
+  // Only discard if not explicitely asked by $select or when performing
+  // on-demand probing (in this case the probing time is given)
+  if (!query || (!(query.$select && query.$select.includes('features')) && !query.forecastTime)) {
+    discardFeaturesField(hook)
+  }
+}
+

@@ -7,12 +7,12 @@ const authenticate = authentication.hooks.authenticate
 // Marshall/Unmarshall should be always first so that we have a consistent data format in other hooks
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
-    find: [ marshallResultQuery, hooks.marshallQuery ],
+    all: [ authenticate('jwt'), hooks.marshallQuery ],
+    find: [ marshallResultQuery ],
     get: [],
     create: [ hooks.marshall ],
     update: [ hooks.marshall ],
-    patch: [ hooks.marshallQuery, hooks.marshall ],
+    patch: [ hooks.marshall ],
     remove: [ hooks.marshallQuery ]
   },
 

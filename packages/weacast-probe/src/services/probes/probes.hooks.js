@@ -1,11 +1,12 @@
 import authentication from 'feathers-authentication'
 import { getItems, replaceItems } from 'feathers-hooks-common'
-import { performProbing, removeResults } from '../../hooks'
+import { hooks } from 'weacast-core'
+import { performProbing, removeResults, removeFeatures } from '../../hooks'
 const authenticate = authentication.hooks.authenticate
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
+    all: [ authenticate('jwt'), hooks.marshallQuery ],
     find: [],
     get: [],
     create: [],
@@ -15,13 +16,15 @@ module.exports = {
   },
 
   after: {
+    // By default do not response with layer geometry if not explicitely asked for
+    // Do not set the removeFeatures hook in all because probing needs to be done first on creation
     all: [],
-    find: [],
-    get: [],
+    find: [ removeFeatures ],
+    get: [ removeFeatures ],
     // Perform probing on insert
-    create: [ performProbing ],
-    update: [],
-    patch: [],
+    create: [ performProbing, removeFeatures ],
+    update: [ removeFeatures ],
+    patch: [ removeFeatures ],
     // Perform results removing on delete
     remove: [ removeResults ]
   },

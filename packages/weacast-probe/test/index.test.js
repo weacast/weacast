@@ -8,7 +8,7 @@ import arpege from 'weacast-arpege'
 import probe from '../src'
 
 describe('weacast-probe', () => {
-  let app, uService, vService, probeService, probeResultService, probeId
+  let app, uService, vService, probeService, probeResultService, probeId, probeFeatures
 
   before(() => {
     chailint(chai, util)
@@ -16,6 +16,11 @@ describe('weacast-probe', () => {
 
     app = weacast()
     return app.db.connect()
+    .then(_ => {
+      // Disable TTL because we keep past forecast times so that the number of forecasts is predictable for tests
+      // but otherwise MongoDB will remove them automatically
+      app.db._db.executeDbAdminCommand( { setParameter: 1, ttlMonitorEnabled: false } )
+    })
   })
 
   it('is CommonJS compatible', () => {
@@ -41,37 +46,40 @@ describe('weacast-probe', () => {
     uService.Model.remove()
     vService.Model.remove()
     fs.emptyDirSync(app.get('forecastPath'))
-
-    return uService.updateForecastData('once')
-    .then(_ => {
-      return vService.updateForecastData('once')
-    })
+    // download both elements in parallel
+    return Promise.all([
+      uService.updateForecastData('once'),
+      vService.updateForecastData('once')
+    ])
   })
   // Let enough time to download a couple of data
   .timeout(30000)
   
-
-  it('performs probing element', () => {
+  it('performs probing element on-demand', () => {
+    let spyProbe = chai.spy.on(probeService, 'probeForecastTime')
+    let spyUpdate = chai.spy.on(probeService, 'updateFeaturesInDatabase')
     let geojson = fs.readJsonSync(path.join(__dirname, 'data', 'runways.geojson'))
     Object.assign(geojson, {
       forecast: 'arpege-world',
       elements: ['u-wind', 'v-wind']
     })
-    return probeService.create(geojson)
+    return uService.find({ paginate: false })
+    .then(forecasts => {
+      // We should have 2 forecast times
+      expect(forecasts.length).to.equal(2)
+      return probeService.create(geojson, { query: { forecastTime: forecasts[0].forecastTime } })
+    })
     .then(data => {
-      probeId = data._id
-      return probeResultService.find({
-        query: {
-          probeId: probeId
-        }
-      })
-      .then(response => {
-        // 3 features over 2 forecast times
-        expect(response.data.length).to.equal(6)
-        response.data.forEach(feature => {
-          expect(feature.properties['u-wind']).toExist()
-          expect(feature.properties['v-wind']).toExist()
-        })
+      expect(spyProbe).to.have.been.called()
+      expect(spyUpdate).not.to.have.been.called()
+      // 3 features with data for the forecast times
+      expect(data.features.length).to.equal(3)
+      data.features.forEach(feature => {
+        expect(feature.properties['u-wind']).toExist()
+        expect(feature.properties['v-wind']).toExist()
+        // Test if derived direction values are also present
+        expect(feature.properties['windDirection']).toExist()
+        expect(feature.properties['windSpeed']).toExist()
       })
     })
     /* For debug purpose only
@@ -83,14 +91,33 @@ describe('weacast-probe', () => {
   // Let enough time to download a couple of data
   .timeout(10000)
 
-  it('performs probing element on forecast update', () => {
-    let spy = chai.spy.on(probeService, 'probeForecastTime')
-    return uService.Model.drop()
-    .then(_ => {
-      return uService.updateForecastData('once')
+  it('performs probing stream on element', () => {
+    let spyProbe = chai.spy.on(probeService, 'probeForecastTime')
+    let spyUpdate = chai.spy.on(probeService, 'updateFeaturesInDatabase')
+    let geojson = fs.readJsonSync(path.join(__dirname, 'data', 'runways.geojson'))
+    Object.assign(geojson, {
+      forecast: 'arpege-world',
+      elements: ['u-wind', 'v-wind']
     })
+    return probeService.create(geojson)
     .then(data => {
-      expect(spy).to.have.been.called()
+      probeId = data._id
+      expect(spyProbe).to.have.been.called()
+      expect(spyUpdate).to.have.been.called()
+      return probeResultService.find({ paginate: false, query: { probeId: probeId } })
+    })
+    .then(features => {
+      // 3 features over 2 forecast times
+      expect(features.length).to.equal(6)
+      features.forEach(feature => {
+        expect(feature.properties['u-wind']).toExist()
+        expect(feature.properties['v-wind']).toExist()
+        // Test if derived direction values are also present
+        expect(feature.properties['windDirection']).toExist()
+        expect(feature.properties['windSpeed']).toExist()
+      })
+      // Keep track of the features
+      probeFeatures = features
     })
     /* For debug purpose only
     .then(data => {
@@ -98,11 +125,48 @@ describe('weacast-probe', () => {
     })
     */
   })
+
+  it('performs probing element on forecast update', () => {
+    let spyProbe = chai.spy.on(probeService, 'probeForecastTime')
+    let spyUpdate = chai.spy.on(probeService, 'updateFeaturesInDatabase')
+    return uService.Model.drop()
+    .then(_ => {
+      return uService.updateForecastData('once')
+    })
+    .then(_ => {
+      return probeResultService.find({ paginate: false, query: { probeId: probeId } })
+    })
+    .then(features => {
+      expect(spyProbe).to.have.been.called()
+      expect(spyUpdate).to.have.been.called()
+      // Test we do not have generated new results
+      expect(features.length).to.equal(6)
+      features.forEach(feature => {
+        expect(probeFeatures.find(element => element._id === feature._id)).toExist()
+      })
+    })
+  })
   // Let enough time to download a couple of data
   .timeout(30000)
 
+  it('performs probing results removal on probe removal', () => {
+    return probeService.remove(probeId)
+    .then(data => {
+      return probeResultService.find({
+        query: {
+          probeId: probeId
+        }
+      })
+    })
+    .then(response => {
+      // Nothing should remain
+      expect(response.data.length).to.equal(0)
+    })
+  })
+
   // Cleanup
   after(() => {
+    app.getService('forecasts').Model.drop()
     probeService.Model.drop()
     probeResultService.Model.drop()
     uService.Model.drop()
@@ -110,3 +174,4 @@ describe('weacast-probe', () => {
     fs.removeSync(app.get('forecastPath'))
   })
 })
+
