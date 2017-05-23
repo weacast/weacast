@@ -186,8 +186,8 @@ export default {
     for (let timeOffset = this.forecast.lowerLimit; timeOffset <= this.forecast.upperLimit; timeOffset += this.forecast.interval) {
       let forecastTime = runTime.clone().add({ seconds: timeOffset })
       let discard = false
-      if (this.forecast.discardPastForecasts) {
-        discard = forecastTime.isSameOrAfter(lowerTime)
+      if (!this.forecast.keepPastForecasts) {
+        discard = forecastTime.isBefore(lowerTime)
       }
       if (!discard) {
         try {

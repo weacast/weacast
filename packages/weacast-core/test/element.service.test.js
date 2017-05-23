@@ -85,6 +85,7 @@ describe('weacast-core', () => {
 
   // Cleanup
   after(() => {
+    app.getService('forecasts').Model.drop()
     service.Model.drop()
     fs.removeSync(service.getDataDirectory())
   })

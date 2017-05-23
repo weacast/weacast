@@ -78,7 +78,7 @@ export function createService (name, app, modelsPath, servicesPath, options) {
   // Optionnally a specific service mixin can be provided, apply it
   try {
     const serviceMixin = require(path.join(servicesPath, name, name + '.service'))
-    proto.mixin(serviceMixin, service)
+    service.mixin(serviceMixin)
   } catch (error) {
     // As this is optionnal this require has to fail silently
   }
@@ -109,7 +109,7 @@ export function createElementService (forecast, element, app, servicesPath, opti
   service = configureService(forecast.model, service, servicesPath)
 
   // Apply all element mixins
-  elementMixins.forEach(mixin => { proto.mixin(mixin, service) })
+  elementMixins.forEach(mixin => { service.mixin(mixin) })
   // Apply specific model service mixin
   const serviceMixin = require(path.join(servicesPath, forecast.model, forecast.model + '.service'))
   proto.mixin(serviceMixin, service)

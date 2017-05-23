@@ -39,6 +39,9 @@ describe('weacast-grid', () => {
     // Due to longitude wrapping +180° is similar to -180°
     expect(grid.interpolate(180, 90), 'top-right border').to.equal(0)
     expect(grid.interpolate(180, -90), 'bottom-right border').to.equal(1)
+    // Test that we do not try to interpolate values outside grid bounds
+    expect(grid.interpolate(254, 0), 'longitude overflow').beUndefined()
+    expect(grid.interpolate(0, 128), 'latitude overflow').beUndefined()
     // Then test interpolation
     expect(grid.interpolate(0, 0)).to.equal(0.5)
   })

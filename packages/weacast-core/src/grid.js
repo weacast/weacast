@@ -20,6 +20,20 @@ function clamp (x, min, max) {
   return Math.max(min, Math.min(x, max))
 }
 
+/**
+ * @returns {Boolean} if the given point is inside the given bounding box e.g. [-180, -90, 180, 90].
+ * This solution also takes in consideration a case in which the UI sends a box which crosses longitude 180/-180
+ * (maps views on low zoom level where you can see the whole world, allow infinite cyclic horizontal scrolling,
+ * so it is possible for example that a box's bottomLeft.lng=170 while topRight.lng=-170(=190) and by that including a range of 20 degrees
+ */
+function isInside (lon, lat, bounds) {
+  let isLonInRange = (bounds[2] < bounds[0] ?
+    lon >= bounds[0] || lon <= bounds[2] :
+    lon >= bounds[0] && lon <= bounds[2])
+
+  return lat >= bounds[1] && lat <= bounds[3] && isLonInRange
+}
+
 export class Grid {
   // Options are similar to those defining the forecast model + a data json array for grid point values
   // (bounds e.g. [-180, -90, 180, 90], e.g. origin: [-180, 90], e.g. size: [720, 361], e.g. resolution: [0.5, 0.5])
@@ -38,7 +52,7 @@ export class Grid {
     if (index < this.data.length) {
       return this.data[index]
     } else {
-      return null
+      return undefined
     }
   }
 
@@ -60,7 +74,9 @@ export class Grid {
    * @returns {Object}
    */
   interpolate (lon, lat) {
-    if (!this.data) return null
+    if (!this.data) return undefined
+    // Check for points outside bbox
+    if (!isInside(lon, lat, this.bounds)) return undefined
 
     let i = this.lonDirection * floorMod(lon - this.origin[0], 360) / this.resolution[0] - 0.5     // calculate longitude index in wrapped range [0, 360)
     let j = this.latDirection * (lat - this.origin[1]) / this.resolution[1] - 0.5                       // calculate latitude index in direction +90 to -90
@@ -80,7 +96,7 @@ export class Grid {
     if (isValue(g00) && isValue(g10) && isValue(g01) && isValue(g11)) {
       return this.bilinearInterpolate(i - fi, j - fj, g00, g10, g01, g11)
     } else {
-      return null
+      return undefined
     }
   }
 
