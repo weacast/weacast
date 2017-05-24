@@ -8,7 +8,7 @@ const authenticate = authentication.hooks.authenticate
 module.exports = {
   before: {
     all: [ authenticate('jwt'), hooks.marshallQuery ],
-    find: [ marshallResultQuery ],
+    find: [ hooks.marshallSpatialQuery, marshallResultQuery ],
     get: [],
     create: [ disallow('external'), hooks.marshall ],
     update: [ disallow('external'), hooks.marshall ],

@@ -13,24 +13,6 @@ export function marshallResultQuery (hook) {
     if ((hook.service.app.db.adapter === 'mongodb') && (typeof query.probeId === 'string')) {
       query.probeId = new ObjectID(query.probeId)
     }
-    if (query.centerLon && query.centerLat && query.distance) {
-      let lon = (typeof query.centerLon === 'string' ? parseFloat(query.centerLon) : query.centerLon)
-      let lat = (typeof query.centerLat === 'string' ? parseFloat(query.centerLat) : query.centerLat)
-      let d = (typeof query.distance === 'string' ? parseFloat(query.distance) : query.distance)
-      // Transform to MongoDB spatial request
-      delete query.centerLon
-      delete query.centerLat
-      delete query.distance
-      query.geometry = {
-        $near: {
-          $geometry: {
-            type: 'Point',
-            coordinates: [lon, lat]
-          },
-          $maxDistance: d
-        }
-      }
-    }
   }
 }
 
