@@ -217,8 +217,7 @@ export default {
       if (mode === 'interval') {
         await setTimeout(_ => this.updateForecastData('interval'), 1000 * this.forecast.updateInterval)
       }
-    }
-    catch (error) {
+    } catch (error) {
     }
   }
 }

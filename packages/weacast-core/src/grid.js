@@ -27,9 +27,9 @@ function clamp (x, min, max) {
  * so it is possible for example that a box's bottomLeft.lng=170 while topRight.lng=-170(=190) and by that including a range of 20 degrees
  */
 function isInside (lon, lat, bounds) {
-  let isLonInRange = (bounds[2] < bounds[0] ?
-    lon >= bounds[0] || lon <= bounds[2] :
-    lon >= bounds[0] && lon <= bounds[2])
+  let isLonInRange = (bounds[2] < bounds[0]
+    ? lon >= bounds[0] || lon <= bounds[2]
+    : lon >= bounds[0] && lon <= bounds[2])
 
   return lat >= bounds[1] && lat <= bounds[3] && isLonInRange
 }
