@@ -1,5 +1,5 @@
 import authentication from 'feathers-authentication'
-import { getItems, replaceItems } from 'feathers-hooks-common'
+import { disallow } from 'feathers-hooks-common'
 import { hooks } from 'weacast-core'
 import { marshallResultQuery } from '../../hooks'
 const authenticate = authentication.hooks.authenticate
@@ -10,10 +10,10 @@ module.exports = {
     all: [ authenticate('jwt'), hooks.marshallQuery ],
     find: [ marshallResultQuery ],
     get: [],
-    create: [ hooks.marshall ],
-    update: [ hooks.marshall ],
-    patch: [ hooks.marshall ],
-    remove: [ hooks.marshallQuery ]
+    create: [ disallow('external'), hooks.marshall ],
+    update: [ disallow('external'), hooks.marshall ],
+    patch: [ disallow('external'), hooks.marshall ],
+    remove: [ disallow('external'), hooks.marshallQuery ]
   },
 
   after: {

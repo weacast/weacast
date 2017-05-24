@@ -1,9 +1,5 @@
-import path from 'path'
-import fs from 'fs-extra'
 import logger from 'winston'
 import makeDebug from 'debug'
-import moment from 'moment'
-import _ from 'lodash'
 import errors from 'feathers-errors'
 import { Grid } from 'weacast-core'
 
@@ -12,7 +8,7 @@ const debug = makeDebug('weacast:weacast-probe')
 export default {
 
   // Update the given probe results (given as features)
-  async updateFeaturesInDatabase(features, probe, elementService, runTime, forecastTime) {
+  async updateFeaturesInDatabase (features, probe, elementService, runTime, forecastTime) {
     // Get the service to store results in
     let resultService = this.app.getService('probe-results')
     let probeUpdates = []
@@ -21,8 +17,7 @@ export default {
       if (feature._id) {
         debug('Updating probe result for probe ' + feature.probeId + ' at ' + feature.forecastTime.format() + ' on run ' + feature.runTime.format())
         probeUpdates.push(resultService.update(feature._id, feature))
-      }
-      else {
+      } else {
         debug('Creating probe result for probe ' + feature.probeId + ' at ' + feature.forecastTime.format() + ' on run ' + feature.runTime.format())
         probeUpdates.push(resultService.create(feature))
       }
@@ -38,7 +33,7 @@ export default {
   },
 
   // Update the given features, for given probe, with interpolated values according to given forecast data, run/forecast time
-  async updateFeatures(features, probe, elementService, runTime, forecastTime, data) {
+  async updateFeatures (features, probe, elementService, runTime, forecastTime, data) {
     let grid = new Grid({
       bounds: elementService.forecast.bounds,
       origin: elementService.forecast.origin,
@@ -62,6 +57,9 @@ export default {
       feature.probeId = probe._id
       let value = grid.interpolate(feature.geometry.coordinates[0], feature.geometry.coordinates[1])
       if (value) { // Prevent values outside grid bbox
+        if (!feature.properties) { // Take care to initialize properties holder if not given in input feature
+          feature.properties = {}
+        }
         // Store interpolated element value
         feature.properties[elementName] = value
         // Update derived direction values as well in this case
@@ -99,24 +97,25 @@ export default {
       throw new Error('Cannot retrieve forecast data for probe ' + probe._id + ' on element ' + elementService.forecast.name + '/' + elementService.element.name +
                 ' at ' + forecastTime.format() + ' for run ' + runTime.format())
     }
-    
+
     this.updateFeatures(features, probe, elementService, runTime, forecastTime, forecastData)
   },
 
-  async getResultsForProbe(probe, forecastTime) {
+  async getResultsForProbe (probe, forecastTime) {
     // Get the service to read results in
     let resultService = this.app.getService('probe-results')
-    return await resultService.find({
+    let results = await resultService.find({
       paginate: false,
       query: {
         forecastTime: forecastTime,
         probeId: probe._id
       }
     })
+    return results
   },
 
   // Retrieve all element services required to update the given probe
-  getElementServicesForProbe(probe) {
+  getElementServicesForProbe (probe) {
     // Retrieve target elements for all models or specified one
     let services = this.app.getElementServices(probe.forecast)
     services = services.filter(service => {
@@ -125,12 +124,12 @@ export default {
     return services
   },
 
-  getRefreshCallbackName(probe) {
+  getRefreshCallbackName (probe) {
     return 'refresh_probe_' + probe._id.toString()
   },
 
   // Register to updates on all element services required to update the given probe
-  registerForecastUpdates(probe) {
+  registerForecastUpdates (probe) {
     const refreshCallbackName = this.getRefreshCallbackName(probe)
     // Retrieve target elements
     let services = this.getElementServicesForProbe(probe)
@@ -143,14 +142,20 @@ export default {
           debug('Looking for existing results with probe ' + probe._id + ' for element ' + service.forecast.name + '/' + service.element.name +
                 ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
           try {
-            let results = await this.getResultsForProbe(probe, forecast.forecastTime)
+            let features = await this.getResultsForProbe(probe, forecast.forecastTime)
+            // Possible on first probing
+            if (features.length === 0) {
+              let result = await this.get(probe._id, { query: { $select: ['forecast', 'elements', 'features'] } })
+              features = result.features
+            }
             logger.info('Probing forecast data for element ' + service.forecast.name + '/' + service.element.name + ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
-            await this.probeForecastTime(results, probe, service, forecast.runTime, forecast.forecastTime, forecast.data)
-            await this.updateFeaturesInDatabase(results, probe, service, forecast.runTime, forecast.forecastTime)
+            await this.probeForecastTime(features, probe, service, forecast.runTime, forecast.forecastTime, forecast.data)
+            await this.updateFeaturesInDatabase(features, probe, service, forecast.runTime, forecast.forecastTime)
             // Send a message so that clients know there are new results, indeed for performance reasons standard events have been disabled on results
+            // Take care to not forward forecast data
+            delete forecast.data
             this.emit('results', { probe, forecast })
-          }
-          catch (error) {
+          } catch (error) {
             logger.info(error.message)
           }
         }
@@ -161,7 +166,7 @@ export default {
   },
 
   // Unregister from updates on all element services required to update the given probe
-  unregisterForecastUpdates(probe) {
+  unregisterForecastUpdates (probe) {
     const refreshCallbackName = this.getRefreshCallbackName(probe)
     // Retrieve target elements
     let services = this.getElementServicesForProbe(probe)
@@ -177,15 +182,17 @@ export default {
   // This also registers the probe to perform updates on results when new forecast data are coming
   async probe (probe, forecastTime) {
     if (!probe || !probe.type || probe.type !== 'FeatureCollection') {
-      return Promise.reject(new errors.BadRequest('Only GeoJSON FeatureCollection layers are supported to create probes'))
+      throw new errors.BadRequest('Only GeoJSON FeatureCollection layers are supported to create probes')
+    }
+    if (!probe.forecast) {
+      throw new errors.BadRequest('Target forecast model not specified')
     }
     if (!probe.elements || probe.elements.length === 0) {
-      return Promise.reject(new errors.BadRequest('Target forecast element(s) not specified'))
+      throw new errors.BadRequest('Target forecast element(s) not specified')
     }
     // Retrieve target elements
     let services = this.getElementServicesForProbe(probe)
     // Then run all probes
-    let results = null
     try {
       for (let service of services) {
         // Get all available forecast times (probing stream) or selected one (on-demand probe)
@@ -197,16 +204,21 @@ export default {
             forecastTime: forecastTime
           }
         }
-        
+
         let forecasts = await service.find(options)
         for (let forecast of forecasts) {
-          // Retrieve previously stored features to perform update if any, otherwise this means we have to create new ones starting from given template collection
-          let features = await this.getResultsForProbe(probe, forecast.forecastTime)
+          let features = []
+          // Retrieve previously stored features to perform update if any when streaming
+          if (!forecastTime) {
+            features = await this.getResultsForProbe(probe, forecast.forecastTime)
+          }
+          // Otherwise this means we have to create new ones starting from given template collection
+          // First probing for streaming or always on-demand
           if (features.length === 0) {
             features = probe.features
           }
           // Ask to retrieve forecast data and perform probing
-          results = await this.probeForecastTime(features, probe, service, forecast.runTime, forecast.forecastTime)
+          await this.probeForecastTime(features, probe, service, forecast.runTime, forecast.forecastTime)
           // When performing probing on-demand we do not store any result,
           // the returned features contain the probe values
           if (!forecastTime) {
@@ -216,18 +228,15 @@ export default {
           }
         }
       }
-    }
-    catch (error) {
+    } catch (error) {
       logger.info(error.message)
     }
-    
+
     // Register for forecast data updates on probing streams
     if (!forecastTime) {
       this.registerForecastUpdates(probe)
     }
-
-    return results
-  },
+  }
 
   // Overriden to manage the on-demand probing mode that do not store anything in DB
   // BUG : waiting for https://github.com/feathersjs/feathers/issues/586

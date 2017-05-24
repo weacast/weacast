@@ -1,5 +1,5 @@
 import authentication from 'feathers-authentication'
-import { getItems, replaceItems } from 'feathers-hooks-common'
+import { disallow } from 'feathers-hooks-common'
 import { hooks } from 'weacast-core'
 import { performProbing, removeResults, removeFeatures } from '../../hooks'
 const authenticate = authentication.hooks.authenticate
@@ -10,8 +10,8 @@ module.exports = {
     find: [],
     get: [],
     create: [],
-    update: [],
-    patch: [],
+    update: disallow(),
+    patch: disallow(),
     remove: []
   },
 

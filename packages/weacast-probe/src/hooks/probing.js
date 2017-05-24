@@ -24,7 +24,7 @@ export function marshallResultQuery (hook) {
       query.geometry = {
         $near: {
           $geometry: {
-            type: 'Point' ,
+            type: 'Point',
             coordinates: [lon, lat]
           },
           $maxDistance: d
@@ -82,11 +82,10 @@ export function removeResults (hook) {
 export function removeFeatures (hook) {
   let params = hook.params
   let query = params.query
-  
+
   // Only discard if not explicitely asked by $select or when performing
   // on-demand probing (in this case the probing time is given)
   if (!query || (!(query.$select && query.$select.includes('features')) && !query.forecastTime)) {
     discardFeaturesField(hook)
   }
 }
-
