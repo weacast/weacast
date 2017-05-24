@@ -1,6 +1,7 @@
 import moment from 'moment'
 import fs from 'fs-extra'
 import logger from 'winston'
+import _ from 'lodash'
 import makeDebug from 'debug'
 import { getItems, replaceItems, discard } from 'feathers-hooks-common'
 import { Grid } from '../grid'
@@ -13,7 +14,7 @@ const discardConvertedFilepathField = discard('convertedFilePath')
 export function marshallQuery (hook) {
   let query = hook.params.query
   if (query) {
-      // Need to convert from client/server side types : string or moment dates
+    // Need to convert from client/server side types : string or moment dates
     if (typeof query.runTime === 'string') {
       query.runTime = new Date(query.runTime)
     } else if (moment.isMoment(query.runTime)) {
@@ -24,7 +25,7 @@ export function marshallQuery (hook) {
     } else if (moment.isMoment(query.forecastTime)) {
       query.forecastTime = new Date(query.forecastTime.format())
     }
-      // In this case take care that we always internally require the file path, it will be removed for the client by another hook
+    // In this case take care that we always internally require the file path, it will be removed for the client by another hook
     if (query.$select && this.element && this.element.dataStore === 'fs') {
       query.$select.push('convertedFilePath')
     }
@@ -35,15 +36,43 @@ export function marshallQuery (hook) {
       hook.params.paginate = false
       delete query.$paginate
     }
+  }
+}
+
+function marshallGeometryQuery(query) {
+  if (typeof query.geometry === 'object') {
+    // Geospatial operators begin with $
+    let geoOperator = _.keys(query.geometry).find(key => key.startsWith('$'))
+    geoOperator = query.geometry[geoOperator]
+    _.forOwn(geoOperator, (value, key) => {
+      // Geospatial parameters begin with $
+      if (key.startsWith('$')) {
+        // Some target coordinates
+        if (value.coordinates) {
+          value.coordinates = value.coordinates.map(coordinate => _.toNumber(coordinate))
+        }
+        // Other simple values
+        else {
+          geoOperator[key] = _.toNumber(value)
+        }
+      }
+    })
+  }
+}
+
+export function marshallSpatialQuery (hook) {
+  let query = hook.params.query
+  if (query) {
+    marshallGeometryQuery(query)
     // Resampling is used by hooks only, do not send it to DB
     if (query.oLon && query.oLat && query.sLon && query.sLat && query.dLon && query.dLat) {
       // convert when required from query strings
-      hook.params.oLat = Number.isFinite(query.oLat) ? query.oLat : parseFloat(query.oLat)
-      hook.params.oLon = Number.isFinite(query.oLon) ? query.oLon : parseFloat(query.oLon)
-      hook.params.sLat = Number.isFinite(query.sLat) ? query.sLat : parseFloat(query.sLat)
-      hook.params.sLon = Number.isFinite(query.sLon) ? query.sLon : parseFloat(query.sLon)
-      hook.params.dLat = Number.isFinite(query.dLat) ? query.dLat : parseFloat(query.dLat)
-      hook.params.dLon = Number.isFinite(query.dLon) ? query.dLon : parseFloat(query.dLon)
+      hook.params.oLat = _.toNumber(query.oLat)
+      hook.params.oLon = _.toNumber(query.oLon)
+      hook.params.sLat = _.toNumber(query.sLat)
+      hook.params.sLon = _.toNumber(query.sLon)
+      hook.params.dLat = _.toNumber(query.dLat)
+      hook.params.dLon = _.toNumber(query.dLon)
       delete query.oLat
       delete query.oLon
       delete query.sLat
@@ -51,20 +80,39 @@ export function marshallQuery (hook) {
       delete query.dLat
       delete query.dLon
     }
+    // shortcut for proximity query
+    if (query.centerLon && query.centerLat && query.distance) {
+      let lon = _.toNumber(query.centerLon)
+      let lat = _.toNumber(query.centerLat)
+      let d = _.toNumber(query.distance)
+      // Transform to MongoDB spatial request
+      delete query.centerLon
+      delete query.centerLat
+      delete query.distance
+      query.geometry = {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [lon, lat]
+          },
+          $maxDistance: d
+        }
+      }
+    }
   }
 }
 
 export function processForecastTime (hook) {
   let query = hook.params.query
   if (query && query.time) {
-      // Find nearest forecast time corresponding to request time
+    // Find nearest forecast time corresponding to request time
     let time = (typeof query.time === 'string' ? moment.utc(query.time) : query.time)
     let forecastTime = hook.service.getNearestForecastTime(time)
     delete query.time
     query.forecastTime = new Date(forecastTime.format())
   }
   if (query && query.from && query.to) {
-      // Find nearest forecast time corresponding to request time range
+    // Find nearest forecast time corresponding to request time range
     let from = (typeof query.from === 'string' ? moment.utc(query.from) : query.from)
     let to = (typeof query.to === 'string' ? moment.utc(query.to) : query.to)
     let fromForecastTime = hook.service.getNearestForecastTime(from)
@@ -85,9 +133,9 @@ export function processData (hook) {
   const isArray = Array.isArray(items)
   items = (isArray ? items : [items])
 
-    // If we use a file based storage we have to load data on demand
+  // If we use a file based storage we have to load data on demand
   if (this.element.dataStore === 'fs') {
-      // Process data files when required
+    // Process data files when required
     if (query && query.$select && query.$select.includes('data')) {
       return new Promise((resolve, reject) => {
         let dataPromises = []
