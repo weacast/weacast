@@ -1,11 +1,12 @@
 import { marshall, unmarshall } from './marshall'
-import { processForecastTime, marshallQuery, marshallSpatialQuery, processData } from './query'
+import { processForecastTime, marshallQuery, marshallComparisonQuery, marshallSpatialQuery, processData } from './query'
 
 let hooks = {
   marshall,
   unmarshall,
   processForecastTime,
   marshallQuery,
+  marshallComparisonQuery,
   marshallSpatialQuery,
   processData
 }

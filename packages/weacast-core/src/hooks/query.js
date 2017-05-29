@@ -11,6 +11,29 @@ const discardDataField = discard('data')
 const discardFilepathField = discard('filePath')
 const discardConvertedFilepathField = discard('convertedFilePath')
 
+function marshallComparisonFieldsInQuery(queryObject) {
+  _.forOwn(queryObject, (value, key) => {
+    // Process current attributes or  recurse
+    if (typeof value === 'object') {
+      marshallComparisonFieldsInQuery(value)
+    }
+    else if ( (value === '$lt') || (value === '$lte') || (value === '$gt') || (value === '$gte') ) {
+      let number = _.toNumber(value)
+      // Update from query string to number if required
+      if (!Number.isNaN(number)) {
+        queryObject[key] = number
+      }
+    }
+  })
+}
+
+export function marshallComparisonQuery(hook) {
+  let query = hook.params.query
+  if (query) {
+    marshallComparisonFieldsInQuery(query)
+  }
+}
+
 export function marshallQuery (hook) {
   let query = hook.params.query
   if (query) {
@@ -66,7 +89,7 @@ export function marshallSpatialQuery (hook) {
     marshallGeometryQuery(query)
     // Resampling is used by hooks only, do not send it to DB
     if (query.oLon && query.oLat && query.sLon && query.sLat && query.dLon && query.dLat) {
-      // convert when required from query strings
+      // Convert when required from query strings
       hook.params.oLat = _.toNumber(query.oLat)
       hook.params.oLon = _.toNumber(query.oLon)
       hook.params.sLat = _.toNumber(query.sLat)
@@ -80,7 +103,7 @@ export function marshallSpatialQuery (hook) {
       delete query.dLat
       delete query.dLon
     }
-    // shortcut for proximity query
+    // Shortcut for proximity query
     if (query.centerLon && query.centerLat && query.distance) {
       let lon = _.toNumber(query.centerLon)
       let lat = _.toNumber(query.centerLat)
