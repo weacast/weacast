@@ -63,8 +63,8 @@ describe('weacast-probe', () => {
   // Let enough time to download a couple of data
   .timeout(30000)
 
-  it('performs probing element on-demand', () => {
-    return uService.find({ paginate: false })
+  it('performs probing element on-demand', (done) => {
+    uService.find({ paginate: false })
     .then(forecasts => {
       // We should have 2 forecast times
       expect(forecasts.length).to.equal(2)
@@ -76,6 +76,8 @@ describe('weacast-probe', () => {
       expect(spyUpdate).not.to.have.been.called()
       spyProbe.reset()
       spyUpdate.reset()
+      // This will insure spies are properly reset before jumping to next test due to async ops
+      done()
       // 3 features with data for the forecast times
       expect(data.features.length).to.equal(3)
       data.features.forEach(feature => {
@@ -165,7 +167,7 @@ describe('weacast-probe', () => {
       query
     })
     .then(features => {
-      // None should be covered sicne speed is always >= 0
+      // None should be covered since speed is always >= 0
       expect(features.length).to.equal(0)
       query['properties.windSpeed'] = { $gt: 0, $lt: 99999 }
       return probeResultService.find({
