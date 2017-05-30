@@ -1,5 +1,6 @@
 import logger from 'winston'
 import makeDebug from 'debug'
+import _ from 'lodash'
 import errors from 'feathers-errors'
 import { Grid } from 'weacast-core'
 
@@ -13,15 +14,18 @@ export default {
     let resultService = this.app.getService('probe-results')
     let probeUpdates = []
     features.forEach(feature => {
-      // Already stored in DB ? If so update else create
-      if (feature._id) {
-        debug('Updating probe result for probe ' + feature.probeId + ' at ' + feature.forecastTime.format() + ' on run ' + feature.runTime.format())
-        probeUpdates.push(resultService.update(feature._id, feature))
-      } else {
-        debug('Creating probe result for probe ' + feature.probeId + ' at ' + feature.forecastTime.format() + ' on run ' + feature.runTime.format())
-        probeUpdates.push(resultService.create(feature))
+      // Check if something to store for the element
+      if (feature.properties.hasOwnProperty(elementService.element.name)) {
+        // Already stored in DB ? If so update else create
+        if (feature._id) {
+          debug('Updating probe result for probe ' + feature.probeId + ' at ' + feature.forecastTime.format() + ' on run ' + feature.runTime.format())
+          probeUpdates.push(resultService.update(feature._id, feature))
+        } else {
+          debug('Creating probe result for probe ' + feature.probeId + ' at ' + feature.forecastTime.format() + ' on run ' + feature.runTime.format())
+          probeUpdates.push(resultService.create(feature))
+        }
+        debug(feature)
       }
-      debug(feature)
     })
     // Run DB updates
     let results = await Promise.all(probeUpdates)
@@ -50,6 +54,9 @@ export default {
     const isVComponentOfDirection = elementName.startsWith(vComponentPrefix) // e.g. 'v-wind'
     const elementPrefix = isUComponentOfDirection ? uComponentPrefix : (isVComponentOfDirection ? vComponentPrefix : '') // e.g. 'u-' for u-wind'
     const directionElement = elementName.replace(elementPrefix, '') // e.g. will generate 'wind' for 'u-wind'/'v-wind'
+    // Check if a bearing property is given to compute direction relatively to
+    const bearingProperty = directionElement + 'BearingProperty'
+    const bearingPropertyName = probe.hasOwnProperty(bearingProperty) ? probe[bearingProperty] : undefined
 
     features.forEach(feature => {
       feature.runTime = runTime
@@ -68,8 +75,21 @@ export default {
           const v = feature.properties[vComponentPrefix + directionElement]
           // Only possible if both elements are already computed
           if (isFinite(u) && isFinite(v)) {
-            feature.properties[directionElement + 'Speed'] = Math.sqrt(u * u + v * v)
-            feature.properties[directionElement + 'Direction'] = 180.0 + Math.atan2(u, v) * 180.0 / Math.PI
+            // Compute direction
+            let norm = Math.sqrt(u * u + v * v)
+            let direction = 180.0 + Math.atan2(u, v) * 180.0 / Math.PI
+            // Then store it
+            feature.properties[directionElement + 'Speed'] = norm
+            feature.properties[directionElement + 'Direction'] = direction
+            // Compute bearing relatively to a bearing property is given
+            if (bearingPropertyName) {
+              const bearing = _.toNumber(feature.properties[bearingPropertyName])
+              if (isFinite(bearing)) {
+                direction += bearing
+                if (direction > 360) direction -= 360
+                feature.properties[directionElement + 'BearingDirection'] = direction
+              }
+            }
           }
         }
       }
