@@ -75,18 +75,22 @@ export default {
           const v = feature.properties[vComponentPrefix + directionElement]
           // Only possible if both elements are already computed
           if (isFinite(u) && isFinite(v)) {
-            // Compute direction
+            // Compute direction expressed in meteorological convention, i.e. angle from which the flow comes
             let norm = Math.sqrt(u * u + v * v)
             let direction = 180.0 + Math.atan2(u, v) * 180.0 / Math.PI
             // Then store it
             feature.properties[directionElement + 'Speed'] = norm
             feature.properties[directionElement + 'Direction'] = direction
-            // Compute bearing relatively to a bearing property is given
+            // Compute bearing relatively to a bearing property if given
             if (bearingPropertyName) {
-              const bearing = _.toNumber(feature.properties[bearingPropertyName])
+              let bearing = _.toNumber(feature.properties[bearingPropertyName])
               if (isFinite(bearing)) {
-                direction += bearing
-                if (direction > 360) direction -= 360
+                // Take care that bearing uses the geographical convention, i.e. angle toward which the element goes,
+                // we need to convert from meteorological convention, i.e. angle from which the flow comes
+                direction += 180
+                if (direction >= 360) direction -= 360
+                direction -= bearing
+                if (direction < 0) direction += 360
                 feature.properties[directionElement + 'BearingDirection'] = direction
               }
             }
