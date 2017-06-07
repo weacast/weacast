@@ -1,7 +1,7 @@
 import authentication from 'feathers-authentication'
 import { disallow } from 'feathers-hooks-common'
 import { hooks } from 'weacast-core'
-import { performProbing, removeResults, removeFeatures } from '../../hooks'
+import { checkProbingType, performProbing, removeResults, removeFeatures } from '../../hooks'
 const authenticate = authentication.hooks.authenticate
 
 module.exports = {
@@ -9,7 +9,7 @@ module.exports = {
     all: [ authenticate('jwt'), hooks.marshallQuery ],
     find: [],
     get: [],
-    create: [],
+    create: [ checkProbingType ],
     update: disallow(),
     patch: disallow(),
     remove: []

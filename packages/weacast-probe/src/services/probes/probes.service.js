@@ -261,22 +261,4 @@ export default {
       this.registerForecastUpdates(probe)
     }
   }
-
-  // Overriden to manage the on-demand probing mode that do not store anything in DB
-  // BUG : waiting for https://github.com/feathersjs/feathers/issues/586
-  /*
-  create(data, params) {
-    return new Promise((resolve, reject) => {
-      // When performing on-demand probing nothing will be created in the DB
-      // Simply return the probe object to be used by hooks
-      if (params.query && params.query.forecastTime) {
-        resolve(data)
-      }
-      // Otherwise create the probe object
-      else {
-        resolve(this._super(data, params))
-      }
-    })
-  }
-  */
 }

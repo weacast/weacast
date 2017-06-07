@@ -1,7 +1,8 @@
-import { marshallResultQuery, performProbing, removeResults, removeFeatures } from './probing'
+import { marshallResultQuery, checkProbingType, performProbing, removeResults, removeFeatures } from './probing'
 
 let hooks = {
   marshallResultQuery,
+  checkProbingType,
   performProbing,
   removeResults,
   removeFeatures

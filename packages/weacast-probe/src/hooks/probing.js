@@ -16,6 +16,17 @@ export function marshallResultQuery (hook) {
   }
 }
 
+export function checkProbingType (hook) {
+  let query = hook.params.query
+  // When performing on-demand probing nothing will be created in the DB
+  // Simply return the probe object to be used by hooks
+  if (query && query.forecastTime) {
+    hook.result = hook.data
+  }
+  // Otherwise let create the probe object
+  return hook
+}
+
 export function performProbing (hook) {
   let query = hook.params.query
 
