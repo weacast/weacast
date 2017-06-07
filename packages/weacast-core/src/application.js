@@ -1,4 +1,6 @@
 import path from 'path'
+import logger from 'winston'
+import 'winston-daily-rotate-file'
 import proto from 'uberproto'
 import elementMixins from './mixins'
 import compress from 'compression'
@@ -142,8 +144,36 @@ function getElementServices (app, name) {
   return services
 }
 
+function setupLogger (logsConfig) {
+  // Remove winston defaults
+  try {
+    logger.remove(logger.transports.Console)
+  } catch (error) {
+
+  }
+  // We have one entry per log type
+  let logsTypes = logsConfig ? Object.getOwnPropertyNames(logsConfig) : []
+  // Create corresponding winston transports with options
+  logsTypes.forEach(logType => {
+    let options = logsConfig[logType]
+    // Setup default log level if not defined
+    if (!options.level) {
+      options.level = (process.env.ENV === 'development' ? 'debug' : 'info')
+    }
+    try {
+      logger.add(logger.transports[logType], options)
+    } catch (error) {
+      
+    }
+  })
+}
+
 export default function weacast () {
   let app = feathers()
+  // Load app configuration first
+  app.configure(configuration())
+  // Then setup logger
+  setupLogger(app.get('logs'))
 
   // This avoid managing the API path before each service name
   app.getService = function (path) {
@@ -161,9 +191,6 @@ export default function weacast () {
   app.createElementService = function (forecast, element, servicesPath) {
     return createElementService(forecast, element, app, servicesPath)
   }
-
-  // Load app configuration
-  app.configure(configuration())
 
   // Enable CORS, security, compression, and body parsing
   app.use(cors())

@@ -11,13 +11,12 @@ const discardDataField = discard('data')
 const discardFilepathField = discard('filePath')
 const discardConvertedFilepathField = discard('convertedFilePath')
 
-function marshallComparisonFieldsInQuery(queryObject) {
+function marshallComparisonFieldsInQuery (queryObject) {
   _.forOwn(queryObject, (value, key) => {
     // Process current attributes or  recurse
     if (typeof value === 'object') {
       marshallComparisonFieldsInQuery(value)
-    }
-    else if ( (value === '$lt') || (value === '$lte') || (value === '$gt') || (value === '$gte') ) {
+    } else if ((value === '$lt') || (value === '$lte') || (value === '$gt') || (value === '$gte')) {
       let number = _.toNumber(value)
       // Update from query string to number if required
       if (!Number.isNaN(number)) {
@@ -27,7 +26,7 @@ function marshallComparisonFieldsInQuery(queryObject) {
   })
 }
 
-export function marshallComparisonQuery(hook) {
+export function marshallComparisonQuery (hook) {
   let query = hook.params.query
   if (query) {
     marshallComparisonFieldsInQuery(query)
@@ -62,7 +61,7 @@ export function marshallQuery (hook) {
   }
 }
 
-function marshallGeometryQuery(query) {
+function marshallGeometryQuery (query) {
   if (typeof query.geometry === 'object') {
     // Geospatial operators begin with $
     let geoOperator = _.keys(query.geometry).find(key => key.startsWith('$'))
@@ -73,9 +72,8 @@ function marshallGeometryQuery(query) {
         // Some target coordinates
         if (value.coordinates) {
           value.coordinates = value.coordinates.map(coordinate => _.toNumber(coordinate))
-        }
-        // Other simple values
-        else {
+        } else {
+          // Other simple values
           geoOperator[key] = _.toNumber(value)
         }
       }

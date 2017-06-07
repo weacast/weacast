@@ -6,9 +6,9 @@ module.exports = {
     all: [ authenticate('jwt') ],
     find: [],
     get: [],
-    create: disallow('external'), 
-    update: disallow('external'), 
-    patch: disallow('external'), 
+    create: disallow('external'),
+    update: disallow('external'),
+    patch: disallow('external'),
     remove: disallow('external')
   },
 

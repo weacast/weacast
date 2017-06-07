@@ -76,7 +76,8 @@
     "request": "^2.81.0",
     "sublevelup": "^4.0.0",
     "uberproto": "^1.2.0",
-    "winston": "^2.3.1"
+    "winston": "^2.3.1",
+    "winston-daily-rotate-file": "^1.4.6"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
@@ -97,5 +98,9 @@
     "shx": "^0.2.2",
     "standard": "^10.0.2"
   },
-  "peerDependencies": {}
+  "peerDependencies": {
+    "leaflet-heatmap": "^1.0.0",
+    "leaflet-timedimension": "^1.0.6",
+    "leaflet-velocity": "^1.1.0"
+  }
 }

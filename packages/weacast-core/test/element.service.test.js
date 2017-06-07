@@ -10,11 +10,12 @@ describe('weacast-core', () => {
     name: 'test-forecast',
     model: 'test-model',
     size: [2, 2],
+    keepPastForecasts: true,        // We will keep past forecast times so that the number of forecasts is predictable for tests
     runInterval: 6 * 3600,          // Produced every 6h
     oldestRunInterval: 6 * 3600,    // Don't go back in time older than 6h
     interval: 3 * 3600,             // Steps of 3h
     lowerLimit: 0 * 3600,           // From T0+3h
-    upperLimit: 6 * 3600           // Up to T0+6h
+    upperLimit: 6 * 3600            // Up to T0+6h
   }
   let element = {
     name: 'test-element',
@@ -46,7 +47,7 @@ describe('weacast-core', () => {
     service.Model.remove()
     fs.emptyDirSync(service.getDataDirectory())
 
-    return service.updateForecastData()
+    return service.updateForecastData('once')
     .then(_ => {
       let files = fs.readdirSync(service.getDataDirectory())
       expect(files.length).to.equal(6)
@@ -54,6 +55,8 @@ describe('weacast-core', () => {
       expect(files.filter(item => path.extname(item) === '.html').length).to.equal(3)
     })
   })
+  // Let enough time to download a couple of data
+  .timeout(10000)
 
   it('stores element in DB', () => {
     return service.find()
