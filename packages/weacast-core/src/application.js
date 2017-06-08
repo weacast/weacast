@@ -163,7 +163,7 @@ function setupLogger (logsConfig) {
     try {
       logger.add(logger.transports[logType], options)
     } catch (error) {
-      
+
     }
   })
 }
