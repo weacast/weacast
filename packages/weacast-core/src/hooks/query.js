@@ -16,11 +16,17 @@ function marshallComparisonFieldsInQuery (queryObject) {
     // Process current attributes or  recurse
     if (typeof value === 'object') {
       marshallComparisonFieldsInQuery(value)
-    } else if ((value === '$lt') || (value === '$lte') || (value === '$gt') || (value === '$gte')) {
+    } else if ((key === '$lt') || (key === '$lte') || (key === '$gt') || (key === '$gte')) {
       let number = _.toNumber(value)
       // Update from query string to number if required
       if (!Number.isNaN(number)) {
         queryObject[key] = number
+      } else {
+        // try for dates as well
+        let date = moment.utc(value)
+        if (date.isValid()) {
+          queryObject[key] = new Date(date.format())
+        }
       }
     }
   })
@@ -29,6 +35,7 @@ function marshallComparisonFieldsInQuery (queryObject) {
 export function marshallComparisonQuery (hook) {
   let query = hook.params.query
   if (query) {
+    // Complex queries might have nested objects so we call a recursive function to handle this
     marshallComparisonFieldsInQuery(query)
   }
 }
