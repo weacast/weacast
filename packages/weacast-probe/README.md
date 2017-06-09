@@ -16,6 +16,10 @@ npm install weacast-probe --save
 yarn add weacast-probe
 ```
 
+## Documentation
+
+The [Weacast docs](https://weacast.gitbooks.io/weacast-docs/) are loaded with awesome stuff and tell you everything you need to know about using and configuring Weacast. Some details about this plugin can be found [here](https://weacast.gitbooks.io/weacast-docs/api/PROBE.html).
+
 ## Complete Example
 
 Here's an example of a Weacast server that uses `weacast-probe`. 
