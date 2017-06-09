@@ -47,6 +47,7 @@ module.exports = {
       lowerLimit: 0,                  // From T0
       upperLimit: 6 * 3600,           // Up to T0+6
       updateInterval: 0,              // We will check for update manually for testing
+      keepPastForecasts: true,        // We will keep past forecast times so that the number of forecasts is predictable for tests
       elements: [
         {
           name: 'temperature',
