@@ -22,6 +22,11 @@ module.exports = {
     path: API_PREFIX + '/authentication',
     service: API_PREFIX + '/users'
   },
+  logs: {
+    Console: {
+      colorize: true
+    }
+  },
   db: {
     adapter: 'mongodb',
     path: path.join(__dirname, '../db-data'),
