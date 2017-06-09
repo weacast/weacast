@@ -1,5 +1,8 @@
 # Change Log
 
+## [v0.2.0](https://github.com/weacast/weacast-probe/tree/v0.2.0) (2017-06-09)
+[Full Changelog](https://github.com/weacast/weacast-probe/compare/v0.1.1...v0.2.0)
+
 ## [v0.1.1](https://github.com/weacast/weacast-probe/tree/v0.1.1) (2017-05-15)
 
 
