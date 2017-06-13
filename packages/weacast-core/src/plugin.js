@@ -32,7 +32,7 @@ export default function initializePlugin (app, name, servicesPath) {
 
     // Then generate services of the right type for each forecast element
     for (let element of forecast.elements) {
-      let service = app.createElementService(forecast, element, servicesPath)
+      let service = app.createElementService(forecast, element, servicesPath, element.serviceOptions)
       // Setup the update process, will trigger the initial harvesting
       if (forecast.updateInterval > 0) {
         debug('Launching update process for forecast data on ' + forecast.name + '/' + element.name)

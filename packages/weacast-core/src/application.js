@@ -180,16 +180,16 @@ export default function weacast () {
     return app.service(app.get('apiPath') + '/' + path)
   }
   // This is used to create standard services
-  app.createService = function (name, modelsPath, servicesPath) {
-    return createService(name, app, modelsPath, servicesPath)
+  app.createService = function (name, modelsPath, servicesPath, options) {
+    return createService(name, app, modelsPath, servicesPath, options)
   }
   // This is used to retrieve all element services registered by forecast model plugins
   app.getElementServices = function (name) {
     return getElementServices(app, name)
   }
   // This is used to create forecast element services
-  app.createElementService = function (forecast, element, servicesPath) {
-    return createElementService(forecast, element, app, servicesPath)
+  app.createElementService = function (forecast, element, servicesPath, options) {
+    return createElementService(forecast, element, app, servicesPath, options)
   }
 
   // Enable CORS, security, compression, and body parsing
