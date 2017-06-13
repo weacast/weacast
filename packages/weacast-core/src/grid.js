@@ -43,6 +43,8 @@ export class Grid {
     // Depending on the model longitude/latitude increases/decreases according to grid scanning
     this.lonDirection = (this.origin[0] === this.bounds[0] ? 1 : -1)
     this.latDirection = (this.origin[1] === this.bounds[1] ? 1 : -1)
+    // Check for wrapped grids
+    this.isContinuous = Math.floor(this.size[0] * this.resolution[0]) >= 360
   }
 
   getValue (i, j) {
@@ -78,15 +80,19 @@ export class Grid {
     // Check for points outside bbox
     if (!isInside(lon, lat, this.bounds)) return undefined
 
-    let i = this.lonDirection * floorMod(lon - this.origin[0], 360) / this.resolution[0] - 0.5     // calculate longitude index in wrapped range [0, 360)
-    let j = this.latDirection * (lat - this.origin[1]) / this.resolution[1] - 0.5                       // calculate latitude index in direction +90 to -90
-    i = clamp(i, 0, this.size[0] - 1)
-    j = clamp(j, 0, this.size[1] - 1)
+    let i = this.lonDirection * floorMod(lon - this.origin[0], 360) / this.resolution[0]     // calculate longitude index in wrapped range [0, 360)
     let fi = Math.floor(i)
-    let ci = clamp(fi + 1, 0, this.size[0] - 1)
+    let ci = fi + 1
+    // In this case virtually duplicate first column as last column to simplify interpolation logic
+    if (this.isContinuous && ci >= this.size[0]) {
+      ci = 0
+    }
+    ci = clamp(ci, 0, this.size[0] - 1)
+    
+    let j = this.latDirection * (lat - this.origin[1]) / this.resolution[1]                  // calculate latitude index in direction +90 to -90
     let fj = Math.floor(j)
     let cj = clamp(fj + 1, 0, this.size[1] - 1)
-
+    
     let g00 = this.getValue(fi, fj)
     let g10 = this.getValue(ci, fj)
     let g01 = this.getValue(fi, cj)
@@ -112,8 +118,8 @@ export class Grid {
     for (let j = 0; j < size[1]; j++) {
       for (let i = 0; i < size[0]; i++) {
         // Offset by pixel center
-        let lon = origin[0] + this.lonDirection * (i * resolution[0] + 0.5 * resolution[0])
-        let lat = origin[1] + this.latDirection * (j * resolution[1] + 0.5 * resolution[1])
+        let lon = origin[0] + this.lonDirection * (i * resolution[0])
+        let lat = origin[1] + this.latDirection * (j * resolution[1])
         let value = this.interpolate(lon, lat)
         data.push(value)
       }
