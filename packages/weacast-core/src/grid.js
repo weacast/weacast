@@ -88,11 +88,11 @@ export class Grid {
       ci = 0
     }
     ci = clamp(ci, 0, this.size[0] - 1)
-    
+
     let j = this.latDirection * (lat - this.origin[1]) / this.resolution[1]                  // calculate latitude index in direction +90 to -90
     let fj = Math.floor(j)
     let cj = clamp(fj + 1, 0, this.size[1] - 1)
-    
+
     let g00 = this.getValue(fi, fj)
     let g10 = this.getValue(ci, fj)
     let g01 = this.getValue(fi, cj)
