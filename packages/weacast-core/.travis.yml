@@ -5,7 +5,7 @@ services:
   - mongodb
 addons:
   code_climate:
-    repo_token: '1537b3b6588d23c51f18e04cab1be6dc52537396fdebc7784b7e7b9037ecee5c'
+    repo_token: 'db215b17c4b000e0591484b2da42116402141571763b91440b1d691c67f4b12c'
 notifications:
   email: false
 before_script:
