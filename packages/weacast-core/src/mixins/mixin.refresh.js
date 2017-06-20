@@ -65,37 +65,36 @@ export default {
     return promise
   },
 
-  processForecastTime (runTime, forecastTime) {
-    return this.downloadForecastTime(runTime, forecastTime)
-    .then(file => {
-      return this.convertForecastTime(runTime, forecastTime)
-    })
-    .then(grid => {
-      // Compute min/max values
-      let min = (grid && grid.length > 0 ? grid[0] : Number.NEGATIVE_INFINITY)
-      let max = (grid && grid.length > 0 ? grid[0] : Number.POSITIVE_INFINITY)
-      for (let i = 1; i < this.forecast.size[0] * this.forecast.size[1]; i++) {
-        min = Math.min(min, grid[i])
-        max = Math.max(max, grid[i])
-      }
-      let forecast = {
-        runTime: runTime,
-        forecastTime: forecastTime,
-        minValue: min,
-        maxValue: max
-      }
-      // Depending if we keep file as data storage include a link to files or data directly in the object
-      if (this.element.dataStore === 'fs') {
-        return Object.assign(forecast, {
-          filePath: this.getForecastTimeFilePath(runTime, forecastTime),
-          convertedFilePath: this.getForecastTimeConvertedFilePath(runTime, forecastTime)
-        })
-      } else {
-        return Object.assign(forecast, {
-          data: grid
-        })
-      }
-    })
+  async processForecastTime (runTime, forecastTime) {
+    await this.downloadForecastTime(runTime, forecastTime)
+    let grid = await this.convertForecastTime(runTime, forecastTime)
+    if (this.element.dataStore === 'gridfs') {
+      await this.saveToGridFS(this.getForecastTimeConvertedFilePath(runTime, forecastTime))
+    }
+    // Compute min/max values
+    let min = (grid && grid.length > 0 ? grid[0] : Number.NEGATIVE_INFINITY)
+    let max = (grid && grid.length > 0 ? grid[0] : Number.POSITIVE_INFINITY)
+    for (let i = 1; i < this.forecast.size[0] * this.forecast.size[1]; i++) {
+      min = Math.min(min, grid[i])
+      max = Math.max(max, grid[i])
+    }
+    let forecast = {
+      runTime: runTime,
+      forecastTime: forecastTime,
+      minValue: min,
+      maxValue: max
+    }
+    // Depending if we keep file as data storage include a link to files or data directly in the object
+    if (this.element.dataStore === 'fs' || this.element.dataStore === 'gridfs') {
+      return Object.assign(forecast, {
+        filePath: this.getForecastTimeFilePath(runTime, forecastTime),
+        convertedFilePath: this.getForecastTimeConvertedFilePath(runTime, forecastTime)
+      })
+    } else {
+      return Object.assign(forecast, {
+        data: grid
+      })
+    }
   },
 
   updateForecastTimeInDatabase (data, previousData) {
@@ -107,7 +106,15 @@ export default {
       // this.update(previousData._id, data)
       // For now we use a remove/create workaround
       return this.remove(previousData._id)
-      .then(_ => this.create(data))
+      .then(_ => {
+        // Remove persistent file associated with data
+        if (this.element.dataStore === 'fs') {
+          fs.remove(previousData.convertedFilePath)
+        } else if (this.element.dataStore === 'gridfs') {
+          this.removeFromGridFS(previousData.convertedFilePath)
+        }
+        return this.create(data)
+      })
     } else {
       return this.create(data)
     }
@@ -136,6 +143,13 @@ export default {
           this.updateForecastTimeInDatabase(data, previousData)
           .then(data => {
             logger.verbose((previousData ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+            // Remove temporary file associated with data except when using fs data store
+            if (this.element.dataStore !== 'fs') {
+              const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
+              const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
+              if (fs.existsSync(filePath)) fs.removeSync(filePath)
+              if (fs.existsSync(convertedFilePath)) fs.removeSync(convertedFilePath)
+            }
             resolve(data)
           })
           .catch(error => {
@@ -159,6 +173,7 @@ export default {
       })
       .catch(error => {
         logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        logger.error(error)
         let previousRunTime = runTime.clone().subtract({ seconds: this.forecast.runInterval })
         // When data for current time is not available we might try previous data
         // check here that we go back until the configured limit

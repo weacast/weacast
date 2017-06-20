@@ -42,6 +42,7 @@ export function marshallComparisonQuery (hook) {
 
 export function marshallQuery (hook) {
   let query = hook.params.query
+  let service = hook.service
   if (query) {
     // Need to convert from client/server side types : string or moment dates
     if (typeof query.runTime === 'string') {
@@ -55,7 +56,7 @@ export function marshallQuery (hook) {
       query.forecastTime = new Date(query.forecastTime.format())
     }
     // In this case take care that we always internally require the file path, it will be removed for the client by another hook
-    if (query.$select && this.element && this.element.dataStore === 'fs') {
+    if (query.$select && service.element && (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs')) {
       query.$select.push('convertedFilePath')
     }
     // When listing available forecast we might want to disable pagination
@@ -132,10 +133,11 @@ export function marshallSpatialQuery (hook) {
 
 export function processForecastTime (hook) {
   let query = hook.params.query
+  let service = hook.service
   if (query && query.time) {
     // Find nearest forecast time corresponding to request time
     let time = (typeof query.time === 'string' ? moment.utc(query.time) : query.time)
-    let forecastTime = hook.service.getNearestForecastTime(time)
+    let forecastTime = service.getNearestForecastTime(time)
     delete query.time
     query.forecastTime = new Date(forecastTime.format())
   }
@@ -143,8 +145,8 @@ export function processForecastTime (hook) {
     // Find nearest forecast time corresponding to request time range
     let from = (typeof query.from === 'string' ? moment.utc(query.from) : query.from)
     let to = (typeof query.to === 'string' ? moment.utc(query.to) : query.to)
-    let fromForecastTime = hook.service.getNearestForecastTime(from)
-    let toForecastTime = hook.service.getNearestForecastTime(to)
+    let fromForecastTime = service.getNearestForecastTime(from)
+    let toForecastTime = service.getNearestForecastTime(to)
     delete query.from
     delete query.to
     query.forecastTime = {
@@ -154,38 +156,57 @@ export function processForecastTime (hook) {
   }
 }
 
+function readFile (service, item) {
+  let promise = new Promise((resolve, reject) => {
+    fs.readJson(item.convertedFilePath, 'utf8')
+    .then(grid => {
+      item.data = grid
+      resolve(item)
+    })
+    .catch(error => {
+      let errorMessage = 'Cannot read converted ' + service.forecast.name + '/' + service.element.name + ' forecast'
+      if (item.forecastTime) errorMessage += ' at ' + item.forecastTime.format()
+      if (item.runTime) errorMessage += ' for run ' + item.runTime.format()
+      logger.error(errorMessage)
+      debug('Input JSON file was : ' + item.convertedFilePath)
+      reject(error)
+    })
+  })
+
+  return promise
+}
+
 export function processData (hook) {
   let params = hook.params
   let query = params.query
+  let service = hook.service
   let items = getItems(hook)
   const isArray = Array.isArray(items)
   items = (isArray ? items : [items])
 
   // If we use a file based storage we have to load data on demand
-  if (this.element.dataStore === 'fs') {
+  if (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs') {
     // Process data files when required
     if (query && query.$select && query.$select.includes('data')) {
       return new Promise((resolve, reject) => {
         let dataPromises = []
         items.forEach(item => {
-          dataPromises.push(
-            fs.readJson(item.convertedFilePath, 'utf8')
-            .then(grid => {
-              item.data = grid
-              return item
-            })
-            .catch(error => {
-              let errorMessage = 'Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast'
-              if (item.forecastTime) errorMessage += ' at ' + item.forecastTime.format()
-              if (item.runTime) errorMessage += ' for run ' + item.runTime.format()
-              logger.error(errorMessage)
-              debug('Input JSON file was : ' + item.convertedFilePath)
-              reject(error)
-            })
-          )
+          // In this case we need to extract from GridFS first
+          if (service.element.dataStore === 'gridfs') {
+            dataPromises.push(
+              service.readFromGridFS(item.convertedFilePath)
+              .then(_ => readFile(service, item))
+            )
+          } else {
+            dataPromises.push(readFile(service, item))
+          }
         })
 
         Promise.all(dataPromises).then(_ => {
+          // In this case we need to remove extracted files
+          if (service.element.dataStore === 'gridfs') {
+            items.forEach(item => fs.remove(item.convertedFilePath))
+          }
           // Remove as well any sensitive information about file path on the client side
           // Must be done second as we need this information first to read data
           discardFilepathField(hook)
@@ -208,10 +229,10 @@ export function processData (hook) {
       if (params.oLon && params.oLat && params.sLon && params.sLat && params.dLon && params.dLat) {
         items.forEach(item => {
           let grid = new Grid({
-            bounds: hook.service.forecast.bounds,
-            origin: hook.service.forecast.origin,
-            size: hook.service.forecast.size,
-            resolution: hook.service.forecast.resolution,
+            bounds: service.forecast.bounds,
+            origin: service.forecast.origin,
+            size: service.forecast.size,
+            resolution: service.forecast.resolution,
             data: item.data
           })
           item.data = grid.resample([params.oLon, params.oLat], [params.dLon, params.dLat], [params.sLon, params.sLat])

@@ -8,6 +8,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import bodyParser from 'body-parser'
 import feathers from 'feathers'
+import errors from 'feathers-errors'
 import configuration from 'feathers-configuration'
 import hooks from 'feathers-hooks'
 import rest from 'feathers-rest'
@@ -15,6 +16,7 @@ import socketio from 'feathers-socketio'
 import authentication from 'feathers-authentication'
 import jwt from 'feathers-authentication-jwt'
 import local from 'feathers-authentication-local'
+import mongo from 'mongodb'
 import { Database } from './db'
 
 function auth () {
@@ -120,6 +122,18 @@ export function createElementService (forecast, element, app, servicesPath, opti
   service.name = serviceName
   service.forecast = forecast
   service.element = element
+  // Attach a GridFS storage element when required
+  if (element.dataStore === 'gridfs') {
+    if (app.get('db').adapter !== 'mongodb') {
+      throw new errors.GeneralError('GridFS store is only available for MongoDB adapter')
+    }
+    service.gfs = new mongo.GridFSBucket(app.db._db, {
+      // GridFS is use to bypass the limit of 16MB documents in MongoDB
+      // We are not specifically interested in splitting the file in small chunks
+      chunkSizeBytes: 8 * 1024 * 1024,
+      bucketName: forecast.name + '/' + element.name
+    })
+  }
 
   return service
 }
