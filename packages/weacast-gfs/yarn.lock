@@ -4222,9 +4222,9 @@ verror@1.3.6:
   dependencies:
     extsprintf "1.0.2"
 
-weacast-core@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/weacast-core/-/weacast-core-0.2.0.tgz#55d98696f82aa74c6bcc8d7dd5adae4659bf02a0"
+weacast-core@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/weacast-core/-/weacast-core-0.2.3.tgz#681b826645abfb8f8828006ae91e2489a2a41b89"
   dependencies:
     body-parser "^1.17.1"
     compression "^1.6.2"
