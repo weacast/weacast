@@ -2,6 +2,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import moment from 'moment'
 import request from 'request'
+import errors from 'feathers-errors'
 import logger from 'winston'
 import makeDebug from 'debug'
 const debug = makeDebug('weacast:weacast-core')
@@ -44,7 +45,7 @@ export default {
         if (response.statusCode !== 200) {
           errorMessage += ', provider responded with HTTP code ' + response.statusCode
           logger.error(errorMessage)
-          reject(new Error(errorMessage))
+          reject(new errors.NotFound(errorMessage))
         } else {
           let file = fs.createWriteStream(filePath)
           response.pipe(file)
@@ -173,7 +174,10 @@ export default {
       })
       .catch(error => {
         logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-        logger.error(error)
+        // 404 might be 'normal' errors because some data are not available at the planned run time from meteo providers
+        if (!error.code || error.code !== 404) {
+          logger.error(error)
+        }
         let previousRunTime = runTime.clone().subtract({ seconds: this.forecast.runInterval })
         // When data for current time is not available we might try previous data
         // check here that we go back until the configured limit
