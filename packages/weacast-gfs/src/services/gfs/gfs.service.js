@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs-extra'
+import errors from 'feathers-errors'
 import grib2json from 'weacast-grib2json'
 import logger from 'winston'
 import makeDebug from 'debug'
@@ -27,14 +28,15 @@ export default {
       }
 
       grib2json(filePath, {
-        data: true
+        data: true,
+        bufferSize: 1024 * 1024 * 1024
       })
       .then(json => {
         if (json.length === 0 || !json[0].data || !json[0].data.length > 0) {
-          const errorMessage = 'Converted  ' + this.forecast.name + '/' + this.element.name + ' forecast data at ' + forecastTime.format() + ' for run ' + runTime.format() + ' is invalid or empty'
+          const errorMessage = 'Converted ' + this.forecast.name + '/' + this.element.name + ' forecast data at ' + forecastTime.format() + ' for run ' + runTime.format() + ' is invalid or empty'
           logger.error(errorMessage)
           debug('Output JSON file was : ' + convertedFilePath)
-          reject(new Error(errorMessage))
+          reject(errors.Unprocessable(errorMessage))
           return
         } else {
           logger.verbose('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
@@ -69,11 +71,21 @@ export default {
     // Directories are organized by run time
     let subDirectory = '/gfs.' + runTime.format('YYYYMMDDHH')
     // Then we need to target the right file for forecast time
+    // Get offset from run time
     let hours = forecastTime.diff(runTime, 'hours')
     // Convert to string with zero padding like 006
     hours = hours.toFixed(0)
     while (hours.length < 3) hours = '0' + hours
-    let file = 'gfs.t' + runTime.format('HH') + 'z.pgrb2' + this.forecast.fileSuffix + '.f' + hours
+    // Get resolution expressed as XpXX
+    let resolution = this.forecast.resolution.length > 0 ? this.forecast.resolution[0] : 0.5
+    resolution = resolution.toFixed(2).replace('.', 'p')
+    // Specific case of 0.5° model
+    if (resolution === '0p50') {
+      resolution = 'full.' + resolution
+    } else {
+      resolution = '.' + resolution
+    }
+    let file = 'gfs.t' + runTime.format('HH') + 'z.pgrb2' + resolution + '.f' + hours
     // Setup request with URL, variable, level parameters for HTTP filter
     let queryParameters = {
       dir: subDirectory,

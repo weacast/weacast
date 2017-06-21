@@ -41,7 +41,6 @@ module.exports = {
       attribution: 'Forecast data from <a href="http://www.emc.ncep.noaa.gov/index.php?branch=GFS">NCEP</a>',
       model: 'gfs',
       baseUrl: 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p50.pl',
-      fileSuffix: 'full.0p50',
       bounds: [-180, -90, 180, 90],
       origin: [-180, 90],
       size: [720, 361],
@@ -56,7 +55,8 @@ module.exports = {
       elements: [
         {
           name: 'temperature',
-          variable: 'var_TMP',
+          // Avoid expansion to the TMP environment variable
+          variable: '\\TMP',
           levels: ['surface'],
           dataStore: 'fs'             // So that we can check for output files
         }
