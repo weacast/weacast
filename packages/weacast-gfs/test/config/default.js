@@ -36,7 +36,7 @@ module.exports = {
   forecasts: [
     {
       name: 'gfs-world',
-      label: 'ARPEGE - 0.5°',
+      label: 'GFS - 0.5°',
       description: 'World-wide',
       attribution: 'Forecast data from <a href="http://www.emc.ncep.noaa.gov/index.php?branch=GFS">NCEP</a>',
       model: 'gfs',
