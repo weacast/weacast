@@ -41,8 +41,8 @@ module.exports = {
       attribution: 'Forecast data from <a href="http://www.emc.ncep.noaa.gov/index.php?branch=GFS">NCEP</a>',
       model: 'gfs',
       baseUrl: 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p50.pl',
-      bounds: [-180, -90, 180, 90],
-      origin: [-180, 90],
+      bounds: [0, -90, 360, 90],
+      origin: [0, 90],
       size: [720, 361],
       resolution: [0.5, 0.5],
       runInterval: 6 * 3600,          // Produced every 6h
