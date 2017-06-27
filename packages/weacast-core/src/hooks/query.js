@@ -56,7 +56,7 @@ export function marshallQuery (hook) {
       query.forecastTime = new Date(query.forecastTime.format())
     }
     // In this case take care that we always internally require the file path, it will be removed for the client by another hook
-    if (query.$select && service.element && (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs')) {
+    if (!_.isNil(query.$select) && !_.isNil(service.element) && (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs')) {
       query.$select.push('convertedFilePath')
     }
     // When listing available forecast we might want to disable pagination
@@ -78,7 +78,7 @@ function marshallGeometryQuery (query) {
       // Geospatial parameters begin with $
       if (key.startsWith('$')) {
         // Some target coordinates
-        if (value.coordinates) {
+        if (!_.isNil(value.coordinates)) {
           value.coordinates = value.coordinates.map(coordinate => _.toNumber(coordinate))
         } else {
           // Other simple values
@@ -94,7 +94,7 @@ export function marshallSpatialQuery (hook) {
   if (query) {
     marshallGeometryQuery(query)
     // Resampling is used by hooks only, do not send it to DB
-    if (query.oLon && query.oLat && query.sLon && query.sLat && query.dLon && query.dLat) {
+    if (!_.isNil(query.oLon) && !_.isNil(query.oLat) && !_.isNil(query.sLon) && !_.isNil(query.sLat) && !_.isNil(query.dLon) && !_.isNil(query.dLat)) {
       // Convert when required from query strings
       hook.params.oLat = _.toNumber(query.oLat)
       hook.params.oLon = _.toNumber(query.oLon)
@@ -110,7 +110,7 @@ export function marshallSpatialQuery (hook) {
       delete query.dLon
     }
     // Shortcut for proximity query
-    if (query.centerLon && query.centerLat && query.distance) {
+    if (!_.isNil(query.centerLon) && !_.isNil(query.centerLat) && !_.isNil(query.distance)) {
       let lon = _.toNumber(query.centerLon)
       let lat = _.toNumber(query.centerLat)
       let d = _.toNumber(query.distance)
@@ -134,14 +134,14 @@ export function marshallSpatialQuery (hook) {
 export function processForecastTime (hook) {
   let query = hook.params.query
   let service = hook.service
-  if (query && query.time) {
+  if (query && !_.isNil(query.time)) {
     // Find nearest forecast time corresponding to request time
     let time = (typeof query.time === 'string' ? moment.utc(query.time) : query.time)
     let forecastTime = service.getNearestForecastTime(time)
     delete query.time
     query.forecastTime = new Date(forecastTime.format())
   }
-  if (query && query.from && query.to) {
+  if (query && !_.isNil(query.from) && !_.isNil(query.to)) {
     // Find nearest forecast time corresponding to request time range
     let from = (typeof query.from === 'string' ? moment.utc(query.from) : query.from)
     let to = (typeof query.to === 'string' ? moment.utc(query.to) : query.to)
@@ -187,7 +187,7 @@ export function processData (hook) {
   // If we use a file based storage we have to load data on demand
   if (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs') {
     // Process data files when required
-    if (query && query.$select && query.$select.includes('data')) {
+    if (query && !_.isNil(query.$select) && query.$select.includes('data')) {
       return new Promise((resolve, reject) => {
         let dataPromises = []
         items.forEach(item => {
@@ -222,11 +222,11 @@ export function processData (hook) {
     }
   } else {
     // Only discard if not explicitely asked by $select
-    if (!query || !query.$select || !query.$select.includes('data')) {
+    if (_.isNil(query) || _.isNil(query.$select) || !query.$select.includes('data')) {
       discardDataField(hook)
     } else {
       // Check for resampling on returned data
-      if (params.oLon && params.oLat && params.sLon && params.sLat && params.dLon && params.dLat) {
+      if (!_.isNil(params.oLon) && !_.isNil(params.oLat) && !_.isNil(params.sLon) && !_.isNil(params.sLat) && !_.isNil(params.dLon) && !_.isNil(params.dLat)) {
         items.forEach(item => {
           let grid = new Grid({
             bounds: service.forecast.bounds,
