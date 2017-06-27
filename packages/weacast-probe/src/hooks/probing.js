@@ -2,6 +2,7 @@
 // import makeDebug from 'debug'
 import { getItems, replaceItems, discard } from 'feathers-hooks-common'
 import { ObjectID } from 'mongodb'
+import _ from 'lodash'
 
 // const debug = makeDebug('weacast:weacast-core')
 const discardFeaturesField = discard('features')
@@ -20,7 +21,7 @@ export function checkProbingType (hook) {
   let query = hook.params.query
   // When performing on-demand probing nothing will be created in the DB
   // Simply return the probe object to be used by hooks
-  if (query && query.forecastTime) {
+  if (!_.isNil(query) && !_.isNil(query.forecastTime)) {
     hook.result = hook.data
   }
   // Otherwise let create the probe object
@@ -37,7 +38,7 @@ export function performProbing (hook) {
 
     let probePromises = []
     items.forEach(item => {
-      probePromises.push(hook.service.probe(item, query ? query.forecastTime : null))
+      probePromises.push(hook.service.probe(item, !_.isNil(query) ? query.forecastTime : null))
     })
 
     Promise.all(probePromises).then(_ => {
@@ -78,7 +79,7 @@ export function removeFeatures (hook) {
 
   // Only discard if not explicitely asked by $select or when performing
   // on-demand probing (in this case the probing time is given)
-  if (!query || (!(query.$select && query.$select.includes('features')) && !query.forecastTime)) {
+  if (_.isNil(query) || (!(!_.isNil(query.$select) && query.$select.includes('features')) && _.isNil(query.forecastTime))) {
     discardFeaturesField(hook)
   }
 }
