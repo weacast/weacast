@@ -148,8 +148,8 @@ export default {
             if (this.element.dataStore !== 'fs') {
               const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
               const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
-              if (fs.existsSync(filePath)) fs.removeSync(filePath)
-              if (fs.existsSync(convertedFilePath)) fs.removeSync(convertedFilePath)
+              if (fs.existsSync(filePath)) fs.remove(filePath)
+              if (fs.existsSync(convertedFilePath)) fs.remove(convertedFilePath)
             }
             resolve(data)
           })
