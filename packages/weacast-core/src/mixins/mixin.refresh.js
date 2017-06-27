@@ -148,8 +148,10 @@ export default {
             if (this.element.dataStore !== 'fs') {
               const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
               const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
-              if (fs.existsSync(filePath)) fs.remove(filePath)
-              if (fs.existsSync(convertedFilePath)) fs.remove(convertedFilePath)
+              // FIXME: trying to remove temporary files as soon as possible raises "EBUSY: resource busy or locked" because there is probably some async operation still running
+              // For now we remove temporary files as a whole by removing the data dir on each update process of the element
+              // if (fs.existsSync(filePath)) fs.remove(filePath)
+              // if (fs.existsSync(convertedFilePath)) fs.remove(convertedFilePath)
             }
             resolve(data)
           })
