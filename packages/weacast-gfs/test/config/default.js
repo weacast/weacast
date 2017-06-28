@@ -24,7 +24,8 @@ module.exports = {
   },
   logs: {
     Console: {
-      colorize: true
+      colorize: true,
+      level: 'verbose'
     }
   },
   db: {
