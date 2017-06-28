@@ -44,8 +44,10 @@ export default {
       .on('response', response => {
         if (response.statusCode !== 200) {
           errorMessage += ', provider responded with HTTP code ' + response.statusCode
-          logger.error(errorMessage)
-          reject(new errors.NotFound(errorMessage))
+          reject(errors.convert({
+            name: response.statusCode.toString(),
+            message: errorMessage
+          }))
         } else {
           let file = fs.createWriteStream(filePath)
           response.pipe(file)
@@ -145,14 +147,16 @@ export default {
           .then(data => {
             logger.verbose((previousData ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
             // Remove temporary file associated with data except when using fs data store
+            // FIXME: trying to remove temporary files as soon as possible raises "EBUSY: resource busy or locked" because there is probably some async operation still running
+              // For now we remove temporary files as a whole by removing the data dir on each update process of the element
+            /*
             if (this.element.dataStore !== 'fs') {
               const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
               const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
-              // FIXME: trying to remove temporary files as soon as possible raises "EBUSY: resource busy or locked" because there is probably some async operation still running
-              // For now we remove temporary files as a whole by removing the data dir on each update process of the element
-              // if (fs.existsSync(filePath)) fs.remove(filePath)
-              // if (fs.existsSync(convertedFilePath)) fs.remove(convertedFilePath)
+              if (fs.existsSync(filePath)) fs.remove(filePath)
+              if (fs.existsSync(convertedFilePath)) fs.remove(convertedFilePath)
             }
+            */
             resolve(data)
           })
           .catch(error => {
@@ -175,10 +179,14 @@ export default {
         resolve(data)
       })
       .catch(error => {
-        logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         // 404 might be 'normal' errors because some data are not available at the planned run time from meteo providers
+        // or some might vary the time steps available in the forecast depending on the run
         if (!error.code || error.code !== 404) {
+          logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
           logger.error(error)
+        } else {
+          logger.verbose('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+          logger.verbose(error)
         }
         let previousRunTime = runTime.clone().subtract({ seconds: this.forecast.runInterval })
         // When data for current time is not available we might try previous data
