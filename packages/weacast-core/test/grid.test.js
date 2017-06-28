@@ -42,7 +42,7 @@ describe('weacast-grid', () => {
     expect(grid.interpolate(180, 90), 'top-right border').to.equal(0)
     expect(grid.interpolate(180, -90), 'bottom-right border').to.equal(0)
     // Test that we do not try to interpolate values outside grid bounds
-    expect(grid.interpolate(254, 0), 'longitude overflow').beUndefined()
+    expect(grid.interpolate(-254, 0), 'longitude overflow').beUndefined()
     expect(grid.interpolate(0, 128), 'latitude overflow').beUndefined()
     // Then test interpolation
     expect(grid.interpolate(-135, 45), 'top-left quad center').to.equal(1)
