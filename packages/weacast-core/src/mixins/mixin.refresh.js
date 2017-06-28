@@ -45,7 +45,7 @@ export default {
         if (response.statusCode !== 200) {
           errorMessage += ', provider responded with HTTP code ' + response.statusCode
           reject(errors.convert({
-            name: response.statusCode.toString(),
+            name: response.statusCode,
             message: errorMessage
           }))
         } else {
@@ -183,10 +183,10 @@ export default {
         // or some might vary the time steps available in the forecast depending on the run
         if (!error.code || error.code !== 404) {
           logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          logger.error(error)
+          logger.error(error.message)
         } else {
           logger.verbose('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          logger.verbose(error)
+          logger.verbose(error.message)
         }
         let previousRunTime = runTime.clone().subtract({ seconds: this.forecast.runInterval })
         // When data for current time is not available we might try previous data
