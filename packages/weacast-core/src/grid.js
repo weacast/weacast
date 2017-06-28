@@ -34,6 +34,23 @@ function isInside (lon, lat, bounds) {
   return lat >= bounds[1] && lat <= bounds[3] && isLonInRange
 }
 
+/**
+ * @returns {Number} Returns a new longitude with the value wrapped so it's always in the same range than the given bounding box (e.g. between -180 and +180 degrees).
+ */
+function wrapLongitude (lon, bounds) {
+  // We have longitudes in range [-180, 180] so take care if longitude is given in range [0, 360]
+  if (bounds[0] < 0) {
+    return lon > 180 ? lon - 360 : lon
+  }
+  // We have longitudes in range [0, 360] so take care if longitude is given in range [-180, 180]
+  else if (bounds[2] > 180) {
+    return lon < 0 ? lon + 360 : lon
+  }
+  else {
+    return lon
+  }
+}
+
 export class Grid {
   // Options are similar to those defining the forecast model + a data json array for grid point values
   // (bounds e.g. [-180, -90, 180, 90], e.g. origin: [-180, 90], e.g. size: [720, 361], e.g. resolution: [0.5, 0.5])
@@ -77,6 +94,8 @@ export class Grid {
    */
   interpolate (lon, lat) {
     if (!this.data) return undefined
+    // Take care that some models express longitude in [0,360] and not [-180,180], so unify range here
+    lon = wrapLongitude(lon, this.bounds)
     // Check for points outside bbox
     if (!isInside(lon, lat, this.bounds)) return undefined
 
@@ -117,7 +136,6 @@ export class Grid {
     let data = []
     for (let j = 0; j < size[1]; j++) {
       for (let i = 0; i < size[0]; i++) {
-        // Offset by pixel center
         let lon = origin[0] + this.lonDirection * (i * resolution[0])
         let lat = origin[1] + this.latDirection * (j * resolution[1])
         let value = this.interpolate(lon, lat)
