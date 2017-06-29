@@ -11,13 +11,13 @@ export function log (hook) {
   if (hook.error) {
     logger.error(message)
   } else {
-    logger.verbose(message)
+    logger.debug(message)
   }
 
-  logger.debug('hook.data', hook.data)
-  logger.debug('hook.params', hook.params)
+  logger.silly('hook.data', hook.data)
+  logger.silly('hook.params', hook.params)
 
   if (hook.result) {
-    logger.debug('hook.result', hook.result)
+    logger.silly('hook.result', hook.result)
   }
 }
