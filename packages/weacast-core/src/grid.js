@@ -41,12 +41,10 @@ function wrapLongitude (lon, bounds) {
   // We have longitudes in range [-180, 180] so take care if longitude is given in range [0, 360]
   if (bounds[0] < 0) {
     return lon > 180 ? lon - 360 : lon
-  }
-  // We have longitudes in range [0, 360] so take care if longitude is given in range [-180, 180]
-  else if (bounds[2] > 180) {
+  } else if (bounds[2] > 180) {
+    // We have longitudes in range [0, 360] so take care if longitude is given in range [-180, 180]
     return lon < 0 ? lon + 360 : lon
-  }
-  else {
+  } else {
     return lon
   }
 }
