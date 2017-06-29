@@ -30,7 +30,7 @@ export default {
     // Run DB updates
     let results = await Promise.all(probeUpdates)
 
-    logger.info('Produced ' + results.length + ' results for probe ' + probe._id + ' on element ' + elementService.forecast.name + '/' + elementService.element.name +
+    logger.verbose('Produced ' + results.length + ' results for probe ' + probe._id + ' on element ' + elementService.forecast.name + '/' + elementService.element.name +
                 ' at ' + forecastTime.format() + ' for run ' + runTime.format())
 
     return results
@@ -172,7 +172,7 @@ export default {
               let result = await this.get(probe._id, { query: { $select: ['forecast', 'elements', 'features'] } })
               features = result.features
             }
-            logger.info('Probing forecast data for element ' + service.forecast.name + '/' + service.element.name + ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
+            logger.verbose('Probing forecast data for element ' + service.forecast.name + '/' + service.element.name + ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
             await this.probeForecastTime(features, probe, service, forecast.runTime, forecast.forecastTime, forecast.data)
             await this.updateFeaturesInDatabase(features, probe, service, forecast.runTime, forecast.forecastTime)
             // Send a message so that clients know there are new results, indeed for performance reasons standard events have been disabled on results
@@ -180,7 +180,7 @@ export default {
             delete forecast.data
             this.emit('results', { probe, forecast })
           } catch (error) {
-            logger.info(error.message)
+            logger.error(error.message)
           }
         }
         // Register for forecast data update
@@ -253,7 +253,7 @@ export default {
         }
       }
     } catch (error) {
-      logger.info(error.message)
+      logger.error(error.message)
     }
 
     // Register for forecast data updates on probing streams
