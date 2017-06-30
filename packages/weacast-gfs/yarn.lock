@@ -4279,9 +4279,9 @@ weacast-core@^0.3.0:
     winston "^2.3.1"
     winston-daily-rotate-file "^1.4.6"
 
-weacast-grib2json@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/weacast-grib2json/-/weacast-grib2json-0.2.0.tgz#6dd629b5069077c8bb08bc4d85a371460572ddbd"
+weacast-grib2json@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/weacast-grib2json/-/weacast-grib2json-0.2.2.tgz#3d062bfc75c312e4c32ef46376f61d18dd34edb6"
   dependencies:
     commander "^2.9.0"
     fs-extra "^3.0.1"
