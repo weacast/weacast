@@ -48,6 +48,8 @@ describe('weacast-probe', () => {
     spyProbe = chai.spy.on(probeService, 'probeForecastTime')
     spyUpdate = chai.spy.on(probeService, 'updateFeaturesInDatabase')
   })
+  // Let enough time to process
+  .timeout(5000)
 
   it('performs element download process', () => {
     // Clear any previous data
