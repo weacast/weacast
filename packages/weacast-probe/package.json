@@ -64,7 +64,7 @@
     "mongodb": "^2.2.26",
     "request": "^2.81.0",
     "uberproto": "^1.2.0",
-    "weacast-core": "^0.2.3",
+    "weacast-core": "^0.3.0",
     "winston": "^2.3.1"
   },
   "devDependencies": {
@@ -85,6 +85,6 @@
     "mocha": "^3.2.0",
     "shx": "^0.2.2",
     "standard": "^10.0.2",
-    "weacast-arpege": "^0.2.1"
+    "weacast-arpege": "^0.3.0"
   }
 }
