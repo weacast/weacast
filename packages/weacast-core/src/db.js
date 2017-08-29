@@ -10,6 +10,7 @@ import errors from 'feathers-errors'
 export class Database {
   constructor (app) {
     try {
+      this.app = app
       this._adapter = app.get('db').adapter
     } catch (error) {
       throw new errors.GeneralError('Cannot find database adapter configuration in application')
