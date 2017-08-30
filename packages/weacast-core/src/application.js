@@ -47,16 +47,19 @@ function auth () {
     }))
   }
   if (config.oidc) {
+    // We do not manage state using express-session as it does not seem to work well with Feathers
+    let sessionInfos = Object.assign({}, config.oidc)
+    Object.assign(sessionInfos, { params: { state: config.oidc.sessionKey } })
     app.configure(oauth2({
       name: 'oidc',
       Strategy: OpenIDStrategy,
       Verifier: OAuth2Verifier,
       store: {
         store (req, meta, cb) {
-          return cb(null, 'weacast')
+          return cb(null, sessionInfos.sessionKey)
         },
         verify (req, state, cb) {
-          return cb(null, true, Object.assign(config.oidc, { params: { state: 'weacast' } }))
+          return cb(null, true, sessionInfos)
         }
       }
     }))
