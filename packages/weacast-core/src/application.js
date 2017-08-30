@@ -31,26 +31,32 @@ function auth () {
   app.configure(authentication(config))
   app.configure(jwt())
   app.configure(local())
-  app.configure(oauth2({
-    name: 'github',
-    Strategy: GithubStrategy
-  }))
-  app.configure(oauth2({
-    name: 'google',
-    Strategy: GoogleStrategy
-  }))
-  app.configure(oauth2({
-    name: 'oidc',
-    Strategy: OpenIDStrategy,
-    store: {
-      store (req, meta, cb) {
-        return cb(null, 'weacast')
-      },
-      verify (req, state, cb) {
-        return cb(null, true, { params: { state: 'weacast' } })
+  if (config.github) {
+    app.configure(oauth2({
+      name: 'github',
+      Strategy: GithubStrategy
+    }))
+  }
+  if (config.google) {
+    app.configure(oauth2({
+      name: 'google',
+      Strategy: GoogleStrategy
+    }))
+  }
+  if (config.oidc) {
+    app.configure(oauth2({
+      name: 'oidc',
+      Strategy: OpenIDStrategy,
+      store: {
+        store (req, meta, cb) {
+          return cb(null, 'weacast')
+        },
+        verify (req, state, cb) {
+          return cb(null, true, { params: { state: 'weacast' } })
+        }
       }
-    }
-  }))
+    }))
+  }
   // The `authentication` service is used to create a JWT.
   // The before `create` hook registers strategies that can be used
   // to create a new valid JWT (e.g. local or oauth2)
