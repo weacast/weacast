@@ -20,6 +20,7 @@ import oauth2 from 'feathers-authentication-oauth2'
 import GithubStrategy from 'passport-github'
 import GoogleStrategy from 'passport-google-oauth20'
 import OpenIDStrategy from 'passport-openidconnect'
+import OAuth2Verifier from './verifier'
 import mongo from 'mongodb'
 import { Database } from './db'
 
@@ -34,25 +35,28 @@ function auth () {
   if (config.github) {
     app.configure(oauth2({
       name: 'github',
-      Strategy: GithubStrategy
+      Strategy: GithubStrategy,
+      Verifier: OAuth2Verifier
     }))
   }
   if (config.google) {
     app.configure(oauth2({
       name: 'google',
-      Strategy: GoogleStrategy
+      Strategy: GoogleStrategy,
+      Verifier: OAuth2Verifier
     }))
   }
   if (config.oidc) {
     app.configure(oauth2({
       name: 'oidc',
       Strategy: OpenIDStrategy,
+      Verifier: OAuth2Verifier,
       store: {
         store (req, meta, cb) {
           return cb(null, 'weacast')
         },
         verify (req, state, cb) {
-          return cb(null, true, { params: { state: 'weacast' } })
+          return cb(null, true, Object.assign(config.oidc, { params: { state: 'weacast' } }))
         }
       }
     }))
