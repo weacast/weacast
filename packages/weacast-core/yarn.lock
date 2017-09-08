@@ -3332,9 +3332,9 @@ passport-oauth2@1.x.x:
     uid2 "0.0.x"
     utils-merge "1.x.x"
 
-"passport-openidconnect@https://github.com/scleriot/passport-openidconnect":
+"passport-openidconnect@https://github.com/kalisio/passport-openidconnect":
   version "0.0.2"
-  resolved "https://github.com/scleriot/passport-openidconnect#8dabfca06719e5515bc5f92e2071f1bacdf13cf9"
+  resolved "https://github.com/kalisio/passport-openidconnect#de4c42293f32ee2d7879f84b9d786419a4df851d"
   dependencies:
     oauth "0.9.x"
     passport-strategy "1.x.x"

@@ -76,7 +76,7 @@
     "nedb": "^1.8.0",
     "passport-github": "^1.1.0",
     "passport-google-oauth20": "^1.0.0",
-    "passport-openidconnect": "https://github.com/scleriot/passport-openidconnect",
+    "passport-openidconnect": "https://github.com/kalisio/passport-openidconnect",
     "request": "^2.81.0",
     "sublevelup": "^4.0.0",
     "uberproto": "^1.2.0",
