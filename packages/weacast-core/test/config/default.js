@@ -29,7 +29,8 @@ module.exports = {
     },
     DailyRotateFile: {
       filename: path.join(__dirname, '..', 'test-log-'),
-      datePattern: 'yyyy-MM-dd.log'
+      datePattern: 'yyyy-MM-dd.log',
+      maxDays: 5
     }
   },
   db: {

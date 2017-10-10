@@ -5,7 +5,6 @@ import { Verifier } from 'feathers-authentication-oauth2'
 const debug = makeDebug('feathers-authentication-oauth2:verify')
 
 class OAuth2Verifier extends Verifier {
-
   constructor (app, options = {}) {
     options.emailField = options.emailField || 'email'
     options.emailFieldInProfile = options.emailFieldInProfile || 'emails[0].value'
