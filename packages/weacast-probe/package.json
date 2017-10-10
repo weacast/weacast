@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "chai-spies": "^0.7.1",
-    "debug": "^2.6.4",
+    "debug": "^3.1.0",
     "feathers-authentication": "^1.2.2",
     "feathers-errors": "^2.6.3",
     "feathers-hooks": "^2.0.1",
@@ -58,7 +58,7 @@
     "feathers-levelup": "^1.1.1",
     "feathers-mongodb": "^2.8.0",
     "feathers-nedb": "^2.6.2",
-    "fs-extra": "^3.0.0",
+    "fs-extra": "^4.0.2",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "mongodb": "^2.2.26",
