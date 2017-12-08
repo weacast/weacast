@@ -4,6 +4,7 @@
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-gtiff2json/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-gtiff2json)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-gtiff2json/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-gtiff2json/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-gtiff2json.svg?style=flat-square)](https://david-dm.org/weacast/weacast-gtiff2json)
+[![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-gtiff2json/badge.svg)](https://snyk.io/test/github/weacast/weacast-gtiff2json)
 [![Download Status](https://img.shields.io/npm/dm/gtiff2json.svg?style=flat-square)](https://www.npmjs.com/package/weacast-gtiff2json)
 
 A command line utility that decodes [GeoTIFF](https://en.wikipedia.org/wiki/GeoTIFF) files as JSON.
