@@ -4,6 +4,8 @@
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-probe/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-probe)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-probe/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-probe/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-probe.svg?style=flat-square)](https://david-dm.org/weacast/weacast-probe)
+[![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.gitbooks.io/weacast-docs/api/)
+[![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-probe/badge.svg)](https://snyk.io/test/github/weacast/weacast-probe)
 [![Download Status](https://img.shields.io/npm/dm/weacast-probe.svg?style=flat-square)](https://www.npmjs.com/package/weacast-probe)
 
 > Probing forecast model plugin for Weacast
