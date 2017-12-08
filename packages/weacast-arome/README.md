@@ -4,6 +4,8 @@
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-arome/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-arome)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-arome/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-arome/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-arome.svg?style=flat-square)](https://david-dm.org/weacast/weacast-arome)
+[![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.gitbooks.io/weacast-docs/api/)
+[![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-arome/badge.svg)](https://snyk.io/test/github/weacast/weacast-arome)
 [![Download Status](https://img.shields.io/npm/dm/weacast-arome.svg?style=flat-square)](https://www.npmjs.com/package/weacast-arome)
 
 > AROME weather forecast model plugin for Weacast
