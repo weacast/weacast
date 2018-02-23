@@ -36,7 +36,7 @@ export default {
           const errorMessage = 'Converted ' + this.forecast.name + '/' + this.element.name + ' forecast data at ' + forecastTime.format() + ' for run ' + runTime.format() + ' is invalid or empty'
           logger.error(errorMessage)
           debug('Output JSON file was : ' + convertedFilePath)
-          reject(errors.Unprocessable(errorMessage))
+          reject(new errors.Unprocessable(errorMessage))
           return
         } else {
           logger.verbose('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
