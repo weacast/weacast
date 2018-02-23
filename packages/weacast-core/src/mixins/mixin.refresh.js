@@ -181,7 +181,7 @@ export default {
       .catch(error => {
         // 404 might be 'normal' errors because some data are not available at the planned run time from meteo providers
         // or some might vary the time steps available in the forecast depending on the run
-        if (!error.code || error.code !== 404) {
+        if (!error || !error.code || error.code !== 404) {
           logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
           logger.error(error.message)
         } else {
