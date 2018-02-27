@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.5.1](https://github.com/weacast/weacast-core/tree/v0.5.1) (2018-02-27)
+
+[Full Changelog](https://github.com/weacast/weacast-core/compare/v0.5.0...v0.5.1)
+
+**Fixed bugs:**
+
+- Unhandled exception on forecast update when not HTTP error [\#1](https://github.com/weacast/weacast-core/issues/1)
+
 ## [v0.5.0](https://github.com/weacast/weacast-core/tree/v0.5.0) (2018-01-16)
 
 [Full Changelog](https://github.com/weacast/weacast-core/compare/v0.4.0...v0.5.0)
