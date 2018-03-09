@@ -1,3 +1,4 @@
+import logger from 'winston'
 import makeDebug from 'debug'
 import errors from 'feathers-errors'
 
@@ -5,9 +6,10 @@ import errors from 'feathers-errors'
 export default function initializePlugin (app, name, servicesPath) {
   const debug = makeDebug('weacast:weacast-' + name)
 
-  const forecasts = app.get('forecasts') ? app.get('forecasts').filter(forecast => forecast.model === name) : null
+  const forecasts = app.get('forecasts') ? app.get('forecasts').filter(forecast => forecast.model === name) : []
   if (!forecasts.length) {
-    throw new errors.GeneralError('Cannot find valid ' + name + ' plugin configuration in application')
+    logger.warn('Cannot find valid ' + name + ' plugin configuration in application')
+    return
   }
 
   debug('Initializing weacast-' + name + ' plugin')
