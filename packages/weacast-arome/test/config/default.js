@@ -59,7 +59,9 @@ module.exports = {
           name: 'temperature',
           coverageid: 'TEMPERATURE__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
           subsets: {
-            height: 2
+            height: 2,
+            long: [-8, 12],
+            lat: [38, 53]
           },
           dataStore: 'fs'             // So that we can check for output files
         }
