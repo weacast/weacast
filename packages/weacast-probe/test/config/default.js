@@ -59,14 +59,18 @@ module.exports = {
           name: 'u-wind',
           coverageid: 'U_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
           subsets: {
-            height: 10
+            height: 10,
+            long: [-180, 180],
+            lat: [-90, 90]
           }
         },
         {
           name: 'v-wind',
           coverageid: 'V_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
           subsets: {
-            height: 10
+            height: 10,
+            long: [-180, 180],
+            lat: [-90, 90]
           }
         }
       ]
