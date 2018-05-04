@@ -6,6 +6,7 @@
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-gtiff2json.svg?style=flat-square)](https://david-dm.org/weacast/weacast-gtiff2json)
 [![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-gtiff2json/badge.svg)](https://snyk.io/test/github/weacast/weacast-gtiff2json)
 [![Download Status](https://img.shields.io/npm/dm/gtiff2json.svg?style=flat-square)](https://www.npmjs.com/package/weacast-gtiff2json)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-gtiff2json.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-gtiff2json?ref=badge_shield)
 
 A command line utility that decodes [GeoTIFF](https://en.wikipedia.org/wiki/GeoTIFF) files as JSON.
 
@@ -82,3 +83,6 @@ Copyright (c) 2017
 
 Licensed under the [MIT license](LICENSE).
 
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-gtiff2json.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-gtiff2json?ref=badge_large)
