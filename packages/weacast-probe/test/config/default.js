@@ -52,7 +52,7 @@ module.exports = {
       interval: 3 * 3600,             // Steps of 3h
       lowerLimit: 0,                  // From T0
       upperLimit: 3 * 3600,           // Up to T0+3
-      updateInterval: 0,              // We will check for update manually for testing
+      updateInterval: -1,             // We will check for update manually for testing
       keepPastForecasts: true,        // We will keep past forecast times so that the number of forecasts is predictable for tests
       elements: [
         {
