@@ -58,8 +58,8 @@ describe('weacast-probe', () => {
     fs.emptyDirSync(app.get('forecastPath'))
     // download both elements in parallel
     return Promise.all([
-      uService.updateForecastData('once'),
-      vService.updateForecastData('once')
+      uService.updateForecastData(),
+      vService.updateForecastData()
     ])
   })
   // Let enough time to download a couple of data
@@ -186,7 +186,7 @@ describe('weacast-probe', () => {
   it('performs probing element on forecast update', (done) => {
     uService.Model.drop()
     .then(_ => {
-      uService.updateForecastData('once')
+      uService.updateForecastData()
     })
     // We need to register to results update event to know when to proceed
     let updateCount = 0
