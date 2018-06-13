@@ -41,4 +41,6 @@ describe('weacast-core', () => {
       })
     }, 2500)
   })
+  // Let enough time to process
+  .timeout(5000)
 })
