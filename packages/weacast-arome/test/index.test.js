@@ -32,7 +32,7 @@ describe('weacast-arome', () => {
     service.Model.remove()
     fs.emptyDirSync(app.get('forecastPath'))
 
-    return service.updateForecastData('once')
+    return service.updateForecastData()
     .then(_ => {
       let files = fs.readdirSync(service.getDataDirectory())
       expect(files.length).to.equal(8)
