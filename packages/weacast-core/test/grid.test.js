@@ -2,7 +2,7 @@ import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
 import { Grid } from '../src'
 
-describe('weacast-grid', () => {
+describe('weacast-core:grid', () => {
   let grid
 
   before(() => {

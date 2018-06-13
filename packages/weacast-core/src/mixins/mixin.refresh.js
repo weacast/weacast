@@ -51,7 +51,7 @@ export default {
         } else {
           let file = fs.createWriteStream(filePath)
           response.pipe(file)
-          file.on('finish', _ => {
+          .on('finish', _ => {
             file.close()
             logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
             resolve(filePath)
@@ -100,7 +100,7 @@ export default {
     }
   },
 
-  updateForecastTimeInDatabase (data, previousData) {
+  async updateForecastTimeInDatabase (data, previousData) {
     // Test if we have to patch existing data or create new one
     if (previousData) {
       // The simplest and most efficient way is to update existing forecast
@@ -108,102 +108,79 @@ export default {
       // Just before inserting it in the DB (_id is reported to be null by the adapter)
       // this.update(previousData._id, data)
       // For now we use a remove/create workaround
-      return this.remove(previousData._id)
-      .then(_ => {
-        // Remove persistent file associated with data
-        if (this.element.dataStore === 'fs') {
-          fs.remove(previousData.convertedFilePath)
-        } else if (this.element.dataStore === 'gridfs') {
-          this.removeFromGridFS(previousData.convertedFilePath)
-        }
-        return this.create(data)
-      })
-    } else {
-      return this.create(data)
+      await this.remove(previousData._id)
+      // Remove persistent file associated with data
+      if (this.element.dataStore === 'fs') {
+        fs.remove(previousData.convertedFilePath)
+      } else if (this.element.dataStore === 'gridfs') {
+        this.removeFromGridFS(previousData.convertedFilePath)
+      }
     }
+
+    return await this.create(data)
   },
 
-  refreshForecastTime (datetime, runTime, forecastTime) {
-    let promise = new Promise((resolve, reject) => {
-      // Retrieve last available forecast if any
-      this.find({
-        query: {
-          $select: ['_id', 'runTime', 'forecastTime'], // We only need object ID
-          forecastTime: forecastTime
-        }
-      })
-      .then(result => {
-        let previousData = (result.data.length > 0 ? result.data[0] : null)
-        // Check if we are already up-to-date
-        if (previousData && runTime.isSameOrBefore(previousData.runTime)) {
-          logger.verbose('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')
-          resolve(previousData)
-          return
-        }
-        // Otherwise download and process data
-        this.processForecastTime(runTime, forecastTime)
-        .then(data => {
-          this.updateForecastTimeInDatabase(data, previousData)
-          .then(data => {
-            logger.verbose((previousData ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-            // Remove temporary file associated with data except when using fs data store
-            // FIXME: trying to remove temporary files as soon as possible raises "EBUSY: resource busy or locked" because there is probably some async operation still running
-              // For now we remove temporary files as a whole by removing the data dir on each update process of the element
-            /*
-            if (this.element.dataStore !== 'fs') {
-              const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
-              const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
-              if (fs.existsSync(filePath)) fs.remove(filePath)
-              if (fs.existsSync(convertedFilePath)) fs.remove(convertedFilePath)
-            }
-            */
-            resolve(data)
-          })
-          .catch(error => {
-            reject(error)
-          })
-        })
-        .catch(error => {
-          reject(error)
-        })
-      })
+  async refreshForecastTime (datetime, runTime, forecastTime) {
+    // Retrieve last available forecast if any
+    let result = await this.find({
+      query: {
+        $select: ['_id', 'runTime', 'forecastTime'], // We only need object ID
+        forecastTime: forecastTime
+      }
     })
-
-    return promise
+    
+    let previousData = (result.data.length > 0 ? result.data[0] : null)
+    // Check if we are already up-to-date
+    if (previousData && runTime.isSameOrBefore(previousData.runTime)) {
+      logger.verbose('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')
+      return previousData
+    }
+    // Otherwise download and process data
+    let data = await this.processForecastTime(runTime, forecastTime)
+    data = await this.updateForecastTimeInDatabase(data, previousData)
+    logger.verbose((previousData ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+    // Remove temporary file associated with data except when using fs data store
+    // FIXME: trying to remove temporary files as soon as possible raises "EBUSY: resource busy or locked" because there is probably some async operation still running
+      // For now we remove temporary files as a whole by removing the data dir on each update process of the element
+    /*
+    if (this.element.dataStore !== 'fs') {
+      const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
+      const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
+      if (fs.existsSync(filePath)) fs.remove(filePath)
+      if (fs.existsSync(convertedFilePath)) fs.remove(convertedFilePath)
+    }
+    */
+    return data
   },
 
-  harvestForecastTime (datetime, runTime, forecastTime) {
-    let promise = new Promise((resolve, reject) => {
-      this.refreshForecastTime(datetime, runTime, forecastTime)
-      .then(data => {
-        resolve(data)
-      })
-      .catch(error => {
-        // 404 might be 'normal' errors because some data are not available at the planned run time from meteo providers
-        // or some might vary the time steps available in the forecast depending on the run
-        if (!error || !error.code || error.code !== 404) {
-          logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          logger.error(error.message)
-        } else {
-          logger.verbose('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          logger.verbose(error.message)
-        }
-        let previousRunTime = runTime.clone().subtract({ seconds: this.forecast.runInterval })
-        // When data for current time is not available we might try previous data
-        // check here that we go back until the configured limit
-        // because otherwise this means there is a real problem with the provider and/or we will have outdated data
-        if (datetime.diff(previousRunTime, 'seconds') > this.forecast.oldestRunInterval) {
-          logger.verbose('Hit oldest run time limit ' + runTime.format() + ' on ' + this.forecast.name + '/' + this.element.name + ', there is a too much big gap in data from the provider')
-          reject(error)
-          return
-        }
-
+  async harvestForecastTime (datetime, runTime, forecastTime) {
+    try {
+      let result = await this.refreshForecastTime(datetime, runTime, forecastTime)
+      // Do not keep track of all in-memory data
+      delete result.data
+      return result
+    } catch(error) {
+      // 404 might be 'normal' errors because some data are not available at the planned run time from meteo providers
+      // or some might vary the time steps available in the forecast depending on the run
+      if (!error || !error.code || error.code !== 404) {
+        logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        logger.error(error.message)
+      } else {
+        logger.verbose('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        logger.verbose(error.message)
+      }
+      let previousRunTime = runTime.clone().subtract({ seconds: this.forecast.runInterval })
+      // When data for current time is not available we might try previous data
+      // check here that we go back until the configured limit
+      // because otherwise this means there is a real problem with the provider and/or we will have outdated data
+      if (datetime.diff(previousRunTime, 'seconds') > this.forecast.oldestRunInterval) {
+        logger.verbose('Hit oldest run time limit ' + runTime.format() + ' on ' + this.forecast.name + '/' + this.element.name + ', there is a too much big gap in data from the provider')
+        throw error
+      } else {
         logger.verbose('Harvesting further run time ' + previousRunTime.format() + ' on ' + this.forecast.name + '/' + this.element.name)
-        resolve(this.harvestForecastTime(datetime, previousRunTime, forecastTime))
-      })
-    })
-
-    return promise
+        await this.harvestForecastTime(datetime, previousRunTime, forecastTime)
+      }
+    }
   },
 
   async refreshForecastData (datetime) {
@@ -211,6 +188,7 @@ export default {
     let runTime = this.getNearestRunTime(datetime)
     // We don't care about the past, however a forecast is still potentially valid at least until we reach the next one
     let lowerTime = datetime.clone().subtract({ seconds: this.forecast.interval })
+    let times = []
     // Check for each forecast step if update is required
     for (let timeOffset = this.forecast.lowerLimit; timeOffset <= this.forecast.upperLimit; timeOffset += this.forecast.interval) {
       let forecastTime = runTime.clone().add({ seconds: timeOffset })
@@ -220,15 +198,22 @@ export default {
       }
       if (!discard) {
         try {
-          await this.harvestForecastTime(datetime, runTime, forecastTime)
+          times.push(await this.harvestForecastTime(datetime, runTime, forecastTime))
         } catch (error) {
-          // This catch does not rethrow the error so that the update process will not stop and tray again at next refresh
+          // This catch does not rethrow the error so that the update process will not stop and we try the next time
         }
       }
     }
+    return times
   },
 
-  async updateForecastData (mode = 'interval') {
+  async updateForecastData () {
+    // Avoid stacking updates
+    if (this.updateRunning) {
+      logger.info('Skipping forecast data update on ' + this.forecast.name + '/' + this.element.name + ' as previous one is not yet finished')
+      return
+    }
+    this.updateRunning = true
     logger.info('Checking for up-to-date forecast data on ' + this.forecast.name + '/' + this.element.name)
     // Make sure we've got somewhere to put data and clean it up if we only use file as a temporary data store
     let dataDir = this.getDataDirectory()
@@ -238,15 +223,10 @@ export default {
       fs.emptyDirSync(dataDir)
     }
     const now = moment.utc()
-    try {
-      // Try data refresh for current time
-      await this.refreshForecastData(now)
-      logger.info('Completed forecast data update on ' + this.forecast.name + '/' + this.element.name)
-      // Then plan next update according to provided update interval if required
-      if (mode === 'interval') {
-        await setTimeout(_ => this.updateForecastData('interval'), 1000 * this.forecast.updateInterval)
-      }
-    } catch (error) {
-    }
+    // Try data refresh for current time
+    let times = await this.refreshForecastData(now)
+    logger.info('Completed forecast data update on ' + this.forecast.name + '/' + this.element.name)
+    this.updateRunning = false
+    return times
   }
 }
