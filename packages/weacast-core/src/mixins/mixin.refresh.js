@@ -117,7 +117,8 @@ export default {
       }
     }
 
-    return await this.create(data)
+    let result = await this.create(data)
+    return result
   },
 
   async refreshForecastTime (datetime, runTime, forecastTime) {
