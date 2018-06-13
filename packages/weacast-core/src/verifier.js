@@ -7,22 +7,28 @@ const debug = makeDebug('feathers-authentication-oauth2:verify')
 class OAuth2Verifier extends Verifier {
   constructor (app, options = {}) {
     options.emailField = options.emailField || 'email'
-    options.emailFieldInProfile = options.emailFieldInProfile || 'emails[0].value'
+    options.emailFieldInProfile = options.emailFieldInProfile || ['email', 'emails[0].value']
+    // Unify this property as array, indeed the email might be at different places depending on the provider
+    if (!Array.isArray(options.emailFieldInProfile)) {
+      options.emailFieldInProfile = [options.emailFieldInProfile]
+    }
     super(app, options)
   }
 
-  _updateEntity (entity, data) {
-    const options = this.options
-    const name = options.name
-    const id = entity[this.service.id]
-    debug(`Patching ${options.entity}: ${id}`)
-
-    const newData = {
-      [options.idField]: data.profile.id,
-      [name]: data
+  _createEntity (data) {
+    if (!data.profile.id) {
+      data.profile.id = data.profile.sub
+      delete data.profile.sub
     }
+    return super._createEntity(data)
+  }
 
-    return this.service.patch(id, newData)
+  _updateEntity (entity, data) {
+    if (!data.profile.id) {
+      data.profile.id = data.profile.sub
+      delete data.profile.sub
+    }
+    return super._updateEntity(entity, data)
   }
 
   verify (req, accessToken, refreshToken, profile, done) {
@@ -30,11 +36,13 @@ class OAuth2Verifier extends Verifier {
     const options = this.options
     const query = {
       $or: [
-        { [options.idField]: profile.id },
-        { [options.emailField]: _.get(profile, options.emailFieldInProfile) }
+        { [options.idField]: profile.id || profile.sub }
       ],
       $limit: 1
     }
+    options.emailFieldInProfile.forEach(emailFieldInProfile => {
+      query.$or.push({ [options.emailField]: _.get(profile, emailFieldInProfile) })
+    })
     const data = { profile, accessToken, refreshToken }
     let existing
 

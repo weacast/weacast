@@ -20,6 +20,7 @@ import oauth2 from 'feathers-authentication-oauth2'
 import GithubStrategy from 'passport-github'
 import GoogleStrategy from 'passport-google-oauth20'
 import OpenIDStrategy from 'passport-openidconnect'
+import CognitoStrategy from 'passport-oauth2-cognito'
 import OAuth2Verifier from './verifier'
 import mongo from 'mongodb'
 import { Database } from './db'
@@ -62,6 +63,13 @@ function auth () {
           return cb(null, true, sessionInfos)
         }
       }
+    }))
+  }
+  if (config.cognito) {
+    app.configure(oauth2({
+      name: 'cognito',
+      Strategy: CognitoStrategy,
+      Verifier: OAuth2Verifier
     }))
   }
   // The `authentication` service is used to create a JWT.
