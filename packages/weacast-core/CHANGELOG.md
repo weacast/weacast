@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.7.0](https://github.com/weacast/weacast-core/tree/v0.7.0) (2018-06-14)
+
+[Full Changelog](https://github.com/weacast/weacast-core/compare/v0.6.0...v0.7.0)
+
+**Implemented enhancements:**
+
+- Update process should be more reliable in case of unhandled exceptions [\#2](https://github.com/weacast/weacast-core/issues/2)
+
 ## [v0.6.0](https://github.com/weacast/weacast-core/tree/v0.6.0) (2018-03-09)
 
 [Full Changelog](https://github.com/weacast/weacast-core/compare/v0.5.1...v0.6.0)
