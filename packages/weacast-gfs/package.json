@@ -37,7 +37,9 @@
     "mocha": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --opts mocha.opts",
     "coverage": "cross-env NODE_CONFIG_DIR=./test/config/ node --harmony_async_await node_modules/istanbul/lib/cli cover node_modules/mocha/bin/_mocha -- --opts mocha.opts",
     "test": "npm run compile && npm run lint && npm run coverage",
-    "start": "npm run compile && node --harmony_async_await lib"
+    "start": "npm run compile && node --harmony_async_await lib",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "standard": {
     "sourceType": "module",
@@ -64,7 +66,8 @@
     "uberproto": "^1.2.0",
     "weacast-core": "^0.6.0",
     "weacast-grib2json": "^0.2.2",
-    "winston": "^2.3.1"
+    "winston": "^2.3.1",
+    "snyk": "^1.83.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
@@ -84,5 +87,6 @@
     "mocha": "^3.2.0",
     "shx": "^0.2.2",
     "standard": "^10.0.2"
-  }
+  },
+  "snyk": true
 }
