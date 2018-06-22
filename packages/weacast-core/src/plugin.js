@@ -12,11 +12,11 @@ export default function initializePlugin (app, name, servicesPath) {
     return
   }
 
-  debug('Initializing weacast-' + name + ' plugin')
+  logger.info('Initializing weacast-' + name + ' plugin')
   const forecastsService = app.getService('forecasts')
   // Iterate over configured forecast models
   for (let forecast of forecasts) {
-    debug('Initializing ' + forecast.name + ' forecast')
+    logger.info('Initializing ' + forecast.name + ' forecast')
     // Register the forecast model if not already done
     forecastsService.find({
       query: {
@@ -37,10 +37,19 @@ export default function initializePlugin (app, name, servicesPath) {
       let service = app.createElementService(forecast, element, servicesPath, element.serviceOptions)
       if (forecast.updateInterval >= 0) {
         // Trigger the initial harvesting, i.e. try data refresh for current time
-        service.updateForecastData().catch(error => logger.error(error.message))
+        service.updateForecastData().catch(error => {
+          logger.error(error.message)
+          service.updateRunning = false
+        })
         // Then plan next updates according to provided update interval if required
         if (forecast.updateInterval > 0) {
-          setInterval(_ => service.updateForecastData().catch(error => logger.error(error.message)), 1000 * forecast.updateInterval)
+          logger.info('Installing forecast update on ' + service.forecast.name + '/' + service.element.name + ' with interval ' + forecast.updateInterval)
+          setInterval(_ => {
+            service.updateForecastData().catch(error => {
+              logger.error(error.message)
+              service.updateRunning = false
+            })
+          }), 1000 * forecast.updateInterval)
         }
       }
     }

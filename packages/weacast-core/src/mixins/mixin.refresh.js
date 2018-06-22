@@ -225,9 +225,15 @@ export default {
     }
     const now = moment.utc()
     // Try data refresh for current time
-    let times = await this.refreshForecastData(now)
-    logger.info('Completed forecast data update on ' + this.forecast.name + '/' + this.element.name)
-    this.updateRunning = false
-    return times
+    try {
+      let times = await this.refreshForecastData(now)
+      logger.info('Completed forecast data update on ' + this.forecast.name + '/' + this.element.name)
+      this.updateRunning = false
+      return times
+    } catch (error) {
+      logger.error('Forecast data update on ' + this.forecast.name + '/' + this.element.name + ' failed')
+      this.updateRunning = false
+      throw error
+    }
   }
 }
