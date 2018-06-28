@@ -49,7 +49,7 @@ export default function initializePlugin (app, name, servicesPath) {
               logger.error(error.message)
               service.updateRunning = false
             })
-          }), 1000 * forecast.updateInterval)
+          }, 1000 * forecast.updateInterval)
         }
       }
     }
