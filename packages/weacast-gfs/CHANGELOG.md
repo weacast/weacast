@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.5.0](https://github.com/weacast/weacast-gfs/tree/v0.5.0) (2018-06-28)
+
+[Full Changelog](https://github.com/weacast/weacast-gfs/compare/v0.4.0...v0.5.0)
+
 ## [v0.4.0](https://github.com/weacast/weacast-gfs/tree/v0.4.0) (2018-03-09)
 
 [Full Changelog](https://github.com/weacast/weacast-gfs/compare/v0.3.1...v0.4.0)
