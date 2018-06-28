@@ -129,7 +129,7 @@ export default {
         forecastTime: forecastTime
       }
     })
-    
+
     let previousData = (result.data.length > 0 ? result.data[0] : null)
     // Check if we are already up-to-date
     if (previousData && runTime.isSameOrBefore(previousData.runTime)) {
@@ -160,7 +160,7 @@ export default {
       // Do not keep track of all in-memory data
       delete result.data
       return result
-    } catch(error) {
+    } catch (error) {
       // 404 might be 'normal' errors because some data are not available at the planned run time from meteo providers
       // or some might vary the time steps available in the forecast depending on the run
       if (!error || !error.code || error.code !== 404) {

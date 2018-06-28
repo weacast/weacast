@@ -1,11 +1,7 @@
 import logger from 'winston'
-import makeDebug from 'debug'
-import errors from 'feathers-errors'
 
 // Create all element services
 export default function initializePlugin (app, name, servicesPath) {
-  const debug = makeDebug('weacast:weacast-' + name)
-
   const forecasts = app.get('forecasts') ? app.get('forecasts').filter(forecast => forecast.model === name) : []
   if (!forecasts.length) {
     logger.warn('Cannot find valid ' + name + ' plugin configuration in application')
