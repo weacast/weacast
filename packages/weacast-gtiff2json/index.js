@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const ps = require('geo-pixel-stream')
 const fs = require('fs')
 const program = require('commander')
