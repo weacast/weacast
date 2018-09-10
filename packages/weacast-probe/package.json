@@ -35,9 +35,9 @@
     "watch": "npm run compile && babel --watch -d lib/ src/",
     "lint": "standard src/**/*.js test/**/*.js --fix",
     "mocha": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --opts mocha.opts",
-    "coverage": "cross-env NODE_CONFIG_DIR=./test/config/ node --harmony_async_await node_modules/istanbul/lib/cli cover node_modules/mocha/bin/_mocha -- --opts mocha.opts",
+    "coverage": "cross-env NODE_CONFIG_DIR=./test/config/ node node_modules/istanbul/lib/cli cover node_modules/mocha/bin/_mocha -- --opts mocha.opts",
     "test": "npm run compile && npm run lint && npm run coverage",
-    "start": "npm run compile && node --harmony_async_await lib"
+    "start": "npm run compile && node lib"
   },
   "standard": {
     "sourceType": "module",
@@ -73,8 +73,7 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.0.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-es2017-node7": "^0.5.2",
+    "babel-preset-env": "^1.7.0",
     "chai": "^3.5.0",
     "chai-lint": "^0.1.1",
     "containerized": "^1.0.2",
