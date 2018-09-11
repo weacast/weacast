@@ -1,19 +1,25 @@
 language: node_js
 node_js:
-  - '7'
+- '7'
+- '8'
 services:
-  - mongodb
+- mongodb
 addons:
   apt:
     packages:
-      - oracle-java8-set-default
+    - oracle-java8-set-default
   code_climate:
-    repo_token: 'e112f5c3b1faeea91159d0f4176745addb2ceb254eb69d5ba4a53c2f06e19b25'
+    repo_token: e112f5c3b1faeea91159d0f4176745addb2ceb254eb69d5ba4a53c2f06e19b25
 notifications:
   email: false
+  slack:
+    rooms:
+      secure: VIPWxtOvyoyeAmykNgYBWMupqUgm+h8zFpDSfNNm8HakWLNT4FKyT/KieR6QbLUNdyViIGybZtyjxFdb3LpxsJ5WhmvX7QmWbd7WZhw6VaJ34jHJTM66Agyl1BdipwxH54KW36JdMAYPrzyPsOEGwKGNXrkiotuKGjWi6PrpyS4yoipI2BVlwUAObsZEPpke4Ir+PZqjSEYtQprPjdOfkeNvp9S0csGrBnJcKvN0Js82lN3XR0zT4Kae5Bb9vu0K1R8kqCxyr8FYwjlJd5GYXWcUYMfm8Xo4QD6AU5jU+l/E/AZsrToECzirujU1c9arFOs1fymni7buHxjp2URzZBxJNk30Ttr8IR9Y4hvTRvz8mzdO+k0/s67Qs5JDDXhVa9YpGKrkNIklw1UOYOt0l2kd6F7XR4o5K+76vL2TlwRTe3jFU1/DjIFybomEtb6tqotWgYXPPXrLcY3hCWRux+2GaSyvZWSw6zJNPH4dEycSUHiiFttfoRFWmJA+5Be44UMoTzQXgtgfvJZyMTaqJ0EpHr1YtVsM6seM2PCTYigY1CsDbl4T0zKzfFFfCERDKV+GM+zsXPAKUiafUsXDZq51SbG5t3TZpa8xP7Zg3l8osKX0kiuPQuSPkphnPL64e84QG6k0rXno9p2qAaqYNKaTMwbtkWT9lnFJ4QjHqWQ=
+    on_success: always
+    on_failure: always
 before_script:
-  - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-  - $JAVA_HOME/bin/java -version
-  - npm install -g codeclimate-test-reporter
+- export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+- "$JAVA_HOME/bin/java -version"
+- npm install -g codeclimate-test-reporter
 after_script:
-  - codeclimate-test-reporter < coverage/lcov.info
+- codeclimate-test-reporter < coverage/lcov.info
