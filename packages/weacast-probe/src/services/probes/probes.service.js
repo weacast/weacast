@@ -1,6 +1,7 @@
 import logger from 'winston'
 import makeDebug from 'debug'
 import _ from 'lodash'
+import moment from 'moment'
 import errors from 'feathers-errors'
 import { Grid } from 'weacast-core'
 
@@ -158,6 +159,7 @@ export default {
     // Retrieve target elements
     let services = this.getElementServicesForProbe(probe)
     services.forEach(service => {
+      const app = service.app
       // Callback to be called (if not already registered)
       if (!service.hasOwnProperty(refreshCallbackName)) {
         debug('No existing refresh callback for probe ' + probe._id.toString() + ' on element ' + service.forecast.name + '/' + service.element.name + ', registering')
@@ -183,8 +185,19 @@ export default {
             logger.error(error.message)
           }
         }
-        // Register for forecast data update
+        // Register for forecast data updates
+        // When using internal event systems
         service.on('created', service[refreshCallbackName])
+        // Or external loaders if any
+        if (app.sync) {
+          app.sync.on(service.forecast.name + '-' + service.element.name, (forecast) => {
+            // Need to convert from string to in-memory date objects
+            forecast.runTime = moment.utc(forecast.runTime)
+            forecast.forecastTime = moment.utc(forecast.forecastTime)
+            // In this case we don't already have data in memory so it will be fetched
+            service[refreshCallbackName](forecast)
+          })
+        }
       }
     })
   },
