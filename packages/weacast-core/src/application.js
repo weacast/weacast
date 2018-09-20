@@ -96,11 +96,13 @@ function declareService (name, app, service) {
 }
 
 function configureService (name, service, servicesPath) {
-  const hooks = require(path.join(servicesPath, name, name + '.hooks'))
+  const hooksFile = path.join(servicesPath, name, name + '.hooks')
+  const hooks = require(hooksFile)
   service.hooks(hooks)
 
   if (service.filter) {
-    const filters = require(path.join(servicesPath, name, name + '.filters'))
+    const filtersFile = path.join(servicesPath, name, name + '.filters')
+    const filters = require(filtersFile)
     service.filter(filters)
   }
 
@@ -155,13 +157,20 @@ export function createElementService (forecast, element, app, servicesPath, opti
   // Get our initialized service so that we can register hooks and filters
   service = declareService(serviceName, app, service)
   // Register hooks and filters
-  service = configureService(forecast.model, service, servicesPath)
+  // If no service file path provided use default
+  if (servicesPath) {
+    service = configureService(forecast.model, service, servicesPath)
+  } else {
+    service = configureService('elements', service, path.join(__dirname, 'services'))
+  }
 
   // Apply all element mixins
   elementMixins.forEach(mixin => { service.mixin(mixin) })
-  // Apply specific model service mixin
-  const serviceMixin = require(path.join(servicesPath, forecast.model, forecast.model + '.service'))
-  proto.mixin(serviceMixin, service)
+  // Optionnally a specific service mixin can be provided, apply it
+  if (servicesPath) {
+    const serviceMixin = require(path.join(servicesPath, forecast.model, forecast.model + '.service'))
+    proto.mixin(serviceMixin, service)
+  }
   // Then configuration
   service.app = app
   service.name = serviceName

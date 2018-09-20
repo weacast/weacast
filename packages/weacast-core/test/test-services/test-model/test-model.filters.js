@@ -1,3 +1,3 @@
-module.exports = function (data, connection, hook) { // eslint-disable-line no-unused-vars
-  return data
-}
+import { elements } from '../../../src'
+
+export default elements.filters

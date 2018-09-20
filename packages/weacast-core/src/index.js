@@ -1,24 +1,18 @@
 import makeDebug from 'debug'
 import services from './services'
-// A shorter version of all of this should be the following
-/*
-export * as hooks from './hooks'
-export * from './service'
-export * from './db'
-export * from './plugin'
-*/
-// However for now we face a bug in babel so that transform-runtime with export * from 'x' generates import statements in transpiled code
-// Tracked here : https://github.com/babel/babel/issues/2877
-import { log, marshall, unmarshall, processForecastTime, marshallQuery, marshallSpatialQuery, marshallComparisonQuery, processData } from './hooks'
-import { elementMixin, refreshMixin } from './mixins'
+import initializeElements from './elements'
 import initializePlugin from './plugin'
 import weacast from './application'
-export let hooks = { log, marshall, unmarshall, processForecastTime, marshallQuery, marshallComparisonQuery, marshallSpatialQuery, processData }
+import filters from './services/elements/elements.filters'
+import hooks from './services/elements/elements.hooks'
+
+export let elements = { filters, hooks }
 export { weacast }
+export { initializeElements, initializePlugin }
 export { Database } from './db'
-export { Grid } from './grid'
-export { initializePlugin }
-export { elementMixin, refreshMixin }
+export * from './grid'
+export * as hooks from './hooks'
+export * from './mixins'
 
 const debug = makeDebug('weacast:weacast-core')
 

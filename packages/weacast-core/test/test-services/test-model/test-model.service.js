@@ -20,7 +20,7 @@ export default {
   },
 
   getForecastTimeRequest (runTime, forecastTime) {
-    // Just to test the download process use a web site that is almost never down
+    // Just to test the download process use a web site that will be mocked
     return {
       url: 'https://www.elements.com',
       timeout: 5000
