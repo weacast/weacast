@@ -1,3 +1,4 @@
-module.exports = function (data, connection, hook) { // eslint-disable-line no-unused-vars
-  return data
-}
+import { elements } from 'weacast-core'
+
+// Similar to core elements
+export default elements.filters
