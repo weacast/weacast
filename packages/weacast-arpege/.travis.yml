@@ -16,5 +16,7 @@ notifications:
     on_failure: always
 before_script:
 - npm install -g codeclimate-test-reporter
+- git clone https://github.com/weacast/weacast-core.git && cd weacast-core && yarn install && yarn
+  link && cd .. && yarn link weacast-core
 after_script:
 - codeclimate-test-reporter < coverage/lcov.info
