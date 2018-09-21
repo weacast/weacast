@@ -6,6 +6,24 @@ import errors from 'feathers-errors'
 import { Grid } from 'weacast-core'
 
 const debug = makeDebug('weacast:weacast-probe')
+const uComponentPrefix = 'u-'
+const vComponentPrefix = 'v-'
+
+function isDirectionElement(elementName) {
+  const isUComponentOfDirection = elementName.startsWith(uComponentPrefix) // e.g. 'u-wind'
+  const isVComponentOfDirection = elementName.startsWith(vComponentPrefix) // e.g. 'v-wind'
+  return (isUComponentOfDirection || isVComponentOfDirection)
+}
+
+function getElementPrefix(elementName) {
+  const isUComponentOfDirection = elementName.startsWith(uComponentPrefix) // e.g. 'u-wind'
+  const isVComponentOfDirection = elementName.startsWith(vComponentPrefix) // e.g. 'v-wind'
+  return isUComponentOfDirection ? uComponentPrefix : (isVComponentOfDirection ? vComponentPrefix : '') // e.g. 'u-' for u-wind'
+}
+
+function getDirectionElement(elementName) {
+  return elementName.replace(getElementPrefix(elementName), '') // e.g. will generate 'wind' for 'u-wind'/'v-wind'
+}
 
 export default {
 
@@ -14,13 +32,29 @@ export default {
     // Get the service to store results in
     let resultService = this.app.getService('probe-results')
     let probeUpdates = []
+    const elementName = elementService.element.name
+    const propertyName = 'properties.' + elementName
+    const isComponentOfDirection = isDirectionElement(elementName)
+    const directionElement = getDirectionElement(elementName) // e.g. will generate 'wind' for 'u-wind'/'v-wind'
+    const speedPropertyName = 'properties.' + directionElement + 'Speed'
+    const directionPropertyName = 'properties.' + directionElement + 'Direction'
+    const bearingPropertyName = 'properties.' + directionElement + 'BearingDirection'
     features.forEach(feature => {
       // Check if something to store for the element
-      if (feature.properties.hasOwnProperty(elementService.element.name)) {
+      if (_.has(feature, propertyName)) {
         // Already stored in DB ? If so update else create
         if (feature._id) {
           debug('Updating probe result for probe ' + feature.probeId + ' at ' + feature.forecastTime.format() + ' on run ' + feature.runTime.format())
-          probeUpdates.push(resultService.update(feature._id, feature))
+          // See https://github.com/weacast/weacast-probe/issues/2
+          //probeUpdates.push(resultService.update(feature._id, feature))
+          let data = { [propertyName]: _.get(feature, propertyName) }
+          // Update derived direction values as well in this case
+          if (isComponentOfDirection) {
+            if (_.has(feature, speedPropertyName)) data[speedPropertyName] = _.get(feature, speedPropertyName)
+            if (_.has(feature, directionPropertyName)) data[directionPropertyName] = _.get(feature, directionPropertyName)
+            if (_.has(feature, bearingPropertyName)) data[bearingPropertyName] = _.get(feature, bearingPropertyName)
+          }
+          probeUpdates.push(resultService.patch(feature._id, data))
         } else {
           debug('Creating probe result for probe ' + feature.probeId + ' at ' + feature.forecastTime.format() + ' on run ' + feature.runTime.format())
           probeUpdates.push(resultService.create(feature))
@@ -48,13 +82,9 @@ export default {
     })
 
     // Check if we have to manage a direction composed from two axis components
-    const uComponentPrefix = 'u-'
-    const vComponentPrefix = 'v-'
     const elementName = elementService.element.name
-    const isUComponentOfDirection = elementName.startsWith(uComponentPrefix) // e.g. 'u-wind'
-    const isVComponentOfDirection = elementName.startsWith(vComponentPrefix) // e.g. 'v-wind'
-    const elementPrefix = isUComponentOfDirection ? uComponentPrefix : (isVComponentOfDirection ? vComponentPrefix : '') // e.g. 'u-' for u-wind'
-    const directionElement = elementName.replace(elementPrefix, '') // e.g. will generate 'wind' for 'u-wind'/'v-wind'
+    const isComponentOfDirection = isDirectionElement(elementName)
+    const directionElement = getDirectionElement(elementName) // e.g. will generate 'wind' for 'u-wind'/'v-wind'
     // Check if a bearing property is given to compute direction relatively to
     const bearingProperty = directionElement + 'BearingProperty'
     const bearingPropertyName = probe.hasOwnProperty(bearingProperty) ? probe[bearingProperty] : undefined
@@ -71,7 +101,7 @@ export default {
         // Store interpolated element value
         feature.properties[elementName] = value
         // Update derived direction values as well in this case
-        if (isUComponentOfDirection || isVComponentOfDirection) {
+        if (isComponentOfDirection) {
           const u = feature.properties[uComponentPrefix + directionElement]
           const v = feature.properties[vComponentPrefix + directionElement]
           // Only possible if both elements are already computed
@@ -160,12 +190,15 @@ export default {
     let services = this.getElementServicesForProbe(probe)
     services.forEach(service => {
       const app = service.app
+      const forecastName = service.forecast.name
+      const elementName = service.element.name
       // Callback to be called (if not already registered)
       if (!service.hasOwnProperty(refreshCallbackName)) {
-        debug('No existing refresh callback for probe ' + probe._id.toString() + ' on element ' + service.forecast.name + '/' + service.element.name + ', registering')
-        service[refreshCallbackName] = async forecast => {
+        debug('No existing refresh callback for probe ' + probe._id.toString() + ' on element ' + forecastName + '/' + elementName + ', registering')
+        // Internal callback
+        let refreshCallback = async forecast => {
           // Find probe results associated to this forecast data set
-          debug('Looking for existing results with probe ' + probe._id + ' for element ' + service.forecast.name + '/' + service.element.name +
+          debug('Looking for existing results with probe ' + probe._id + ' for element ' + forecastName + '/' + elementName +
                 ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
           try {
             let features = await this.getResultsForProbe(probe, forecast.forecastTime)
@@ -174,7 +207,7 @@ export default {
               let result = await this.get(probe._id, { query: { $select: ['forecast', 'elements', 'features'] } })
               features = result.features
             }
-            logger.verbose('Probing forecast data for element ' + service.forecast.name + '/' + service.element.name + ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
+            logger.verbose('Probing forecast data for element ' + forecastName + '/' + elementName + ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
             await this.probeForecastTime(features, probe, service, forecast.runTime, forecast.forecastTime, forecast.data)
             await this.updateFeaturesInDatabase(features, probe, service, forecast.runTime, forecast.forecastTime)
             // Send a message so that clients know there are new results, indeed for performance reasons standard events have been disabled on results
@@ -185,18 +218,43 @@ export default {
             logger.error(error.message)
           }
         }
-        // Register for forecast data updates
-        // When using internal event systems
+        // External callback
+        let syncRefreshCallback = async (forecast) => {
+          // Need to convert from string to in-memory date objects
+          forecast.runTime = moment.utc(forecast.runTime)
+          forecast.forecastTime = moment.utc(forecast.forecastTime)
+          // In this case we don't already have data in memory so it will be fetched
+          await service[refreshCallbackName](forecast)
+        }
+        
+        /* FIXME: see https://github.com/weacast/weacast-probe/issues/2
+        // Check if we have to manage a direction composed from two axis components
+        const isUComponentOfDirection = elementName.startsWith(uComponentPrefix) // e.g. 'u-wind'
+        const isVComponentOfDirection = elementName.startsWith(vComponentPrefix) // e.g. 'v-wind'
+        // Indeed in this case we must ensure probing is done in sequence
+        if (isUComponentOfDirection || isVComponentOfDirection) {
+          const dualElementName = isUComponentOfDirection ?
+            elementName.replace(uComponentPrefix, vComponentPrefix) : // e.g. will generate 'v-wind' for 'u-wind'
+            elementName.replace(vComponentPrefix, uComponentPrefix) // e.g. will generate 'u-wind' for 'v-wind'
+          // Check if other component callback has been registered
+          let dualService = services.find(service => service.element.name === dualElementName)
+          // If not yet register proceed with the callback as usual, we will update it with the dual component
+          if (dualService) {
+            debug('Updating refresh callbacks on direction element ' + forecastName + '/' + elementName)
+            // Unregister callback on first component as processign will be performed by second one
+            dualService.off('created', dualService[refreshCallbackName])
+            refreshCallback = async forecast => {
+              // TODO
+            }
+          }
+        }
+        */
+        // Register for forecast data updates when using internal event systems
+        service[refreshCallbackName] = refreshCallback
         service.on('created', service[refreshCallbackName])
         // Or external loaders if any
         if (app.sync) {
-          app.sync.on(service.forecast.name + '-' + service.element.name, (forecast) => {
-            // Need to convert from string to in-memory date objects
-            forecast.runTime = moment.utc(forecast.runTime)
-            forecast.forecastTime = moment.utc(forecast.forecastTime)
-            // In this case we don't already have data in memory so it will be fetched
-            service[refreshCallbackName](forecast)
-          })
+          app.sync.on(forecastName + '-' + elementName, syncRefreshCallback)
         }
       }
     })
