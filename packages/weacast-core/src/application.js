@@ -226,7 +226,7 @@ function setupLogger (logsConfig) {
     let options = logsConfig[logType]
     // Setup default log level if not defined
     if (!options.level) {
-      options.level = (process.env.ENV === 'development' ? 'debug' : 'info')
+      options.level = (process.env.NODE_ENV === 'development' ? 'debug' : 'info')
     }
     try {
       logger.add(logger.transports[logType], options)
