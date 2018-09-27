@@ -1,27 +1,29 @@
 import logger from 'winston'
 import makeDebug from 'debug'
 import _ from 'lodash'
+import dot from 'dot-object'
 import moment from 'moment'
 import errors from 'feathers-errors'
 import { Grid } from 'weacast-core'
 
-const debug = makeDebug('weacast:weacast-probe')
+const debug = makeDebug('weacast:weacast-probe:service')
+const debugResults = makeDebug('weacast:weacast-probe:results')
 const uComponentPrefix = 'u-'
 const vComponentPrefix = 'v-'
 
-function isDirectionElement(elementName) {
+function isDirectionElement (elementName) {
   const isUComponentOfDirection = elementName.startsWith(uComponentPrefix) // e.g. 'u-wind'
   const isVComponentOfDirection = elementName.startsWith(vComponentPrefix) // e.g. 'v-wind'
   return (isUComponentOfDirection || isVComponentOfDirection)
 }
 
-function getElementPrefix(elementName) {
+function getElementPrefix (elementName) {
   const isUComponentOfDirection = elementName.startsWith(uComponentPrefix) // e.g. 'u-wind'
   const isVComponentOfDirection = elementName.startsWith(vComponentPrefix) // e.g. 'v-wind'
   return isUComponentOfDirection ? uComponentPrefix : (isVComponentOfDirection ? vComponentPrefix : '') // e.g. 'u-' for u-wind'
 }
 
-function getDirectionElement(elementName) {
+function getDirectionElement (elementName) {
   return elementName.replace(getElementPrefix(elementName), '') // e.g. will generate 'wind' for 'u-wind'/'v-wind'
 }
 
@@ -31,7 +33,7 @@ export default {
   async updateFeaturesInDatabase (features, probe, elementService, runTime, forecastTime) {
     // Get the service to store results in
     let resultService = this.app.getService('probe-results')
-    let probeUpdates = []
+    let operations = []
     const elementName = elementService.element.name
     const propertyName = 'properties.' + elementName
     const isComponentOfDirection = isDirectionElement(elementName)
@@ -39,36 +41,75 @@ export default {
     const speedPropertyName = 'properties.' + directionElement + 'Speed'
     const directionPropertyName = 'properties.' + directionElement + 'Direction'
     const bearingPropertyName = 'properties.' + directionElement + 'BearingDirection'
+    // We don't use service level operations like update to avoid concurrency issues,
+    // eg see https://github.com/weacast/weacast-probe/issues/2.
+    // We also want good performances so we use a bulkWrite
     features.forEach(feature => {
       // Check if something to store for the element
       if (_.has(feature, propertyName)) {
-        // Already stored in DB ? If so update else create
-        if (feature._id) {
-          debug('Updating probe result for probe ' + feature.probeId + ' at ' + feature.forecastTime.format() + ' on run ' + feature.runTime.format())
-          // See https://github.com/weacast/weacast-probe/issues/2
-          //probeUpdates.push(resultService.update(feature._id, feature))
-          let data = { [propertyName]: _.get(feature, propertyName) }
-          // Update derived direction values as well in this case
-          if (isComponentOfDirection) {
-            if (_.has(feature, speedPropertyName)) data[speedPropertyName] = _.get(feature, speedPropertyName)
-            if (_.has(feature, directionPropertyName)) data[directionPropertyName] = _.get(feature, directionPropertyName)
-            if (_.has(feature, bearingPropertyName)) data[bearingPropertyName] = _.get(feature, bearingPropertyName)
-          }
-          probeUpdates.push(resultService.patch(feature._id, data))
-        } else {
-          debug('Creating probe result for probe ' + feature.probeId + ' at ' + feature.forecastTime.format() + ' on run ' + feature.runTime.format())
-          probeUpdates.push(resultService.create(feature))
+        let data = { [propertyName]: _.get(feature, propertyName) }
+        // Update derived direction values as well in this case
+        if (isComponentOfDirection) {
+          if (_.has(feature, speedPropertyName)) data[speedPropertyName] = _.get(feature, speedPropertyName)
+          if (_.has(feature, directionPropertyName)) data[directionPropertyName] = _.get(feature, directionPropertyName)
+          if (_.has(feature, bearingPropertyName)) data[bearingPropertyName] = _.get(feature, bearingPropertyName)
         }
-        debug(feature)
+
+        // Already stored in DB ?
+        if (feature._id) {
+          debugResults('Updating probe result for probe ' + feature.probeId + ' at ' + forecastTime.format() +
+                       ' on run ' + runTime.format(), feature)
+          // Create bulk operation for update
+          operations.push({
+            updateOne: {
+              filter: { _id: feature._id }, // In this case we query by ID for update
+              update: { $set: data } // and indicate we'd like to patch some fields
+            }
+          })
+        } else {
+          debugResults('Inserting probe result for probe ' + feature.probeId + ' at ' + forecastTime.format() +
+                       ' on run ' + runTime.format(), feature)
+          // The base feature to insert is the one without the computed elements
+          let baseFeature = _.omit(feature, Object.keys(data))
+          // Because we will not go through service hooks in this case we have to format dates to basic object types manually
+          Object.assign(baseFeature, {
+            runTime: new Date(runTime.format()),
+            forecastTime: new Date(forecastTime.format())
+          })
+          // MongoDB requires the dot notation here so we perform conversion
+          // Take care that ObjectIDs are not basic types so we remove it before
+          delete baseFeature.probeId
+          baseFeature = dot.dot(baseFeature)
+          // And add it back after conversion
+          baseFeature.probeId = probe._id
+          // Create bulk operation for insert or update
+          operations.push({
+            updateOne: {
+              filter: { runTime, forecastTime, probeId: probe._id }, // In this case we query by forecastTime/runTime/probeId
+              upsert: true, // and indicate we'd like to create it if it does not already exist
+              update: {
+                $set: data, // and indicate we'd like to patch some fields if the probe already exists
+                $setOnInsert: baseFeature // and indicate we will use the whole feature data on creation
+              }
+            }
+          })
+        }
       }
     })
     // Run DB updates
-    let results = await Promise.all(probeUpdates)
+    try {
+      let response = await resultService.Model.bulkWrite(operations)
 
-    logger.verbose('Produced ' + results.length + ' results for probe ' + probe._id + ' on element ' + elementService.forecast.name + '/' + elementService.element.name +
-                ' at ' + forecastTime.format() + ' for run ' + runTime.format())
+      logger.verbose(`Produced ' + ${response.upsertedCount + response.modifiedCount} results (${response.upsertedCount} creates - ${response.modifiedCount} updates
+                      for probe ${probe._id} on element ${elementService.forecast.name + '/' + elementService.element.name}
+                      at ${forecastTime.format()} for run ${runTime.format()}`)
 
-    return results
+      if (response.hasWriteErrors()) response.getWriteErrors().forEach(error => console.log(error))
+      return features
+    } catch (error) {
+      console.log(error)
+      return []
+    }
   },
 
   // Update the given features, for given probe, with interpolated values according to given forecast data, run/forecast time
@@ -226,7 +267,7 @@ export default {
           // In this case we don't already have data in memory so it will be fetched
           await service[refreshCallbackName](forecast)
         }
-        
+
         /* FIXME: see https://github.com/weacast/weacast-probe/issues/2
         // Check if we have to manage a direction composed from two axis components
         const isUComponentOfDirection = elementName.startsWith(uComponentPrefix) // e.g. 'u-wind'

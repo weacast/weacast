@@ -51,6 +51,7 @@
   "dependencies": {
     "chai-spies": "^0.7.1",
     "debug": "^3.1.0",
+    "dot-object": "^1.7.0",
     "feathers-authentication": "^1.2.2",
     "feathers-errors": "^2.6.3",
     "feathers-hooks": "^2.0.1",

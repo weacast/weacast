@@ -90,11 +90,8 @@ describe('weacast-probe', () => {
         expect(feature.properties['windSpeed']).toExist()
       })
     })
-    /* For debug purpose only
-    .then(data => {
-      fs.outputJsonSync(path.join(__dirname, 'data', 'runways-probe.geojson'), data.layer)
-    })
-    */
+    // For debug purpose only
+    // .then(data => fs.outputJsonSync(path.join(__dirname, 'data', 'runways-probe.geojson'), data.layer))
   })
   // Let enough time to download a couple of data
   .timeout(10000)
@@ -107,7 +104,7 @@ describe('weacast-probe', () => {
       expect(spyUpdate).to.have.been.called()
       spyProbe.reset()
       spyUpdate.reset()
-      return probeResultService.find({ paginate: false, query: { probeId: probeId } })
+      return probeResultService.find({ paginate: false, query: { probeId } })
     })
     .then(features => {
       // 3 features over 2 forecast times
@@ -194,7 +191,7 @@ describe('weacast-probe', () => {
       if (event.probe._id === probeId) updateCount++
       // 3 features over 2 forecast times
       if (updateCount === 2) {
-        probeResultService.find({ paginate: false, query: { probeId: probeId } })
+        probeResultService.find({ paginate: false, query: { probeId } })
         .then(features => {
           // Test we do not have generated new results
           expect(features.length).to.equal(6)
@@ -212,11 +209,7 @@ describe('weacast-probe', () => {
   it('performs probing results removal on probe removal', () => {
     return probeService.remove(probeId)
     .then(data => {
-      return probeResultService.find({
-        query: {
-          probeId: probeId
-        }
-      })
+      return probeResultService.find({ query: { probeId } })
     })
     .then(response => {
       // Nothing should remain
