@@ -28,6 +28,7 @@ import { Database } from './db'
 function auth () {
   const app = this
   const config = app.get('authentication')
+  if (!config) return
 
   // Set up authentication with the secret
   app.configure(authentication(config))

@@ -1,9 +1,8 @@
 import { disallow } from 'feathers-hooks-common'
-const { authenticate } = require('feathers-authentication').hooks
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
+    all: [],
     find: [],
     get: [],
     create: disallow('external'),
