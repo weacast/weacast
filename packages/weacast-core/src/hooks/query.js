@@ -54,6 +54,13 @@ export function marshallQuery (hook) {
       query.forecastTime = new Date(query.forecastTime)
     } else if (moment.isMoment(query.forecastTime)) {
       query.forecastTime = new Date(query.forecastTime.format())
+    } else if (typeof query.forecastTime === 'object') {
+      if ((typeof query.forecastTime.$gte === 'string') && (typeof query.forecastTime.$lte === 'string')) {
+        query.forecastTime = {
+          $gte: new Date(moment.utc(query.forecastTime.$gte).format()),
+          $lte: new Date(moment.utc(query.forecastTime.$lte).format())
+        }
+      }
     }
     // In this case take care that we always internally require the file path, it will be removed for the client by another hook
     if (!_.isNil(query.$select) && !_.isNil(service.element) && (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs')) {
@@ -134,6 +141,7 @@ export function marshallSpatialQuery (hook) {
 export function processForecastTime (hook) {
   let query = hook.params.query
   let service = hook.service
+
   if (query && !_.isNil(query.time)) {
     // Find nearest forecast time corresponding to request time
     let time = (typeof query.time === 'string' ? moment.utc(query.time) : query.time)
