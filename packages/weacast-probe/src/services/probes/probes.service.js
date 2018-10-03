@@ -126,13 +126,21 @@ export default {
     const elementName = elementService.element.name
     const isComponentOfDirection = isDirectionElement(elementName)
     const directionElement = getDirectionElement(elementName) // e.g. will generate 'wind' for 'u-wind'/'v-wind'
+    const speedProperty = directionElement + 'Speed'
+    const directionProperty = directionElement + 'Direction'
     // Check if a bearing property is given to compute direction relatively to
     const bearingProperty = directionElement + 'BearingProperty'
     const bearingPropertyName = probe.hasOwnProperty(bearingProperty) ? probe[bearingProperty] : undefined
-
+    const bearingDirectionProperty = directionElement + 'BearingDirection'
+    
     features.forEach(feature => {
       feature.runTime = runTime
-      feature.forecastTime = forecastTime
+      // Check if we process on-demand probing for a time range
+      if (Array.isArray(feature.forecastTime)) {
+        feature.forecastTime.push(forecastTime)
+      } else {
+        feature.forecastTime = forecastTime
+      }
       feature.probeId = probe._id
       let value = grid.interpolate(feature.geometry.coordinates[0], feature.geometry.coordinates[1])
       if (value) { // Prevent values outside grid bbox
@@ -140,19 +148,38 @@ export default {
           feature.properties = {}
         }
         // Store interpolated element value
-        feature.properties[elementName] = value
+        // Check if we process on-demand probing for a time range
+        if (Array.isArray(feature.forecastTime)) {
+          if (!_.has(feature, 'properties.' + elementName)) feature.properties[elementName] = [value]
+          else feature.properties[elementName].push(value)
+        } else {
+          feature.properties[elementName] = value
+        }
         // Update derived direction values as well in this case
         if (isComponentOfDirection) {
-          const u = feature.properties[uComponentPrefix + directionElement]
-          const v = feature.properties[vComponentPrefix + directionElement]
+          let u = feature.properties[uComponentPrefix + directionElement]
+          let v = feature.properties[vComponentPrefix + directionElement]
+          // Check if we process on-demand probing for a time range
+          if (Array.isArray(feature.forecastTime)) {
+            if (u && u.length) u = u[u.length - 1]
+            if (v && v.length) v = v[v.length - 1]
+          }
           // Only possible if both elements are already computed
           if (isFinite(u) && isFinite(v)) {
             // Compute direction expressed in meteorological convention, i.e. angle from which the flow comes
             let norm = Math.sqrt(u * u + v * v)
             let direction = 180.0 + Math.atan2(u, v) * 180.0 / Math.PI
             // Then store it
-            feature.properties[directionElement + 'Speed'] = norm
-            feature.properties[directionElement + 'Direction'] = direction
+            // Check if we process on-demand probing for a time range
+            if (Array.isArray(feature.forecastTime)) {
+              if (!_.has(feature, 'properties.' + speedProperty)) feature.properties[speedProperty] = [norm]
+              else feature.properties[speedProperty].push(norm)
+              if (!_.has(feature, 'properties.' + directionProperty)) feature.properties[directionProperty] = [direction]
+              else feature.properties[directionProperty].push(direction)
+            } else {
+              feature.properties[speedProperty] = norm
+              feature.properties[directionProperty] = direction
+            }
             // Compute bearing relatively to a bearing property if given
             if (bearingPropertyName) {
               let bearing = _.toNumber(feature.properties[bearingPropertyName])
@@ -163,7 +190,14 @@ export default {
                 if (direction >= 360) direction -= 360
                 direction -= bearing
                 if (direction < 0) direction += 360
-                feature.properties[directionElement + 'BearingDirection'] = direction
+                // Then store it
+                // Check if we process on-demand probing for a time range
+                if (Array.isArray(feature.forecastTime)) {
+                  if (!_.has(feature, 'properties.' + bearingDirectionProperty)) feature.properties[bearingDirectionProperty] = [direction]
+                  else feature.properties[bearingDirectionProperty].push(direction)
+                } else {
+                  feature.properties[bearingDirectionProperty] = direction
+                }
               }
             }
           }
@@ -337,7 +371,7 @@ export default {
         }
         if (forecastTime) {
           options.query = {
-            forecastTime: forecastTime
+            forecastTime
           }
         }
 
@@ -352,6 +386,12 @@ export default {
           // First probing for streaming or always on-demand
           if (features.length === 0) {
             features = probe.features
+          }
+          // If we have a time range for on-demand probing tag features using an array
+          if (typeof forecastTime === 'object') {
+            features.forEach(feature => {
+              if (!Array.isArray(feature.forecastTime)) feature.forecastTime = []
+            })
           }
           // Ask to retrieve forecast data and perform probing
           await this.probeForecastTime(features, probe, service, forecast.runTime, forecast.forecastTime)
