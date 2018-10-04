@@ -137,7 +137,7 @@ export default {
       feature.runTime = runTime
       // Check if we process on-demand probing for a time range
       if (Array.isArray(feature.forecastTime)) {
-        feature.forecastTime.push(forecastTime)
+        if (!feature.forecastTime.find(time => time.isSame(forecastTime))) feature.forecastTime.push(forecastTime)
       } else {
         feature.forecastTime = forecastTime
       }
@@ -272,6 +272,8 @@ export default {
         debug('No existing refresh callback for probe ' + probe._id.toString() + ' on element ' + forecastName + '/' + elementName + ', registering')
         // Internal callback
         let refreshCallback = async forecast => {
+          // Do not process tiles but only raw data
+          if (forecast.geometry) return
           // Find probe results associated to this forecast data set
           debug('Looking for existing results with probe ' + probe._id + ' for element ' + forecastName + '/' + elementName +
                 ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
