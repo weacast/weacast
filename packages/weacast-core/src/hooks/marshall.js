@@ -8,8 +8,8 @@ export function marshall (hook) {
   items = (isArray ? items : [items])
 
   items.forEach(item => {
-    if (item.runTime) item.runTime = new Date(item.runTime.format())
-    if (item.forecastTime) item.forecastTime = new Date(item.forecastTime.format())
+    if (item.runTime && moment.isMoment(item.runTime)) item.runTime = new Date(item.runTime.format())
+    if (item.forecastTime && moment.isMoment(item.forecastTime)) item.forecastTime = new Date(item.forecastTime.format())
   })
 
   replaceItems(hook, isArray ? items : items[0])
@@ -23,8 +23,8 @@ export function unmarshall (hook) {
 
   items.forEach(item => {
     // Take care to field selection that might remove some
-    if (item.runTime) item.runTime = moment.utc(item.runTime.toISOString())
-    if (item.forecastTime) item.forecastTime = moment.utc(item.forecastTime.toISOString())
+    if (item.runTime && !moment.isMoment(item.runTime)) item.runTime = moment.utc(item.runTime.toISOString())
+    if (item.forecastTime && !moment.isMoment(item.forecastTime)) item.forecastTime = moment.utc(item.forecastTime.toISOString())
   })
 
   replaceItems(hook, isArray ? items : items[0])

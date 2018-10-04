@@ -1,11 +1,23 @@
 import path from 'path'
 import fs from 'fs-extra'
+import _ from 'lodash'
 import moment from 'moment'
 import request from 'request'
 import errors from 'feathers-errors'
 import logger from 'winston'
 import makeDebug from 'debug'
+import { Grid } from '../grid'
 const debug = makeDebug('weacast:weacast-core')
+
+function getMinMax(grid) {
+  let minValue = (grid && grid.length > 0 ? grid[0] : Number.NEGATIVE_INFINITY)
+  let maxValue = (grid && grid.length > 0 ? grid[0] : Number.POSITIVE_INFINITY)
+  for (let i = 1; i < grid.length; i++) {
+    minValue = Math.min(minValue, grid[i])
+    maxValue = Math.max(maxValue, grid[i])
+  }
+  return { minValue, maxValue }
+}
 
 export default {
 
@@ -75,18 +87,10 @@ export default {
       await this.saveToGridFS(this.getForecastTimeConvertedFilePath(runTime, forecastTime))
     }
     // Compute min/max values
-    let min = (grid && grid.length > 0 ? grid[0] : Number.NEGATIVE_INFINITY)
-    let max = (grid && grid.length > 0 ? grid[0] : Number.POSITIVE_INFINITY)
-    for (let i = 1; i < this.forecast.size[0] * this.forecast.size[1]; i++) {
-      min = Math.min(min, grid[i])
-      max = Math.max(max, grid[i])
-    }
-    let forecast = {
+    let forecast = Object.assign({
       runTime: runTime,
-      forecastTime: forecastTime,
-      minValue: min,
-      maxValue: max
-    }
+      forecastTime: forecastTime
+    }, getMinMax(grid))
     // Depending if we keep file as data storage include a link to files or data directly in the object
     if (this.element.dataStore === 'fs' || this.element.dataStore === 'gridfs') {
       return Object.assign(forecast, {
@@ -101,15 +105,15 @@ export default {
   },
 
   async updateForecastTimeInDatabase (data, previousData) {
-    // Test if we have to patch existing data or create new one
+    // Test if we have to remove existing data first
     if (previousData) {
-      // The simplest and most efficient way is to update existing forecast
-      // However there is a bug in this case, it seems that the input data is mutated
-      // Just before inserting it in the DB (_id is reported to be null by the adapter)
-      // this.update(previousData._id, data)
-      // For now we use a remove/create workaround
-      await this.remove(previousData._id)
-      // Remove persistent file associated with data
+      await this.remove(null, {
+        query: {
+          forecastTime: data.forecastTime,
+          geometry: { $exists: false } // Raw data doesn't have a geometry
+        }
+      })
+      // Remove persistent file associated with data if any
       if (this.element.dataStore === 'fs') {
         fs.remove(previousData.convertedFilePath)
       } else if (this.element.dataStore === 'gridfs') {
@@ -118,6 +122,35 @@ export default {
     }
 
     let result = await this.create(data)
+    // Save tiles if tiling is enabled
+    if (this.forecast.tileResolution) {
+      let grid = new Grid({
+        bounds: this.forecast.bounds,
+        origin: this.forecast.origin,
+        size: this.forecast.size,
+        resolution: this.forecast.resolution,
+        data: data.data
+      })
+      let tiles = grid.tileset(this.forecast.tileResolution)
+      tiles = tiles.map(tile =>
+        Object.assign(Grid.toGeometry(tile.bounds),
+                      getMinMax(tile.data),
+                      _.pick(data, ['runTime', 'forecastTime']),
+                      _.pick(tile, ['data']))
+      )
+      // Test if we have to remove existing data first
+      if (previousData) {
+        await this.remove(null, {
+          query: {
+            forecastTime: data.forecastTime,
+            geometry: { $exists: true } // Only tiles have a geometry
+          }
+        })
+      }
+      await this.create(tiles)
+      // Do not keep track of all in-memory data
+      tiles.forEach(tile => delete tile.data)
+    }
     return result
   },
 
@@ -126,11 +159,12 @@ export default {
     let result = await this.find({
       query: {
         $select: ['_id', 'runTime', 'forecastTime'], // We only need object ID
-        forecastTime: forecastTime
-      }
+        forecastTime
+      },
+      paginate: false
     })
 
-    let previousData = (result.data.length > 0 ? result.data[0] : null)
+    let previousData = (result.length > 0 ? result[0] : null)
     // Check if we are already up-to-date
     if (previousData && runTime.isSameOrBefore(previousData.runTime)) {
       logger.verbose('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')

@@ -1,11 +1,11 @@
 import { disallow } from 'feathers-hooks-common'
-import hooks from '../../hooks'
+import * as hooks from '../../hooks'
 
 // Marshall/Unmarshall should be always first so that we have a consistent data format in other hooks
 export default {
   before: {
     all: [ hooks.marshallQuery ],
-    find: [ hooks.marshallSpatialQuery, hooks.processForecastTime ],
+    find: [ hooks.marshallSpatialQuery, hooks.marshallTileQuery, hooks.processForecastTime ],
     get: [],
     create: [ disallow('external'), hooks.marshall ],
     update: [ disallow('external'), hooks.marshall ],

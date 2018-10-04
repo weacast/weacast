@@ -96,6 +96,13 @@ function marshallGeometryQuery (query) {
   }
 }
 
+export function marshallTileQuery (hook) {
+  let query = hook.params.query || {}
+  if (!query.geometry) {
+    query.geometry = { $exists: false }
+  }
+}
+
 export function marshallSpatialQuery (hook) {
   let query = hook.params.query
   if (query) {
