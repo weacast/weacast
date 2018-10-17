@@ -4,6 +4,7 @@ import logger from 'winston'
 import _ from 'lodash'
 import makeDebug from 'debug'
 import { getItems, replaceItems, discard } from 'feathers-hooks-common'
+import { marshallTime, unmarshallTime } from './marshall'
 import { Grid } from '../grid'
 
 const debug = makeDebug('weacast:weacast-core')
@@ -45,23 +46,16 @@ export function marshallQuery (hook) {
   let service = hook.service
   if (query) {
     // Need to convert from client/server side types : string or moment dates
-    if (typeof query.runTime === 'string') {
-      query.runTime = new Date(query.runTime)
-    } else if (moment.isMoment(query.runTime)) {
-      query.runTime = new Date(query.runTime.format())
+    marshallTime(query, 'runTime')
+    if (query.forecastTime && (query.forecastTime.$lt || query.forecastTime.$lte || query.forecastTime.$gt || query.forecastTime.$gte)) {
+      marshallTime(query.forecastTime, '$lt')
+      marshallTime(query.forecastTime, '$lte')
+      marshallTime(query.forecastTime, '$gt')
+      marshallTime(query.forecastTime, '$gte')
+    } else {
+      marshallTime(query, 'forecastTime')
     }
-    if (typeof query.forecastTime === 'string') {
-      query.forecastTime = new Date(query.forecastTime)
-    } else if (moment.isMoment(query.forecastTime)) {
-      query.forecastTime = new Date(query.forecastTime.format())
-    } else if (typeof query.forecastTime === 'object') {
-      if ((typeof query.forecastTime.$gte === 'string') && (typeof query.forecastTime.$lte === 'string')) {
-        query.forecastTime = {
-          $gte: new Date(moment.utc(query.forecastTime.$gte).format()),
-          $lte: new Date(moment.utc(query.forecastTime.$lte).format())
-        }
-      }
-    }
+    
     // In this case take care that we always internally require the file path, it will be removed for the client by another hook
     if (!_.isNil(query.$select) && !_.isNil(service.element) && (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs')) {
       query.$select.push('convertedFilePath')
@@ -97,7 +91,10 @@ function marshallGeometryQuery (query) {
 }
 
 export function marshallTileQuery (hook) {
-  let query = hook.params.query || {}
+  let params = hook.params
+  // Ensure we have a query object to update
+  if (!params.query) params.query = {}
+  let query = params.query
   if (!query.geometry) {
     query.geometry = { $exists: false }
   }

@@ -1,6 +1,36 @@
 import moment from 'moment'
 import { getItems, replaceItems } from 'feathers-hooks-common'
 
+// Helper function to convert time objects or array of time objects
+export function marshallTime(item, property) {
+  if (!item) return
+  const time = item[property]
+  if (!time) return
+  if (Array.isArray(time)) {
+    item[property] = time.map(t => {
+      if (moment.isMoment(t)) return new Date(t.format())
+      else if (typeof t === 'string') return new Date(t)
+      else return t
+    })
+  } else if (moment.isMoment(time)) {
+    item[property] = new Date(time.format())
+  } else if (typeof time === 'string') {
+    item[property] = new Date(time)
+  }
+}
+
+// Helper function to convert time objects or array of time objects
+export function unmarshallTime(item, property) {
+  if (!item) return
+  const time = item[property]
+  if (!time) return
+  if (Array.isArray(time)) {
+    item[property] = time.map(t => !moment.isMoment(t) ? moment.utc(t.toISOString()) : t)
+  } else if (!moment.isMoment(time)) {
+    item[property] = moment.utc(time.toISOString())
+  }
+}
+
 // Need to convert from server side types (moment dates) to basic JS types when "writing" to DB adapters
 export function marshall (hook) {
   let items = getItems(hook)
@@ -8,8 +38,8 @@ export function marshall (hook) {
   items = (isArray ? items : [items])
 
   items.forEach(item => {
-    if (item.runTime && moment.isMoment(item.runTime)) item.runTime = new Date(item.runTime.format())
-    if (item.forecastTime && moment.isMoment(item.forecastTime)) item.forecastTime = new Date(item.forecastTime.format())
+    marshallTime(item, 'runTime')
+    marshallTime(item, 'forecastTime')
   })
 
   replaceItems(hook, isArray ? items : items[0])
@@ -22,9 +52,8 @@ export function unmarshall (hook) {
   items = (isArray ? items : [items])
 
   items.forEach(item => {
-    // Take care to field selection that might remove some
-    if (item.runTime && !moment.isMoment(item.runTime)) item.runTime = moment.utc(item.runTime.toISOString())
-    if (item.forecastTime && !moment.isMoment(item.forecastTime)) item.forecastTime = moment.utc(item.forecastTime.toISOString())
+    unmarshallTime(item, 'runTime')
+    unmarshallTime(item, 'forecastTime')
   })
 
   replaceItems(hook, isArray ? items : items[0])
