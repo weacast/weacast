@@ -1,12 +1,12 @@
 import { disallow } from 'feathers-hooks-common'
 import { hooks } from 'weacast-core'
-import { marshallResultQuery } from '../../hooks'
+import { marshallResultsQuery, aggregateResultsQuery } from '../../hooks'
 
 // Marshall/Unmarshall should be always first so that we have a consistent data format in other hooks
 module.exports = {
   before: {
     all: [ hooks.marshallQuery ],
-    find: [ hooks.marshallComparisonQuery, hooks.marshallSpatialQuery, marshallResultQuery ],
+    find: [ hooks.marshallComparisonQuery, hooks.marshallSpatialQuery, marshallResultsQuery, aggregateResultsQuery ],
     get: [],
     create: [ disallow('external'), hooks.marshall ],
     update: [ disallow('external'), hooks.marshall ],

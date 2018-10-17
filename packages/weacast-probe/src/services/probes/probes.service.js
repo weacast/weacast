@@ -390,7 +390,7 @@ export default {
             features = probe.features
           }
           // If we have a time range for on-demand probing tag features using an array
-          if (typeof forecastTime === 'object') {
+          if (forecastTime && (forecastTime.$lt || forecastTime.$lte || forecastTime.$gt || forecastTime.$gte)) {
             features.forEach(feature => {
               if (!Array.isArray(feature.forecastTime)) feature.forecastTime = []
             })

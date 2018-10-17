@@ -7,7 +7,7 @@ import _ from 'lodash'
 // const debug = makeDebug('weacast:weacast-core')
 const discardFeaturesField = discard('features')
 
-export function marshallResultQuery (hook) {
+export function marshallResultsQuery (hook) {
   let query = hook.params.query
   if (query) {
     // Need to convert from client/server side types : string
@@ -15,6 +15,39 @@ export function marshallResultQuery (hook) {
       query.probeId = new ObjectID(query.probeId)
     }
   }
+}
+
+export async function aggregateResultsQuery (hook) {
+  let query = hook.params.query
+  if (query) {
+    // Perform aggregation
+    if (query.$aggregate) {
+      const collection = hook.service.Model
+      let groupBy = {
+        _id: '$' + query.$groupBy, // Group by matching ID
+        forecastTime: { $push: '$forecastTime' }, // Keep track of all forecast times
+        geometry: { $last: '$geometry' }, // geometry is similar for all results, keep last
+        properties: { $last: '$properties' } // properties are similar for all results, keep last
+      }
+      // Keep track of all element values
+      query.$aggregate.forEach(element => {
+        groupBy[element] = { $push: '$properties.' + element }
+      })
+      // The query contains the match stage then the aggregation pipeline
+      let results = await collection.aggregate([ { $match: _.omit(query, ['$groupBy', '$aggregate']) }, { $group: groupBy } ]).toArray()
+      // Set back the element values as properties
+      query.$aggregate.forEach(element => {
+        results.forEach(result => {
+          result.properties[element] = result[element]
+          delete result[element]
+        })
+      })
+      delete query.$aggregate
+      // Set result to avoid service DB call
+      hook.result = results
+    }
+  }
+  return hook
 }
 
 export function checkProbingType (hook) {
@@ -28,49 +61,43 @@ export function checkProbingType (hook) {
   return hook
 }
 
-export function performProbing (hook) {
+export async function performProbing (hook) {
   let query = hook.params.query
 
-  return new Promise((resolve, reject) => {
-    let items = getItems(hook)
-    const isArray = Array.isArray(items)
-    items = (isArray ? items : [items])
+  let items = getItems(hook)
+  const isArray = Array.isArray(items)
+  items = (isArray ? items : [items])
 
-    let probePromises = []
-    items.forEach(item => {
-      probePromises.push(hook.service.probe(item, !_.isNil(query) ? query.forecastTime : null))
-    })
-
-    Promise.all(probePromises).then(_ => {
-      replaceItems(hook, isArray ? items : items[0])
-      resolve(hook)
-    })
+  let probePromises = []
+  items.forEach(item => {
+    probePromises.push(hook.service.probe(item, !_.isNil(query) ? query.forecastTime : null))
   })
+
+  await Promise.all(probePromises)
+  replaceItems(hook, isArray ? items : items[0])
+  return hook
 }
 
-export function removeResults (hook) {
-  return new Promise((resolve, reject) => {
-    let resultService = hook.service.app.getService('probe-results')
-    let items = getItems(hook)
-    const isArray = Array.isArray(items)
-    items = (isArray ? items : [items])
+export async function removeResults (hook) {
+  let resultService = hook.service.app.getService('probe-results')
+  let items = getItems(hook)
+  const isArray = Array.isArray(items)
+  items = (isArray ? items : [items])
 
-    let removePromises = []
-    items.forEach(item => {
-      // We have to remove listeners for results update first
-      hook.service.unregisterForecastUpdates(item)
-      // Then result objects
-      removePromises.push(resultService.remove(null, {
-        query: {
-          probeId: item._id
-        }
-      }))
-    })
-
-    Promise.all(removePromises).then(_ => {
-      resolve(hook)
-    })
+  let removePromises = []
+  items.forEach(item => {
+    // We have to remove listeners for results update first
+    hook.service.unregisterForecastUpdates(item)
+    // Then result objects
+    removePromises.push(resultService.remove(null, {
+      query: {
+        probeId: item._id
+      }
+    }))
   })
+
+  await Promise.all(removePromises)
+  return hook
 }
 
 export function removeFeatures (hook) {

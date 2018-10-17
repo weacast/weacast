@@ -9,16 +9,16 @@ import probe from '../src'
 
 describe('weacast-probe', () => {
   let app, uService, vService, probeService, probeResultService,
-    geojson, probeId, probeFeatures, spyProbe, spyUpdate, forecastTime
-
+    geojson, probeId, probeFeatures, spyProbe, spyUpdate, firstForecastTime, nextForecastTime
+  const probeOptions = {
+    forecast: 'arpege-world',
+    elements: ['u-wind', 'v-wind']
+  }
   before(() => {
     chailint(chai, util)
     chai.use(spies)
     geojson = fs.readJsonSync(path.join(__dirname, 'data', 'runways.geojson'))
-    Object.assign(geojson, {
-      forecast: 'arpege-world',
-      elements: ['u-wind', 'v-wind']
-    })
+    Object.assign(geojson, probeOptions)
 
     app = weacast()
     return app.db.connect()
@@ -70,28 +70,80 @@ describe('weacast-probe', () => {
     .then(forecasts => {
       // We should have 2 forecast times
       expect(forecasts.length).to.equal(2)
-      forecastTime = forecasts[0].forecastTime
-      return probeService.create(geojson, { query: { forecastTime } })
+      firstForecastTime = forecasts[0].forecastTime
+      nextForecastTime = firstForecastTime.clone()
+      nextForecastTime.add({ hours: 3 })
+      return probeService.create(geojson, { query: { forecastTime: firstForecastTime } })
     })
     .then(data => {
       expect(spyProbe).to.have.been.called()
       expect(spyUpdate).not.to.have.been.called()
+      // This will insure spies are properly reset before jumping to next test due to async ops
       spyProbe.reset()
       spyUpdate.reset()
-      // This will insure spies are properly reset before jumping to next test due to async ops
-      done()
       // 3 features with data for the forecast times
       expect(data.features.length).to.equal(3)
       data.features.forEach(feature => {
         expect(feature.properties['u-wind']).toExist()
         expect(feature.properties['v-wind']).toExist()
+        expect(typeof feature.properties['u-wind']).to.equal('number')
+        expect(typeof feature.properties['v-wind']).to.equal('number')
         // Test if derived direction values are also present
         expect(feature.properties['windDirection']).toExist()
         expect(feature.properties['windSpeed']).toExist()
+        expect(typeof feature.properties['windDirection']).to.equal('number')
+        expect(typeof feature.properties['windSpeed']).to.equal('number')
       })
+      done()
     })
     // For debug purpose only
     // .then(data => fs.outputJsonSync(path.join(__dirname, 'data', 'runways-probe.geojson'), data.layer))
+  })
+  // Let enough time to download a couple of data
+  .timeout(10000)
+
+  it('performs probing element on-demand at specific location', (done) => {
+    const geometry = {
+      type: 'Point',
+      coordinates: [ 1.5, 43 ]
+    }
+    const query = {
+      forecastTime: {
+        $gte: firstForecastTime,
+        $lte: nextForecastTime
+      },
+      geometry: {
+        $geoIntersects: {
+          $geometry: geometry
+        }
+      }
+    }
+
+    probeService.create(Object.assign({
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: {},
+        geometry
+      }]
+    }, probeOptions), { query })
+    .then(data => {
+      expect(data.features.length).to.equal(1)
+      expect(spyProbe).to.have.been.called()
+      expect(spyUpdate).not.to.have.been.called()
+      // This will insure spies are properly reset before jumping to next test due to async ops
+      spyProbe.reset()
+      spyUpdate.reset()
+      expect(data.features[0].properties['u-wind']).toExist()
+      expect(data.features[0].properties['v-wind']).toExist()
+      expect(data.features[0].properties['u-wind'].length).to.equal(2)
+      expect(data.features[0].properties['v-wind'].length).to.equal(2)
+      expect(typeof data.features[0].properties['u-wind'][0]).to.equal('number')
+      expect(typeof data.features[0].properties['v-wind'][0]).to.equal('number')
+      expect(typeof data.features[0].properties['u-wind'][1]).to.equal('number')
+      expect(typeof data.features[0].properties['v-wind'][1]).to.equal('number')
+      done()
+    })
   })
   // Let enough time to download a couple of data
   .timeout(10000)
@@ -102,6 +154,7 @@ describe('weacast-probe', () => {
       probeId = data._id
       expect(spyProbe).to.have.been.called()
       expect(spyUpdate).to.have.been.called()
+      // This will insure spies are properly reset before jumping to next test due to async ops
       spyProbe.reset()
       spyUpdate.reset()
       return probeResultService.find({ paginate: false, query: { probeId } })
@@ -112,9 +165,13 @@ describe('weacast-probe', () => {
       features.forEach(feature => {
         expect(feature.properties['u-wind']).toExist()
         expect(feature.properties['v-wind']).toExist()
+        expect(typeof feature.properties['u-wind']).to.equal('number')
+        expect(typeof feature.properties['v-wind']).to.equal('number')
         // Test if derived direction values are also present
         expect(feature.properties['windDirection']).toExist()
         expect(feature.properties['windSpeed']).toExist()
+        expect(typeof feature.properties['windDirection']).to.equal('number')
+        expect(typeof feature.properties['windSpeed']).to.equal('number')
       })
       // Keep track of the features
       probeFeatures = features
@@ -136,7 +193,7 @@ describe('weacast-probe', () => {
       query: {
         probeId,
         geometry,
-        forecastTime
+        forecastTime: firstForecastTime
       }
     })
     .then(features => {
@@ -148,7 +205,7 @@ describe('weacast-probe', () => {
         query: {
           probeId,
           geometry,
-          forecastTime
+          forecastTime: firstForecastTime
         }
       })
     })
@@ -177,6 +234,32 @@ describe('weacast-probe', () => {
     .then(features => {
       // All should be covered sicne speed is always >= 0
       expect(features.length).to.equal(6)
+    })
+  })
+
+  it('performs element aggregation on probe results', () => {
+    let query = {
+      probeId,
+      forecastTime: {
+        $gte: firstForecastTime,
+        $lte: nextForecastTime
+      },
+      'properties.Ident': 'RW30',
+      $groupBy: 'properties.Ident',
+      $aggregate: ['windDirection', 'windSpeed']
+    }
+    return probeResultService.find({
+      paginate: false,
+      query
+    })
+    .then(features => {
+      expect(features.length).to.equal(1)
+      expect(features[0].properties['windSpeed'].length).to.equal(2)
+      expect(features[0].properties['windDirection'].length).to.equal(2)
+      expect(typeof features[0].properties['windDirection'][0]).to.equal('number')
+      expect(typeof features[0].properties['windSpeed'][0]).to.equal('number')
+      expect(typeof features[0].properties['windDirection'][1]).to.equal('number')
+      expect(typeof features[0].properties['windSpeed'][1]).to.equal('number')
     })
   })
 
