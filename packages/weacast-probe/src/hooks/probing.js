@@ -39,7 +39,7 @@ export async function aggregateResultsQuery (hook) {
         match[element] = { $exists: true }
       })
       // Ensure we do not mix results with/without relevant element values
-      let results = await collection.aggregate([ { $match:  }, { $group: groupBy } ]).toArray()
+      let results = await collection.aggregate([ { $match: match }, { $group: groupBy } ]).toArray()
       // Set back the element values as properties
       query.$aggregate.forEach(element => {
         results.forEach(result => {
