@@ -33,8 +33,13 @@ export async function aggregateResultsQuery (hook) {
       query.$aggregate.forEach(element => {
         groupBy[element] = { $push: '$properties.' + element }
       })
-      // The query contains the match stage then the aggregation pipeline
-      let results = await collection.aggregate([ { $match: _.omit(query, ['$groupBy', '$aggregate']) }, { $group: groupBy } ]).toArray()
+      // The query contains the match stage except options relevent to the aggregation pipeline
+      let match = _.omit(query, ['$groupBy', '$aggregate'])
+      query.$aggregate.forEach(element => {
+        match[element] = { $exists: true }
+      })
+      // Ensure we do not mix results with/without relevant element values
+      let results = await collection.aggregate([ { $match:  }, { $group: groupBy } ]).toArray()
       // Set back the element values as properties
       query.$aggregate.forEach(element => {
         results.forEach(result => {
