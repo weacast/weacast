@@ -195,13 +195,18 @@ export class Grid {
   }
 
   static toGeometry(bounds) {
+    let [ minLon, minLat, maxLon, maxLat ] = bounds
+    // GeoJSON WGS84 > longitude should be in [-180, 180]
+    minLon = (minLon > 180 ? minLon - 360 : minLon)
+    maxLon = (maxLon > 180 ? maxLon - 360 : maxLon)
+    
     return {
       geometry: {
         type: 'Polygon',
         coordinates: [
           // Exterior ring
-          [ [ bounds[0], bounds[1] ], [ bounds[2], bounds[1] ],
-            [ bounds[2], bounds[3] ], [ bounds[0], bounds[3] ], [ bounds[0], bounds[1] ] ] // Closing point
+          [ [ minLon, minLat ], [ maxLon, minLat ],
+            [ maxLon, maxLat ], [ minLon, maxLat ], [ minLon, minLat ] ] // Closing point
         ]
       }
     }
