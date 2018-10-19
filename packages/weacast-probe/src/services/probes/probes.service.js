@@ -136,8 +136,15 @@ export default {
         forecastIndex = feature.forecastTime.findIndex(time => time.isSame(forecastTime))
         // New time to push
         if (forecastIndex < 0) {
-          feature.forecastTime.push(forecastTime)
-          forecastIndex = feature.forecastTime.length - 1
+          // Find where to insert
+          forecastIndex = feature.forecastTime.findIndex(time => time.isAfter(forecastTime))
+          if (forecastIndex < 0) {
+            feature.forecastTime.push(forecastTime)
+            forecastIndex = feature.forecastTime.length - 1
+          }
+          else {
+            feature.forecastTime.splice(forecastIndex, 0, forecastTime)
+          }
         }
       } else {
         feature.forecastTime = forecastTime
@@ -152,7 +159,7 @@ export default {
         // Check if we process on-demand probing for a time range
         if (forecastIndex >= 0) {
           if (!_.has(feature, 'properties.' + elementName)) feature.properties[elementName] = []
-          feature.properties[elementName][forecastIndex] = value
+          feature.properties[elementName].splice(forecastIndex, 0, value)
         } else {
           feature.properties[elementName] = value
         }
@@ -174,9 +181,9 @@ export default {
             // Check if we process on-demand probing for a time range
             if (forecastIndex >= 0) {
               if (!_.has(feature, 'properties.' + speedProperty)) feature.properties[speedProperty] = []
-              feature.properties[speedProperty][forecastIndex] = norm
+              feature.properties[speedProperty].splice(forecastIndex, 0, norm)
               if (!_.has(feature, 'properties.' + directionProperty)) feature.properties[directionProperty] = []
-              feature.properties[directionProperty][forecastIndex] = direction
+              feature.properties[directionProperty].splice(forecastIndex, 0, direction)
             } else {
               feature.properties[speedProperty] = norm
               feature.properties[directionProperty] = direction
@@ -195,7 +202,7 @@ export default {
                 // Check if we process on-demand probing for a time range
                 if (forecastIndex >= 0) {
                   if (!_.has(feature, 'properties.' + bearingDirectionProperty)) feature.properties[bearingDirectionProperty] = []
-                  else feature.properties[bearingDirectionProperty][forecastIndex] = direction
+                  else feature.properties[bearingDirectionProperty].splice(forecastIndex, 0, direction)
                 } else {
                   feature.properties[bearingDirectionProperty] = direction
                 }
@@ -226,7 +233,7 @@ export default {
       } else {
         query.forecastTime = forecastTime
         // Take care that we need tile ID for tiles
-        if (x && y) {
+        if (!_.isNil(x) && !_.isNil(y)) {
           Object.assign(query, {
             x,
             y,
@@ -244,7 +251,7 @@ export default {
     }
     // Check if we process a tile or raw data
     let grid
-    if (x && y) {
+    if (!_.isNil(x) && !_.isNil(y)) {
       grid = new Grid({
         bounds: forecast.bounds,
         origin: forecast.origin,
