@@ -30,7 +30,8 @@ function getDirectionElement (elementName) {
 export default {
 
   // Update the given probe results (given as features)
-  async updateFeaturesInDatabase (features, probe, elementService, runTime, forecastTime) {
+  async updateFeaturesInDatabase (features, probe, elementService, forecast) {
+    const { runTime, forecastTime } = forecast
     // Get the service to store results in
     let resultService = this.app.getService('probe-results')
     let operations = []
@@ -112,15 +113,9 @@ export default {
     }
   },
 
-  // Update the given features, for given probe, with interpolated values according to given forecast data, run/forecast time
-  async updateFeatures (features, probe, elementService, runTime, forecastTime, data) {
-    let grid = new Grid({
-      bounds: elementService.forecast.bounds,
-      origin: elementService.forecast.origin,
-      size: elementService.forecast.size,
-      resolution: elementService.forecast.resolution,
-      data: data
-    })
+  // Update the given features, for given probe, with interpolated values according to given forecast grid, run/forecast time
+  async updateFeatures (features, probe, elementService, forecast) {
+    const { runTime, forecastTime, grid } = forecast
 
     // Check if we have to manage a direction composed from two axis components
     const elementName = elementService.element.name
@@ -132,16 +127,22 @@ export default {
     const bearingProperty = directionElement + 'BearingProperty'
     const bearingPropertyName = probe.hasOwnProperty(bearingProperty) ? probe[bearingProperty] : undefined
     const bearingDirectionProperty = directionElement + 'BearingDirection'
-    
+
     features.forEach(feature => {
       feature.runTime = runTime
+      let forecastIndex = -1
       // Check if we process on-demand probing for a time range
       if (Array.isArray(feature.forecastTime)) {
-        if (!feature.forecastTime.find(time => time.isSame(forecastTime))) feature.forecastTime.push(forecastTime)
+        forecastIndex = feature.forecastTime.findIndex(time => time.isSame(forecastTime))
+        // New time to push
+        if (forecastIndex < 0) {
+          feature.forecastTime.push(forecastTime)
+          forecastIndex = feature.forecastTime.length - 1
+        }
       } else {
         feature.forecastTime = forecastTime
       }
-      feature.probeId = probe._id
+      if (probe._id) feature.probeId = probe._id
       let value = grid.interpolate(feature.geometry.coordinates[0], feature.geometry.coordinates[1])
       if (value) { // Prevent values outside grid bbox
         if (!feature.properties) { // Take care to initialize properties holder if not given in input feature
@@ -149,9 +150,9 @@ export default {
         }
         // Store interpolated element value
         // Check if we process on-demand probing for a time range
-        if (Array.isArray(feature.forecastTime)) {
-          if (!_.has(feature, 'properties.' + elementName)) feature.properties[elementName] = [value]
-          else feature.properties[elementName].push(value)
+        if (forecastIndex >= 0) {
+          if (!_.has(feature, 'properties.' + elementName)) feature.properties[elementName] = []
+          feature.properties[elementName][forecastIndex] = value
         } else {
           feature.properties[elementName] = value
         }
@@ -160,9 +161,9 @@ export default {
           let u = feature.properties[uComponentPrefix + directionElement]
           let v = feature.properties[vComponentPrefix + directionElement]
           // Check if we process on-demand probing for a time range
-          if (Array.isArray(feature.forecastTime)) {
-            if (u && u.length) u = u[u.length - 1]
-            if (v && v.length) v = v[v.length - 1]
+          if (forecastIndex >= 0) {
+            if (u && u.length) u = u[forecastIndex]
+            if (v && v.length) v = v[forecastIndex]
           }
           // Only possible if both elements are already computed
           if (isFinite(u) && isFinite(v)) {
@@ -171,11 +172,11 @@ export default {
             let direction = 180.0 + Math.atan2(u, v) * 180.0 / Math.PI
             // Then store it
             // Check if we process on-demand probing for a time range
-            if (Array.isArray(feature.forecastTime)) {
-              if (!_.has(feature, 'properties.' + speedProperty)) feature.properties[speedProperty] = [norm]
-              else feature.properties[speedProperty].push(norm)
-              if (!_.has(feature, 'properties.' + directionProperty)) feature.properties[directionProperty] = [direction]
-              else feature.properties[directionProperty].push(direction)
+            if (forecastIndex >= 0) {
+              if (!_.has(feature, 'properties.' + speedProperty)) feature.properties[speedProperty] = []
+              feature.properties[speedProperty][forecastIndex] = norm
+              if (!_.has(feature, 'properties.' + directionProperty)) feature.properties[directionProperty] = []
+              feature.properties[directionProperty][forecastIndex] = direction
             } else {
               feature.properties[speedProperty] = norm
               feature.properties[directionProperty] = direction
@@ -192,9 +193,9 @@ export default {
                 if (direction < 0) direction += 360
                 // Then store it
                 // Check if we process on-demand probing for a time range
-                if (Array.isArray(feature.forecastTime)) {
-                  if (!_.has(feature, 'properties.' + bearingDirectionProperty)) feature.properties[bearingDirectionProperty] = [direction]
-                  else feature.properties[bearingDirectionProperty].push(direction)
+                if (forecastIndex >= 0) {
+                  if (!_.has(feature, 'properties.' + bearingDirectionProperty)) feature.properties[bearingDirectionProperty] = []
+                  else feature.properties[bearingDirectionProperty][forecastIndex] = direction
                 } else {
                   feature.properties[bearingDirectionProperty] = direction
                 }
@@ -208,27 +209,59 @@ export default {
 
   // Update the given features, for given probe, with interpolated values according to given forecast data, run/forecast time
   // If forecast data are not given they are retrieved from the existing data in DB
-  async probeForecastTime (features, probe, elementService, runTime, forecastTime, data) {
+  async probeForecastTime (features, probe, elementService, forecast) {
+    const { _id, x, y, runTime, forecastTime, data } = forecast
     // Retrieve forecast data if required
     let forecastData = data
     if (!forecastData) {
-      debug('No forecast data provided for probe ' + probe._id + ' on element ' + elementService.forecast.name + '/' + elementService.element.name +
-            ' at ' + forecastTime.format() + ' on run ' + runTime.format() + ', looking for existing ones')
-      let response = await elementService.find({
-        query: {
-          forecastTime: forecastTime,
-          $select: ['data']
+      let query = {
+        $select: ['data']
+      }
+      debug('No forecast data provided for probe ' + (probe._id ? probe._id : 'on-demand') + ' on element ' + elementService.forecast.name + '/' + elementService.element.name +
+            ' at ' + forecastTime.format() + ' on run ' + runTime.format() + ', querying existing one', query)
+      // If we have an ID we will use it, otherwise request by forecast time
+      if (_id) {
+        let response = await elementService.get(_id.toString(), { query })
+        forecastData = response.data
+      } else {
+        query.forecastTime = forecastTime
+        // Take care that we need tile ID for tiles
+        if (x && y) {
+          Object.assign(query, {
+            x,
+            y,
+            timeseries: false // Probe single time not timeseries
+          })
         }
-      })
-      forecastData = (response.data.length > 0 ? response.data[0].data : null)
+        let response = await elementService.find({ query })
+        forecastData = (response.data.length > 0 ? response.data[0].data : null)
+      }
     }
 
     if (!forecastData) {
-      throw new Error('Cannot retrieve forecast data for probe ' + probe._id + ' on element ' + elementService.forecast.name + '/' + elementService.element.name +
+      throw new Error('Cannot retrieve forecast data for probe ' + (probe._id ? probe._id : 'on-demand') + ' on element ' + elementService.forecast.name + '/' + elementService.element.name +
                 ' at ' + forecastTime.format() + ' for run ' + runTime.format())
     }
-
-    this.updateFeatures(features, probe, elementService, runTime, forecastTime, forecastData)
+    // Check if we process a tile or raw data
+    let grid
+    if (x && y) {
+      grid = new Grid({
+        bounds: forecast.bounds,
+        origin: forecast.origin,
+        size: forecast.size,
+        resolution: forecast.resolution,
+        data: forecastData
+      })
+    } else {
+      grid = new Grid({
+        bounds: elementService.forecast.bounds,
+        origin: elementService.forecast.origin,
+        size: elementService.forecast.size,
+        resolution: elementService.forecast.resolution,
+        data: forecastData
+      })
+    }
+    this.updateFeatures(features, probe, elementService, { runTime, forecastTime, grid })
   },
 
   async getResultsForProbe (probe, forecastTime) {
@@ -237,7 +270,7 @@ export default {
     let results = await resultService.find({
       paginate: false,
       query: {
-        forecastTime: forecastTime,
+        forecastTime,
         probeId: probe._id
       }
     })
@@ -285,8 +318,8 @@ export default {
               features = result.features
             }
             logger.verbose('Probing forecast data for element ' + forecastName + '/' + elementName + ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
-            await this.probeForecastTime(features, probe, service, forecast.runTime, forecast.forecastTime, forecast.data)
-            await this.updateFeaturesInDatabase(features, probe, service, forecast.runTime, forecast.forecastTime)
+            await this.probeForecastTime(features, probe, service, forecast)
+            await this.updateFeaturesInDatabase(features, probe, service, forecast)
             // Send a message so that clients know there are new results, indeed for performance reasons standard events have been disabled on results
             // Take care to not forward forecast data
             delete forecast.data
@@ -349,10 +382,11 @@ export default {
     })
   },
 
-  // Perform probing on the input features if any (on-demand probe), in this case the probing time must be given
-  // Otherwise features are retrieved from the existing probe in DB, probing performed for each available forecast time and result features updated back in DB (probing stream)
+  // Perform probing on the input features if any (on-demand probe), in this case the probing time(s) must be given
+  // Otherwise features are retrieved from the existing probe in DB, probing performed for each available forecast time,
+  // and result features updated back in DB (probing stream)
   // This also registers the probe to perform updates on results when new forecast data are coming
-  async probe (probe, forecastTime) {
+  async probe (probe, query = {}) {
     if (!probe || !probe.type || probe.type !== 'FeatureCollection') {
       throw new errors.BadRequest('Only GeoJSON FeatureCollection layers are supported to create probes')
     }
@@ -362,22 +396,20 @@ export default {
     if (!probe.elements || probe.elements.length === 0) {
       throw new errors.BadRequest('Target forecast element(s) not specified')
     }
+    const forecastTime = query.forecastTime
     // Retrieve target elements
     let services = this.getElementServicesForProbe(probe)
+    debug('Probing following services for probe ' + (probe._id ? probe._id : 'on-demand '), services.map(service => service.name))
+    // When probing a location we use tiles, take care to use only single time tiles not aggregated if any
+    let forecastQuery = (query.geometry ? { timeseries: false } : {})
+    Object.assign(forecastQuery, query)
+    debug('Probing query', forecastQuery)
     // Then run all probes
     try {
       for (let service of services) {
-        // Get all available forecast times (probing stream) or selected one (on-demand probe)
-        let options = {
-          paginate: false
-        }
-        if (forecastTime) {
-          options.query = {
-            forecastTime
-          }
-        }
-
-        let forecasts = await service.find(options)
+        // Will get all available forecast times (probing stream) or selected one(s) (on-demand probe)
+        let forecasts = await service.find({ paginate: false, query: forecastQuery })
+        debug('Probing following forecasts for probe ' + (probe._id ? probe._id : 'on-demand '), forecasts)
         for (let forecast of forecasts) {
           let features = []
           // Retrieve previously stored features to perform update if any when streaming
@@ -396,11 +428,11 @@ export default {
             })
           }
           // Ask to retrieve forecast data and perform probing
-          await this.probeForecastTime(features, probe, service, forecast.runTime, forecast.forecastTime)
+          await this.probeForecastTime(features, probe, service, forecast)
           // When performing probing on-demand we do not store any result,
           // the returned features contain the probe values
           if (!forecastTime) {
-            await this.updateFeaturesInDatabase(features, probe, service, forecast.runTime, forecast.forecastTime)
+            await this.updateFeaturesInDatabase(features, probe, service, forecast)
             // Send a message so that clients know there are new results, indeed for performance reasons standard events have been disabled on results
             this.emit('results', { probe, forecast })
           }

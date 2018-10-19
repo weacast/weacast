@@ -35,10 +35,10 @@ export async function aggregateResultsQuery (hook) {
       })
       // The query contains the match stage except options relevent to the aggregation pipeline
       let match = _.omit(query, ['$groupBy', '$aggregate'])
+      // Ensure we do not mix results with/without relevant element values
       query.$aggregate.forEach(element => {
         match['properties.' + element] = { $exists: true }
       })
-      // Ensure we do not mix results with/without relevant element values
       let results = await collection.aggregate([ { $match: match }, { $group: groupBy } ]).toArray()
       // Set back the element values as properties
       query.$aggregate.forEach(element => {
@@ -75,7 +75,7 @@ export async function performProbing (hook) {
 
   let probePromises = []
   items.forEach(item => {
-    probePromises.push(hook.service.probe(item, !_.isNil(query) ? query.forecastTime : null))
+    probePromises.push(hook.service.probe(item, query))
   })
 
   await Promise.all(probePromises)
