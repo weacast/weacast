@@ -153,17 +153,27 @@ export class Grid {
   }
 
   /**
-   * Get a tileset from the grid
+   * Get tiling parameters for a tileset from the grid
    * @param resolution {Array} Tile resolution in longitude/latitude of the tileset
-   * @returns {Array} a list of grid data for each tile
+   * @returns {Object} tileset size, tile size, tile resolution
    */
-  tileset (resolution) {
+  getTiling (resolution) {
     const ratio = [ (resolution[0] / this.resolution[0]), (resolution[1] / this.resolution[1]) ]
     // Number of tile is grid size x resolution ratio
     const tilesetSize = [ Math.floor(this.size[0] / ratio[0]), Math.floor(this.size[1] / ratio[1]) ]
     const tileSize = [ Math.floor(this.size[0] / tilesetSize[0]), Math.floor(this.size[1] / tilesetSize[1]) ]
     const tileResolution = [ resolution[0] / tileSize[0], resolution[1] / tileSize[1] ]
+    return { tilesetSize, tileSize, tileResolution }
+  }
 
+  /**
+   * Get a tileset from the grid
+   * @param resolution {Array} Tile resolution in longitude/latitude of the tileset
+   * @returns {Array} a list of grid data for each tile
+   */
+  tileset (resolution) {
+    const { tilesetSize, tileSize, tileResolution } = this.getTiling(resolution)
+    
     let data = []
     // Iterate over tiles
     for (let j = 0; j < tilesetSize[1]; j++) {
@@ -181,9 +191,16 @@ export class Grid {
             tileData.push(value)
           }
         }
-        data.push({
-          bounds: [ tileOrigin[0], tileOrigin[1],
-                    tileOrigin[0] + this.lonDirection * resolution[0], tileOrigin[1] + this.latDirection * resolution[1] ],
+        let minLon = tileOrigin[0]
+        let minLat = tileOrigin[1]
+        let maxLon = tileOrigin[0] + this.lonDirection * resolution[0]
+        let maxLat = tileOrigin[1] + this.latDirection * resolution[1]
+        // Need to switch bounds if descending order
+        if (this.lonDirection < 0) [ minLon, maxLon ] = [ maxLon, minLon ]
+       if (this.latDirection < 0) [ minLat, maxLat ] = [ maxLat, minLat ]
+         data.push({
+          x: i, y: j,
+          bounds: [ minLon, minLat, maxLon, maxLat ],
           origin: tileOrigin,
           size: tileSize,
           resolution: tileResolution,

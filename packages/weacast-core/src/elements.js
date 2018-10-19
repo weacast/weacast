@@ -24,10 +24,11 @@ export default function initializeElements (app, forecast, servicesPath) {
     let service = app.createElementService(forecast, element, servicesPath, element.serviceOptions)
     if (forecast.updateInterval >= 0) {
       // Trigger the initial harvesting, i.e. try data refresh for current time
-      service.updateForecastData().catch(error => {
-        logger.error(error.message)
-        service.updateRunning = false
-      })
+      setTimeout(_ =>
+        service.updateForecastData().catch(error => {
+          logger.error(error.message)
+          service.updateRunning = false
+        }), 5000)
       // Then plan next updates according to provided update interval if required
       if (forecast.updateInterval > 0) {
         logger.info('Installing forecast update on ' + service.forecast.name + '/' + service.element.name + ' with interval ' + forecast.updateInterval)

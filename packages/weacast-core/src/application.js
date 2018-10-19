@@ -260,6 +260,12 @@ export default function weacast () {
   app.createElementService = function (forecast, element, servicesPath, options) {
     return createElementService(forecast, element, app, servicesPath, options)
   }
+  // Override Feathers configure that do not manage async operations,
+  // here we also simply call the function given as parameter but await for it
+  app.configure = async function (fn) {
+    await fn.call(this, this)
+    return this
+  }
 
   // Enable CORS, security, compression, and body parsing
   app.use(cors())

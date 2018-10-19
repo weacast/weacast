@@ -134,9 +134,10 @@ export default {
       let tiles = grid.tileset(this.forecast.tileResolution)
       tiles = tiles.map(tile =>
         Object.assign(Grid.toGeometry(tile.bounds),
+                      tile,
                       getMinMax(tile.data),
                       _.pick(data, ['runTime', 'forecastTime']),
-                      _.pick(tile, ['data']))
+                      { timeseries: false }) // Tag this is not an aggregated tile
       )
       // Test if we have to remove existing data first
       if (previousData) {
@@ -152,6 +153,51 @@ export default {
       tiles.forEach(tile => delete tile.data)
     }
     return result
+  },
+
+  async aggregateTiles () {
+    const collection = this.Model
+    const grid = new Grid({
+      bounds: this.forecast.bounds,
+      origin: this.forecast.origin,
+      size: this.forecast.size,
+      resolution: this.forecast.resolution
+    })
+    const { tilesetSize, tileSize, tileResolution } = grid.getTiling(this.forecast.tileResolution)
+    logger.verbose('Aggregating tiles for ' + this.forecast.name + '/' + this.element.name + ' forecast')
+    // Iterate over tiles
+    for (let j = 0; j < tilesetSize[1]; j++) {
+      for (let i = 0; i < tilesetSize[0]; i++) {
+        // Delete previous aggregated tile if any
+        await this.remove(null, { query: { x: i, y: j, timeseries: true } })
+        // Aggregate data over time for current tile
+        let tiles = await collection.aggregate([{
+          // Select only single and available data for current tile
+          $match: { x: i, y: j, timeseries: false, data: { $exists: true } }
+        }, {
+          $group: {
+            _id: { x: '$x', y: '$y' }, // Group by tile so that we get a single merged result
+            forecastTime: { $push: '$forecastTime' }, // Keep track of all forecast times
+            runTime: { $push: '$runTime' }, // Keep track of all run times
+            data: { $push: '$data' }, // Accumulate data
+            minValue: { $push: '$minValue' }, // Accumulate min
+            maxValue: { $push: '$maxValue' }, // Accumulate max
+            geometry: { $last: '$geometry' }, // geometry is similar for all results, keep last
+          }
+        }]).toArray()
+        if (tiles.length !== 1) {
+          logger.error('Could not aggregate tiles for ' + this.forecast.name + '/' + this.element.name + ' forecast')
+        } else {
+          const tile = tiles[0]
+          // Delete temporary tiles with a single forecast time
+          await this.remove(null, { query: { x: i, y: j } })
+          // Then save aggregated tile extracting x/y from group by ID and tagging as timeseries aggregation
+          Object.assign(tile, tile._id, { timeseries: true })
+          delete tile._id
+          await this.create(tile)
+        }
+      }
+    }
   },
 
   async refreshForecastTime (datetime, runTime, forecastTime) {
@@ -238,6 +284,10 @@ export default {
           // This catch does not rethrow the error so that the update process will not stop and we try the next time
         }
       }
+    }
+    // Aggregate tiles to generate timeseries if anabled and tiling as well
+    if (this.forecast.tileResolution && this.forecast.timeseries) {
+      this.aggregateTiles()
     }
     return times
   },
