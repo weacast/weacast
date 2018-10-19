@@ -163,7 +163,7 @@ export default {
       size: this.forecast.size,
       resolution: this.forecast.resolution
     })
-    const { tilesetSize, tileSize, tileResolution } = grid.getTiling(this.forecast.tileResolution)
+    const { tilesetSize } = grid.getTiling(this.forecast.tileResolution)
     logger.verbose('Aggregating tiles for ' + this.forecast.name + '/' + this.element.name + ' forecast')
     // Iterate over tiles
     for (let j = 0; j < tilesetSize[1]; j++) {
