@@ -86,7 +86,7 @@ export default {
           // Create bulk operation for insert or update
           operations.push({
             updateOne: {
-              filter: { runTime, forecastTime, probeId: probe._id }, // In this case we query by forecastTime/runTime/probeId
+              filter: { runTime: baseFeature.runTime, forecastTime: baseFeature.forecastTime, probeId: baseFeature.probeId }, // In this case we query by forecastTime/runTime/probeId
               upsert: true, // and indicate we'd like to create it if it does not already exist
               update: {
                 $set: data, // and indicate we'd like to patch some fields if the probe already exists
