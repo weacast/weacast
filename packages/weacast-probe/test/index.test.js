@@ -12,7 +12,8 @@ describe('weacast-probe', () => {
     geojson, probeId, probeFeatures, spyProbe, spyUpdate, firstForecastTime, nextForecastTime
   const probeOptions = {
     forecast: 'arpege-world',
-    elements: ['u-wind', 'v-wind']
+    elements: ['u-wind', 'v-wind'],
+    featureId: ['properties.Airport', 'properties.Ident', 'properties.RevCode']
   }
   before(() => {
     chailint(chai, util)

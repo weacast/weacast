@@ -68,7 +68,7 @@ export default {
             }
           })
         } else {
-          debugResults('Inserting probe result for probe ' + feature.probeId + ' at ' + forecastTime.format() +
+          debugResults('Inserting probe result for probe ' + probe._id + ' at ' + forecastTime.format() +
                        ' on run ' + runTime.format(), feature)
           // The base feature to insert is the one without the computed elements
           let baseFeature = _.omit(feature, Object.keys(data))
@@ -84,9 +84,21 @@ export default {
           // And add it back after conversion
           baseFeature.probeId = probe._id
           // Create bulk operation for insert or update
+          let filter = { // In this case we query by forecastTime/runTime/probeId
+            runTime: new Date(runTime.format()),
+            forecastTime: new Date(forecastTime.format()),
+            probeId: probe._id
+          }
+          // And by feature unique ID, unify as array because unique Id can be obtained by combining multiple properties
+          let ids = probe.featureId
+          if (!Array.isArray(ids)) {
+            ids = [ids]
+          }
+          ids.forEach(id => filter[id] = _.get(feature, id))
+          
           operations.push({
             updateOne: {
-              filter: { runTime: baseFeature.runTime, forecastTime: baseFeature.forecastTime, probeId: baseFeature.probeId }, // In this case we query by forecastTime/runTime/probeId
+              filter,
               upsert: true, // and indicate we'd like to create it if it does not already exist
               update: {
                 $set: data, // and indicate we'd like to patch some fields if the probe already exists
@@ -402,6 +414,9 @@ export default {
     }
     if (!probe.elements || probe.elements.length === 0) {
       throw new errors.BadRequest('Target forecast element(s) not specified')
+    }
+    if (!probe.featureId) {
+      throw new errors.BadRequest('Unique identifier for probe features not specified')
     }
     const forecastTime = query.forecastTime
     // Retrieve target elements
