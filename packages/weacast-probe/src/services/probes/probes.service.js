@@ -94,8 +94,10 @@ export default {
           if (!Array.isArray(ids)) {
             ids = [ids]
           }
-          ids.forEach(id => filter[id] = _.get(feature, id))
-          
+          ids.forEach(id => {
+            filter[id] = _.get(feature, id)
+          })
+
           operations.push({
             updateOne: {
               filter,
@@ -153,8 +155,7 @@ export default {
           if (forecastIndex < 0) {
             feature.forecastTime.push(forecastTime)
             forecastIndex = feature.forecastTime.length - 1
-          }
-          else {
+          } else {
             feature.forecastTime.splice(forecastIndex, 0, forecastTime)
           }
         }
@@ -356,28 +357,6 @@ export default {
           await service[refreshCallbackName](forecast)
         }
 
-        /* FIXME: see https://github.com/weacast/weacast-probe/issues/2
-        // Check if we have to manage a direction composed from two axis components
-        const isUComponentOfDirection = elementName.startsWith(uComponentPrefix) // e.g. 'u-wind'
-        const isVComponentOfDirection = elementName.startsWith(vComponentPrefix) // e.g. 'v-wind'
-        // Indeed in this case we must ensure probing is done in sequence
-        if (isUComponentOfDirection || isVComponentOfDirection) {
-          const dualElementName = isUComponentOfDirection ?
-            elementName.replace(uComponentPrefix, vComponentPrefix) : // e.g. will generate 'v-wind' for 'u-wind'
-            elementName.replace(vComponentPrefix, uComponentPrefix) // e.g. will generate 'u-wind' for 'v-wind'
-          // Check if other component callback has been registered
-          let dualService = services.find(service => service.element.name === dualElementName)
-          // If not yet register proceed with the callback as usual, we will update it with the dual component
-          if (dualService) {
-            debug('Updating refresh callbacks on direction element ' + forecastName + '/' + elementName)
-            // Unregister callback on first component as processign will be performed by second one
-            dualService.off('created', dualService[refreshCallbackName])
-            refreshCallback = async forecast => {
-              // TODO
-            }
-          }
-        }
-        */
         // Register for forecast data updates when using internal event systems
         service[refreshCallbackName] = refreshCallback
         service.on('created', service[refreshCallbackName])
