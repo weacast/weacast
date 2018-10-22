@@ -415,10 +415,11 @@ export default {
     if (!probe.elements || probe.elements.length === 0) {
       throw new errors.BadRequest('Target forecast element(s) not specified')
     }
-    if (!probe.featureId) {
+    const forecastTime = query.forecastTime
+    // Probe streaming request a unique feature ID
+    if (!forecastTime && !probe.featureId) {
       throw new errors.BadRequest('Unique identifier for probe features not specified')
     }
-    const forecastTime = query.forecastTime
     // Retrieve target elements
     let services = this.getElementServicesForProbe(probe)
     debug('Probing following services for probe ' + (probe._id ? probe._id : 'on-demand '), services.map(service => service.name))
