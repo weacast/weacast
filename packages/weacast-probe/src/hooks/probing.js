@@ -39,7 +39,11 @@ export async function aggregateResultsQuery (hook) {
       query.$aggregate.forEach(element => {
         match['properties.' + element] = { $exists: true }
       })
-      let results = await collection.aggregate([ { $match: match }, { $group: groupBy } ]).toArray()
+      let results = await collection.aggregate([
+        { $match: match },                  // Find matching probre results
+        { $sort : { forecastTime : 1 } },   // Ensure they are ordered by increasing forecast time
+        { $group: groupBy }                 // And grouped by unique ID
+      ]).toArray()
       // Set back the element values as properties
       query.$aggregate.forEach(element => {
         results.forEach(result => {
