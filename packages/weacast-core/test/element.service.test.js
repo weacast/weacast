@@ -23,6 +23,18 @@ describe('weacast-core:elements', () => {
   let dataStores = ['db', 'fs', 'gridfs']
   let services = []
 
+  function cleanup() {
+    services.forEach(service => {
+      service.Model.drop()
+      // GridFS collections
+      if (service.element.dataStore === 'gridfs') {
+        app.db.collection(service.forecast.name + '/' + service.element.name + '.chunks').drop()
+        app.db.collection(service.forecast.name + '/' + service.element.name + '.files').drop()
+      }
+      fs.removeSync(service.getDataDirectory())
+    })
+  }
+
   before(() => {
     chailint(chai, util)
 
@@ -125,6 +137,7 @@ describe('weacast-core:elements', () => {
   })
 
   it('performs the element download processes with failed requests (403)', async () => {
+    cleanup()
     for (let i = 0; i < services.length; i++) {
       let service = services[i]
       // Clear any previous data
@@ -152,6 +165,7 @@ describe('weacast-core:elements', () => {
   .timeout(10000)
 
   it('performs the element download processes with failed requests (timeout)', async () => {
+    cleanup()
     for (let i = 0; i < services.length; i++) {
       let service = services[i]
       // Clear any previous data
@@ -179,6 +193,7 @@ describe('weacast-core:elements', () => {
   .timeout(10000)
 
   it('performs the element download processes with failed conversions', async () => {
+    cleanup()
     for (let i = 0; i < services.length; i++) {
       let service = services[i]
       // Clear any previous data
@@ -208,14 +223,6 @@ describe('weacast-core:elements', () => {
   // Cleanup
   after(() => {
     app.getService('forecasts').Model.drop()
-    services.forEach(service => {
-      service.Model.drop()
-      // GridFS collections
-      if (service.element.dataStore === 'gridfs') {
-        app.db.collection(service.forecast.name + '/' + service.element.name + '.chunks').drop()
-        app.db.collection(service.forecast.name + '/' + service.element.name + '.files').drop()
-      }
-      fs.removeSync(service.getDataDirectory())
-    })
+    cleanup()
   })
 })
