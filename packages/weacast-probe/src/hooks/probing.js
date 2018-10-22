@@ -41,7 +41,7 @@ export async function aggregateResultsQuery (hook) {
       })
       let results = await collection.aggregate([
         { $match: match },                  // Find matching probre results
-        { $sort : { forecastTime : 1 } },   // Ensure they are ordered by increasing forecast time
+        { $sort: { forecastTime: 1 } },   // Ensure they are ordered by increasing forecast time
         { $group: groupBy }                 // And grouped by unique ID
       ]).toArray()
       // Set back the element values as properties
