@@ -1,4 +1,5 @@
 import moment from 'moment'
+import _ from 'lodash'
 import { getItems, replaceItems } from 'feathers-hooks-common'
 
 // Helper function to convert time objects or array of time objects
@@ -16,6 +17,9 @@ export function marshallTime(item, property) {
     item[property] = new Date(time.format())
   } else if (typeof time === 'string') {
     item[property] = new Date(time)
+  }  else if (typeof time === 'object') { // Check if complex object such as comparison operator
+    // If so this will recurse
+    _.keys(time).forEach(key => marshallTime(time, key))
   }
 }
 
@@ -27,7 +31,11 @@ export function unmarshallTime(item, property) {
   if (Array.isArray(time)) {
     item[property] = time.map(t => !moment.isMoment(t) ? moment.utc(t.toISOString()) : t)
   } else if (!moment.isMoment(time)) {
-    item[property] = moment.utc(time.toISOString())
+    // Check if complex object indexed by element
+    const keys = _.keys(time)
+    // If so recurse
+    if (keys.length > 0) keys.forEach(key => unmarshallTime(time, key))
+    else item[property] = moment.utc(time.toISOString())
   }
 }
 

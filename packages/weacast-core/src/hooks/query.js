@@ -47,14 +47,7 @@ export function marshallQuery (hook) {
   if (query) {
     // Need to convert from client/server side types : string or moment dates
     marshallTime(query, 'runTime')
-    if (query.forecastTime && (query.forecastTime.$lt || query.forecastTime.$lte || query.forecastTime.$gt || query.forecastTime.$gte)) {
-      marshallTime(query.forecastTime, '$lt')
-      marshallTime(query.forecastTime, '$lte')
-      marshallTime(query.forecastTime, '$gt')
-      marshallTime(query.forecastTime, '$gte')
-    } else {
-      marshallTime(query, 'forecastTime')
-    }
+    marshallTime(query, 'forecastTime')
     
     // In this case take care that we always internally require the file path, it will be removed for the client by another hook
     if (!_.isNil(query.$select) && !_.isNil(service.element) && (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs')) {

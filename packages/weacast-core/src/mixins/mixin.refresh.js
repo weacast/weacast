@@ -269,6 +269,8 @@ export default {
     let runTime = this.getNearestRunTime(datetime)
     // We don't care about the past, however a forecast is still potentially valid at least until we reach the next one
     let lowerTime = datetime.clone().subtract({ seconds: this.forecast.interval })
+    // Check for accumulation period on accumulated elements
+    const accumulationPeriod = _.get(this.element, 'accumulationPeriod', 0)
     let times = []
     // Check for each forecast step if update is required
     for (let timeOffset = this.forecast.lowerLimit; timeOffset <= this.forecast.upperLimit; timeOffset += this.forecast.interval) {
@@ -277,6 +279,8 @@ export default {
       if (!this.forecast.keepPastForecasts) {
         discard = forecastTime.isBefore(lowerTime)
       }
+      // For accumulated elements it does not make sense to query before accumulation period
+      if (timeOffset < accumulationPeriod) discard = true
       if (!discard) {
         try {
           times.push(await this.harvestForecastTime(datetime, runTime, forecastTime))
