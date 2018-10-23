@@ -56,11 +56,22 @@ export default {
 
   // Build the request options to download given forecast time from input WCS data source
   getForecastTimeRequest (runTime, forecastTime) {
+    let suffix = ''
+    // Check for accumulation period on accumulated elements
+    let accumulationPeriod = this.element.accumulationPeriod || 0
+    if (accumulationPeriod > 0) {
+      // Jump to hours
+      accumulationPeriod = accumulationPeriod / 3600
+      // When less than 1 day suffix is PTXH
+      if (accumulationPeriod < 24) suffix = '_PT' + accumulationPeriod + 'H'
+      // When more than 1 day suffix is PXD
+      else suffix = '_P' + (accumulationPeriod / 24) + 'D'
+    }
     // Setup request with URL, token, subset parameters for WCS
     let queryParameters = {
       token: this.forecast.token,
       REQUEST: 'GetCoverage',
-      coverageid: this.element.coverageid + '___' + runTime.format(),
+      coverageid: this.element.coverageid + '___' + runTime.format() + suffix,
       subset: []
     }
     if (this.element.subsets) {
