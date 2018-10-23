@@ -127,6 +127,20 @@ export default {
     }
   },
 
+  pushTime(feature, timeName, elementName, time, value) {
+    // For each element we store the list of available times
+    const times = _.get(feature, timeName + '.' + elementName)
+    // Initialize
+    if (!times) _.set(feature, timeName + '.' + elementName, [time.format()])
+    else times.push(time.format())
+    // And we store associated value using a map to avoid any operation order-dependence
+    if (!_.isNil(value)) _.set(feature.properties, elementName + '.' + time.format(), value)
+  },
+
+  getValueAtTime(feature, elementName, time) {
+    return _.get(feature.properties, elementName + '.' + time.format())
+  },
+
   // Update the given features, for given probe, with interpolated values according to given forecast grid, run/forecast time
   async updateFeatures (features, probe, elementService, forecast) {
     const { runTime, forecastTime, grid } = forecast
@@ -141,62 +155,42 @@ export default {
     const bearingProperty = directionElement + 'BearingProperty'
     const bearingPropertyName = probe.hasOwnProperty(bearingProperty) ? probe[bearingProperty] : undefined
     const bearingDirectionProperty = directionElement + 'BearingDirection'
-
+    
     features.forEach(feature => {
-      feature.runTime = runTime
-      let forecastIndex = -1
       // Check if we process on-demand probing for a time range
-      if (Array.isArray(feature.forecastTime)) {
-        forecastIndex = feature.forecastTime.findIndex(time => time.isSame(forecastTime))
-        // New time to push
-        if (forecastIndex < 0) {
-          // Find where to insert
-          forecastIndex = feature.forecastTime.findIndex(time => time.isAfter(forecastTime))
-          if (forecastIndex < 0) {
-            feature.forecastTime.push(forecastTime)
-            forecastIndex = feature.forecastTime.length - 1
-          } else {
-            feature.forecastTime.splice(forecastIndex, 0, forecastTime)
-          }
-        }
-      } else {
-        feature.forecastTime = forecastTime
-      }
+      const isTimeRange = (feature.forecastTime && !moment.isMoment(feature.forecastTime))
       if (probe._id) feature.probeId = probe._id
       let value = grid.interpolate(feature.geometry.coordinates[0], feature.geometry.coordinates[1])
       if (value) { // Prevent values outside grid bbox
-        if (!feature.properties) { // Take care to initialize properties holder if not given in input feature
-          feature.properties = {}
-        }
         // Store interpolated element value
-        // Check if we process on-demand probing for a time range
-        if (forecastIndex >= 0) {
-          if (!_.has(feature, 'properties.' + elementName)) feature.properties[elementName] = []
-          feature.properties[elementName].splice(forecastIndex, 0, value)
+        if (isTimeRange) {
+          this.pushTime(feature, 'forecastTime', elementName, forecastTime, value)
+          this.pushTime(feature, 'runTime', elementName, runTime)
         } else {
+          feature.forecastTime = forecastTime
+          feature.runTime = runTime
           feature.properties[elementName] = value
         }
         // Update derived direction values as well in this case
         if (isComponentOfDirection) {
-          let u = feature.properties[uComponentPrefix + directionElement]
-          let v = feature.properties[vComponentPrefix + directionElement]
-          // Check if we process on-demand probing for a time range
-          if (forecastIndex >= 0) {
-            if (u && u.length) u = u[forecastIndex]
-            if (v && v.length) v = v[forecastIndex]
+          let u, v
+          if (isTimeRange) {
+            u = this.getValueAtTime(feature, uComponentPrefix + directionElement, forecastTime)
+            v = this.getValueAtTime(feature, vComponentPrefix + directionElement, forecastTime)
+          } else {
+            u = feature.properties[uComponentPrefix + directionElement]
+            v = feature.properties[vComponentPrefix + directionElement]
           }
           // Only possible if both elements are already computed
-          if (isFinite(u) && isFinite(v)) {
+          if (!_.isNil(u) && !_.isNil(v) && isFinite(u) && isFinite(v)) {
             // Compute direction expressed in meteorological convention, i.e. angle from which the flow comes
             let norm = Math.sqrt(u * u + v * v)
             let direction = 180.0 + Math.atan2(u, v) * 180.0 / Math.PI
             // Then store it
             // Check if we process on-demand probing for a time range
-            if (forecastIndex >= 0) {
-              if (!_.has(feature, 'properties.' + speedProperty)) feature.properties[speedProperty] = []
-              feature.properties[speedProperty].splice(forecastIndex, 0, norm)
-              if (!_.has(feature, 'properties.' + directionProperty)) feature.properties[directionProperty] = []
-              feature.properties[directionProperty].splice(forecastIndex, 0, direction)
+            if (isTimeRange) {
+              this.pushTime(feature, 'forecastTime', speedProperty, forecastTime, norm)
+              this.pushTime(feature, 'forecastTime', directionProperty, forecastTime, direction)
             } else {
               feature.properties[speedProperty] = norm
               feature.properties[directionProperty] = direction
@@ -212,10 +206,8 @@ export default {
                 direction -= bearing
                 if (direction < 0) direction += 360
                 // Then store it
-                // Check if we process on-demand probing for a time range
-                if (forecastIndex >= 0) {
-                  if (!_.has(feature, 'properties.' + bearingDirectionProperty)) feature.properties[bearingDirectionProperty] = []
-                  else feature.properties[bearingDirectionProperty].splice(forecastIndex, 0, direction)
+                if (isTimeRange) {
+                  this.pushTime(feature, 'forecastTime', bearingDirectionProperty, forecastTime, direction)
                 } else {
                   feature.properties[bearingDirectionProperty] = direction
                 }
@@ -385,7 +377,21 @@ export default {
   // and result features updated back in DB (probing stream)
   // This also registers the probe to perform updates on results when new forecast data are coming
   async probe (probe, query = {}) {
-    if (!probe || !probe.type || probe.type !== 'FeatureCollection') {
+    const forecastTime = query.forecastTime
+    const isTimeRange = (forecastTime && (forecastTime.$lt || forecastTime.$lte || forecastTime.$gt || forecastTime.$gte))
+    const geometry = _.get(query, 'geometry.$geoIntersects.$geometry')
+    // If querying at a specific location automatically generate the GeoJSON feature
+    if (geometry) {
+      Object.assign(probe, {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          properties: {},
+          geometry
+        }]
+      })
+    }
+    if (!probe.type || probe.type !== 'FeatureCollection') {
       throw new errors.BadRequest('Only GeoJSON FeatureCollection layers are supported to create probes')
     }
     if (!probe.forecast) {
@@ -394,7 +400,6 @@ export default {
     if (!probe.elements || probe.elements.length === 0) {
       throw new errors.BadRequest('Target forecast element(s) not specified')
     }
-    const forecastTime = query.forecastTime
     // Probe streaming request a unique feature ID
     if (!forecastTime && !probe.featureId) {
       throw new errors.BadRequest('Unique identifier for probe features not specified')
@@ -403,12 +408,13 @@ export default {
     let services = this.getElementServicesForProbe(probe)
     debug('Probing following services for probe ' + (probe._id ? probe._id : 'on-demand '), services.map(service => service.name))
     // When probing a location we use tiles, take care to use only single time tiles not aggregated if any
-    let forecastQuery = (query.geometry ? { timeseries: false } : {})
+    let forecastQuery = (geometry ? { timeseries: false } : {})
     Object.assign(forecastQuery, query)
     debug('Probing query', forecastQuery)
     // Then run all probes
     try {
       for (let service of services) {
+        const elementName = service.element.name
         // Will get all available forecast times (probing stream) or selected one(s) (on-demand probe)
         let forecasts = await service.find({ paginate: false, query: forecastQuery })
         debug('Probing following forecasts for probe ' + (probe._id ? probe._id : 'on-demand '), forecasts)
@@ -423,12 +429,13 @@ export default {
           if (features.length === 0) {
             features = probe.features
           }
-          // If we have a time range for on-demand probing tag features using an array
-          if (forecastTime && (forecastTime.$lt || forecastTime.$lte || forecastTime.$gt || forecastTime.$gte)) {
-            features.forEach(feature => {
-              if (!Array.isArray(feature.forecastTime)) feature.forecastTime = []
-            })
-          }
+          features.forEach(feature => {
+            // If we have a time range for on-demand probing tag features using an array
+            if (isTimeRange && !feature.forecastTime) feature.forecastTime = {}
+            // Take care to initialize properties holder if not given in input feature
+            if (!feature.properties) feature.properties = {}
+          })
+          
           // Ask to retrieve forecast data and perform probing
           await this.probeForecastTime(features, probe, service, forecast)
           // When performing probing on-demand we do not store any result,
@@ -447,6 +454,23 @@ export default {
     // Register for forecast data updates on probing streams
     if (!forecastTime) {
       this.registerForecastUpdates(probe)
+    } else if (isTimeRange) {
+      // Rearrange data so that we get ordered arrays indexed by element instead of maps
+      probe.features.forEach(feature => {
+        // Create the arrays of ordered times
+        feature.forecastTime = _.mapValues(feature.forecastTime,
+          (times, element) => times.map(time => moment.utc(time)).sort((a, b) => a - b))
+        feature.runTime = _.mapValues(feature.runTime,
+          (times, element) => times.map(time => moment.utc(time)).sort((a, b) => a - b))
+        // Then build the associated array of interpolated values
+        let properties = {}
+        _.forOwn(feature.forecastTime, (times, element) => {
+          properties[element] = []
+          times.forEach(time => properties[element].push(this.getValueAtTime(feature, element, time)))
+        })
+        // Update feature
+        Object.assign(feature.properties, properties)
+      })
     }
   }
 }

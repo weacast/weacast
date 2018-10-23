@@ -66,7 +66,7 @@ describe('weacast-probe', () => {
   // Let enough time to download a couple of data
   .timeout(30000)
 
-  it('performs probing element on-demand', (done) => {
+  it('performs probing element on-demand at forecast time', (done) => {
     uService.find({ paginate: false })
     .then(forecasts => {
       // We should have 2 forecast times
@@ -103,7 +103,7 @@ describe('weacast-probe', () => {
   // Let enough time to download a couple of data
   .timeout(10000)
 
-  it('performs probing element on-demand at specific location', (done) => {
+  it('performs probing element on-demand at specific location for forecast time range', (done) => {
     const geometry = {
       type: 'Point',
       coordinates: [ 1.5, 43 ]
@@ -137,8 +137,12 @@ describe('weacast-probe', () => {
       spyProbe.reset()
       spyUpdate.reset()
       expect(feature.forecastTime).toExist()
-      expect(feature.forecastTime.length).to.equal(2)
-      expect(feature.forecastTime[0].isBefore(feature.forecastTime[1])).beTrue()
+      expect(feature.forecastTime['u-wind']).toExist()
+      expect(feature.forecastTime['v-wind']).toExist()
+      expect(feature.forecastTime['u-wind'].length).to.equal(2)
+      expect(feature.forecastTime['v-wind'].length).to.equal(2)
+      expect(feature.forecastTime['u-wind'][0].isBefore(feature.forecastTime['u-wind'][1])).beTrue()
+      expect(feature.forecastTime['v-wind'][0].isBefore(feature.forecastTime['v-wind'][1])).beTrue()
       expect(feature.properties['u-wind']).toExist()
       expect(feature.properties['v-wind']).toExist()
       expect(feature.properties['u-wind'].length).to.equal(2)
@@ -242,7 +246,7 @@ describe('weacast-probe', () => {
     })
   })
 
-  it('performs element aggregation on probe results', () => {
+  it('performs element aggregation on probe results for forecast time range', () => {
     let query = {
       probeId,
       forecastTime: {
@@ -260,9 +264,12 @@ describe('weacast-probe', () => {
     .then(features => {
       expect(features.length).to.equal(1)
       const feature = features[0]
-      expect(feature.forecastTime).toExist()
-      expect(feature.forecastTime.length).to.equal(2)
-      expect(feature.forecastTime[0].isBefore(feature.forecastTime[1])).beTrue()
+      expect(feature.forecastTime['windDirection']).toExist()
+      expect(feature.forecastTime['windSpeed']).toExist()
+      expect(feature.forecastTime['windDirection'].length).to.equal(2)
+      expect(feature.forecastTime['windSpeed'].length).to.equal(2)
+      expect(feature.forecastTime['windDirection'][0].isBefore(feature.forecastTime['windDirection'][1])).beTrue()
+      expect(feature.forecastTime['windSpeed'][0].isBefore(feature.forecastTime['windSpeed'][1])).beTrue()
       expect(feature.properties['windSpeed'].length).to.equal(2)
       expect(feature.properties['windDirection'].length).to.equal(2)
       expect(typeof feature.properties['windDirection'][0]).to.equal('number')

@@ -26,34 +26,50 @@ export async function aggregateResultsQuery (hook) {
       let groupBy = {
         _id: '$' + query.$groupBy, // Group by matching ID
         forecastTime: { $push: '$forecastTime' }, // Keep track of all forecast times
+        runTime: { $push: '$runTime' }, // Keep track of all run times
         geometry: { $last: '$geometry' }, // geometry is similar for all results, keep last
         properties: { $last: '$properties' } // properties are similar for all results, keep last
       }
-      // Keep track of all element values
-      query.$aggregate.forEach(element => {
-        groupBy[element] = { $push: '$properties.' + element }
-      })
       // The query contains the match stage except options relevent to the aggregation pipeline
       let match = _.omit(query, ['$groupBy', '$aggregate'])
       // Ensure we do not mix results with/without relevant element values
-      query.$aggregate.forEach(element => {
-        match['properties.' + element] = { $exists: true }
-      })
-      let results = await collection.aggregate([
-        { $match: match },                  // Find matching probre results
-        { $sort: { forecastTime: 1 } },   // Ensure they are ordered by increasing forecast time
-        { $group: groupBy }                 // And grouped by unique ID
-      ]).toArray()
-      // Set back the element values as properties
-      query.$aggregate.forEach(element => {
-        results.forEach(result => {
+      // by separately querying each element then merging
+      let aggregatedResults
+      await Promise.all(query.$aggregate.map(async element => {
+        let partialResults = await collection.aggregate([
+          // Find matching probre results only
+          { $match: Object.assign({ ['properties.' + element]: { $exists: true } }, match) },
+          // Ensure they are ordered by increasing forecast time
+          { $sort: { forecastTime: 1 } },
+          // Keep track of all element values
+          { $group: Object.assign({ [element]: { $push: '$properties.' + element } }, groupBy) }
+        ]).toArray()
+        // Rearrange data so that we get ordered arrays indexed by element
+        partialResults.forEach(result => {
+          result.forecastTime = { [element]: result.forecastTime }
+          result.runTime = { [element]: result.runTime }
+          // Set back the element values as properties because we aggregated in an accumulator
+          // to avoid conflict with probe properties
           result.properties[element] = result[element]
+          // Delete accumulator
           delete result[element]
         })
-      })
+        // Now merge
+        if (!aggregatedResults) aggregatedResults = partialResults
+        else {
+          partialResults.forEach(result => {
+            let previousResult = aggregatedResults.find(aggregatedResult => aggregatedResult[query.$groupBy] === result[query.$groupBy])
+            if (previousResult) {
+              Object.assign(previousResult.forecastTime, result.forecastTime)
+              Object.assign(previousResult.runTime, result.runTime)
+              previousResult.properties[element] = result.properties[element]
+            }
+          })
+        }
+      }))
       delete query.$aggregate
       // Set result to avoid service DB call
-      hook.result = results
+      hook.result = aggregatedResults
     }
   }
   return hook
