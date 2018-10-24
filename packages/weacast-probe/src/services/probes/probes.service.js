@@ -161,7 +161,7 @@ export default {
       const isTimeRange = (feature.forecastTime && !moment.isMoment(feature.forecastTime))
       if (probe._id) feature.probeId = probe._id
       let value = grid.interpolate(feature.geometry.coordinates[0], feature.geometry.coordinates[1])
-      if (value) { // Prevent values outside grid bbox
+      if (!_.isNil(value) && isFinite(value)) { // Prevent values outside grid bbox
         // Store interpolated element value
         if (isTimeRange) {
           this.pushTime(feature, 'forecastTime', elementName, forecastTime, value)
