@@ -17,9 +17,10 @@ export default {
   },
 
   getNearestForecastTime (datetime) {
+    const interval = this.element.interval || this.forecast.interval
     // Compute nearest forecast T0
-    let offsetDateTime = datetime.clone().add({ seconds: 0.5 * this.forecast.interval })
-    return datetime.clone().hours(roundHours(offsetDateTime.hours(), this.forecast.interval / 3600)).minutes(0).seconds(0).milliseconds(0)
+    let offsetDateTime = datetime.clone().add({ seconds: 0.5 * interval })
+    return datetime.clone().hours(roundHours(offsetDateTime.hours(), interval / 3600)).minutes(0).seconds(0).milliseconds(0)
   },
 
   readFromGridFS (filePath) {
