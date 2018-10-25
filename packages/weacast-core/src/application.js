@@ -1,4 +1,5 @@
 import path from 'path'
+import makeDebug from 'debug'
 import logger from 'winston'
 import 'winston-daily-rotate-file'
 import proto from 'uberproto'
@@ -24,6 +25,8 @@ import CognitoStrategy from 'passport-oauth2-cognito'
 import OAuth2Verifier from './verifier'
 import mongo from 'mongodb'
 import { Database } from './db'
+
+const debug = makeDebug('weacast:weacast-core:application')
 
 function auth () {
   const app = this
@@ -92,19 +95,36 @@ function declareService (name, app, service) {
   const path = app.get('apiPath') + '/' + name
   // Initialize our service
   app.use(path, service)
+  debug('Service declared on path ' + path)
 
   return app.getService(name)
 }
 
 function configureService (name, service, servicesPath) {
-  const hooksFile = path.join(servicesPath, name, name + '.hooks')
-  const hooks = require(hooksFile)
-  service.hooks(hooks)
+  try {
+    const hooks = require(path.join(servicesPath, name, name + '.hooks'))
+    service.hooks(hooks)
+    debug(name + ' service hooks configured on path ' + servicesPath)
+  } catch (error) {
+    debug('No ' + name + ' service hooks configured on path ' + servicesPath)
+    if (error.code !== 'MODULE_NOT_FOUND') {
+      // Log error in this case as this might be linked to a syntax error in required file
+      debug(error)
+    }
+    // As this is optionnal this require has to fail silently
+  }
 
-  if (service.filter) {
-    const filtersFile = path.join(servicesPath, name, name + '.filters')
-    const filters = require(filtersFile)
+  try {
+    const filters = require(path.join(servicesPath, name, name + '.filters'))
     service.filter(filters)
+    debug(name + ' service filters configured on path ' + servicesPath)
+  } catch (error) {
+    debug('No ' + name + ' service filters configured on path ' + servicesPath)
+    if (error.code !== 'MODULE_NOT_FOUND') {
+      // Log error in this case as this might be linked to a syntax error in required file
+      debug(error)
+    }
+    // As this is optionnal this require has to fail silently
   }
 
   return service
@@ -132,12 +152,18 @@ export function createService (name, app, modelsPath, servicesPath, options) {
     const serviceMixin = require(path.join(servicesPath, name, name + '.service'))
     service.mixin(serviceMixin)
   } catch (error) {
+    debug('No ' + name + ' service mixin configured on path ' + servicesPath)
+    if (error.code !== 'MODULE_NOT_FOUND') {
+      // Log error in this case as this might be linked to a syntax error in required file
+      debug(error)
+    }
     // As this is optionnal this require has to fail silently
   }
   // Then configuration
   service.name = name
   service.app = app
 
+  debug(service.name + ' service registration completed')
   return service
 }
 
@@ -190,6 +216,7 @@ export function createElementService (forecast, element, app, servicesPath, opti
     })
   }
 
+  debug(service.name + ' element service registration completed')
   return service
 }
 
