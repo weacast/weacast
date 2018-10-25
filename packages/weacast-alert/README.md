@@ -8,7 +8,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-alert/badge.svg)](https://snyk.io/test/github/weacast/weacast-alert)
 [![Download Status](https://img.shields.io/npm/dm/weacast-alert.svg?style=flat-square)](https://www.npmjs.com/package/weacast-alert)
 
-> Probing forecast model plugin for Weacast
+> Forecast alert plugin for Weacast
 
 ## Installation
 
@@ -53,7 +53,7 @@ cd api
 npm link weacast-alert
 ```
 
-As this module also depends on [weacast-core](https://github.com/weacast/weacast-core) you have to do the same thing for it.
+As this module also depends on [weacast-core](https://github.com/weacast/weacast-core) and [weacast-probe](https://github.com/weacast/weacast-probe) you have to do the same thing for it.
 
 ## License
 

@@ -1,10 +1,8 @@
-import authentication from 'feathers-authentication'
 import { disallow } from 'feathers-hooks-common'
-const authenticate = authentication.hooks.authenticate
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
+    all: [],
     find: [],
     get: [],
     create: [],
@@ -17,10 +15,10 @@ module.exports = {
     all: [],
     find: [],
     get: [],
-    create: [],
+    create: [ hook => hook.service.registerAlert(hook.result) ],
     update: [],
     patch: [],
-    remove: []
+    remove: [ hook => hook.service.unregisterAlert(hook.result) ]
   },
 
   error: {

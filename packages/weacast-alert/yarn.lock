@@ -1295,6 +1295,12 @@ cors@^2.8.1:
     object-assign "^4"
     vary "^1"
 
+cron@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/cron/-/cron-1.4.1.tgz#ce8451ba4d77c4dbc075526bfdcadcee5bf2bda2"
+  dependencies:
+    moment-timezone "^0.5.x"
+
 cross-env@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-4.0.0.tgz#16083862d08275a4628b0b243b121bedaa55dd80"
@@ -3340,7 +3346,13 @@ mocha@^3.2.0:
     mkdirp "0.5.1"
     supports-color "3.1.2"
 
-moment@2.x.x:
+moment-timezone@^0.5.x:
+  version "0.5.21"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.21.tgz#3cba247d84492174dbf71de2a9848fa13207b845"
+  dependencies:
+    moment ">= 2.9.0"
+
+moment@2.x.x, "moment@>= 2.9.0":
   version "2.22.2"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
 
@@ -3418,12 +3430,6 @@ node-abi@^2.2.0:
   resolved "https://registry.yarnpkg.com/node-abi/-/node-abi-2.4.3.tgz#43666b7b17e57863e572409edbb82115ac7af28b"
   dependencies:
     semver "^5.4.1"
-
-node-cron@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/node-cron/-/node-cron-2.0.1.tgz#c30ba49a34a0123dec3ccfa3cda752f09a872954"
-  dependencies:
-    tz-offset "0.0.1"
 
 node-pre-gyp@^0.6.36, node-pre-gyp@~0.6.27:
   version "0.6.36"
@@ -4646,10 +4652,6 @@ type-is@~1.6.15, type-is@~1.6.16:
 typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
-
-tz-offset@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/tz-offset/-/tz-offset-0.0.1.tgz#fef920257024d3583ed9072a767721a18bdb8a76"
 
 uberproto@^1.2.0:
   version "1.2.0"

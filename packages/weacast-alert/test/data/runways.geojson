@@ -42,37 +42,6 @@
       "type": "Feature",
       "properties": {
         "Airport": "AYMH",
-        "Ident": "RW12",
-        "RevCode": "2",
-        "TrueNorth": "M",
-        "MagBearing": "116.00",
-        "Length": 7185,
-        "Latitude": "S05-49-22.76",
-        "Longitude": "E144-17-27.37",
-        "ThrDisp": 0,
-        "Elevation": 5390,
-        "ILS Navaid": null,
-        "ILS Cat": 0,
-        "ILS LBearing": null,
-        "ILS2 Navaid": null,
-        "ILS2 Cat": 0,
-        "ILS2 LBearing": null,
-        "ThrCrossHeight": 50.000000,
-        "VFR": " ",
-        "Width": 100
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          144.29093611111111,
-          -5.822988888888889
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "Airport": "AYMH",
         "Ident": "RW30",
         "RevCode": "1",
         "TrueNorth": "M",
