@@ -24,7 +24,9 @@ export async function aggregateResultsQuery (hook) {
     if (query.$aggregate) {
       const collection = hook.service.Model
       let groupBy = {
-        _id: '$' + query.$groupBy, // Group by matching ID
+        _id: typeof query.$groupBy === 'string' ?  // Group by matching ID(s)
+          '$' + query.$groupBy :
+          query.$groupBy.reduce((object, id) => Object.assign(object, { [id.replace('properties.', '')]: '$' + id }), {}),
         forecastTime: { $push: '$forecastTime' }, // Keep track of all forecast times
         runTime: { $push: '$runTime' }, // Keep track of all run times
         geometry: { $last: '$geometry' }, // geometry is similar for all results, keep last

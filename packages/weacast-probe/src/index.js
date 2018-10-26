@@ -4,7 +4,9 @@ import makeDebug from 'debug'
 
 const debug = makeDebug('weacast:weacast-probe')
 
-export default function init () {
+export default async function init () {
+  debug('Initializing weacast-probe')
+  
   let app = this
   const syncConfig = app.get('sync')
   // Setup sync with external loaders if any
@@ -21,10 +23,6 @@ export default function init () {
   app.createService('probe-results', path.join(__dirname, 'models'), path.join(__dirname, 'services'))
 
   // On startup restore listeners for forecast data updates required to update probe results
-  probesService.find({ paginate: false })
-  .then(probes => {
-    probes.forEach(probe => {
-      probesService.registerForecastUpdates(probe)
-    })
-  })
+  const probes = await probesService.find({ paginate: false })
+  probes.forEach(probe => probesService.registerForecastUpdates(probe))
 }
