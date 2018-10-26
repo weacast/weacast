@@ -15,7 +15,7 @@ export function marshallAlert (hook) {
     hooks.marshallTime(item.status, 'checkedAt')
     hooks.marshallTime(item.status, 'triggeredAt')
     // Because conditions contains Mongo reserved keywords we have to serialize them otherwise it raises error
-  	if (item.conditions) item.conditions = JSON.stringify(item.conditions)
+    if (item.conditions) item.conditions = JSON.stringify(item.conditions)
   })
 
   replaceItems(hook, isArray ? items : items[0])
@@ -32,7 +32,7 @@ export function unmarshallAlert (hook) {
     hooks.unmarshallTime(item.status, 'checkedAt')
     hooks.unmarshallTime(item.status, 'triggeredAt')
     // Because we serialize conditions we have to unserialize them
-  	if (item.conditions) item.conditions = JSON.parse(item.conditions)
+    if (item.conditions) item.conditions = JSON.parse(item.conditions)
   })
 
   replaceItems(hook, isArray ? items : items[0])

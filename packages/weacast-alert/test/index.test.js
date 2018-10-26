@@ -13,9 +13,10 @@ import alert from '../src'
 describe('weacast-alert', () => {
   let app, uService, vService, probeService, probeResultService, alertService,
     geojson, probeId, probeAlert, spyRegisterAlert, spyUnregisterAlert, spyCheckAlert
-  let activeCount = 0, eventCount = 0
+  let activeCount = 0
+  let eventCount = 0
 
-  function checkAlertEvent(event) {
+  function checkAlertEvent (event) {
     const { alert, triggers } = event
     eventCount++
     if (alert.status.active) {
@@ -28,7 +29,7 @@ describe('weacast-alert', () => {
     }
   }
 
-  function resetAlertEvent() {
+  function resetAlertEvent () {
     activeCount = 0
     eventCount = 0
   }
@@ -88,7 +89,7 @@ describe('weacast-alert', () => {
     const data = await probeService.create(geojson)
     probeId = data._id
     // Wait long enough to be sure the results are here
-    //await utility.promisify(setTimeout)(5000)
+    // await utility.promisify(setTimeout)(5000)
   })
   // Let enough time to download a couple of data
   .timeout(10000)
@@ -97,7 +98,7 @@ describe('weacast-alert', () => {
     const now = moment.utc()
     probeAlert = await alertService.create({
       cron: '*/5 * * * * *',
-      //expireAt: now.add({ days: 1 }), // This is default expiration
+      // expireAt: now.add({ days: 1 }), // This is default expiration
       probeId,
       featureId: geojson.featureId,
       period: {
@@ -116,13 +117,13 @@ describe('weacast-alert', () => {
         windSpeed: { $gte: 0 } // Set a large range so that we are sure it will trigger
       }
     })
-    expect(spyRegisterAlert).to.have.been.called.once
+    expect(spyRegisterAlert).to.have.been.called.once()
     spyRegisterAlert.reset()
     let results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
     // Wait long enough to be sure the cron has been called twice
     await utility.promisify(setTimeout)(10000)
-    expect(spyCheckAlert).to.have.been.called.twice
+    expect(spyCheckAlert).to.have.been.called.twice()
     spyCheckAlert.reset()
     expect(eventCount).to.equal(2)
     expect(activeCount).to.equal(2)
@@ -141,7 +142,7 @@ describe('weacast-alert', () => {
 
   it('removes active alert on probes', async () => {
     await alertService.remove(probeAlert._id.toString())
-    expect(spyUnregisterAlert).to.have.been.called.once
+    expect(spyUnregisterAlert).to.have.been.called.once()
     spyUnregisterAlert.reset()
     const results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(0)
@@ -154,10 +155,8 @@ describe('weacast-alert', () => {
   .timeout(10000)
 
   it('creates inactive alert on probes', async () => {
-    const now = moment.utc()
     probeAlert = await alertService.create({
       cron: '*/5 * * * * *',
-      //expireAt: now.add({ days: 1 }), // This is default expiration
       probeId,
       featureId: geojson.featureId,
       period: {
@@ -173,7 +172,7 @@ describe('weacast-alert', () => {
     expect(results.length).to.equal(1)
     // Wait long enough to be sure the cron has been called twice
     await utility.promisify(setTimeout)(10000)
-    expect(spyCheckAlert).to.have.been.called.twice
+    expect(spyCheckAlert).to.have.been.called.twice()
     spyCheckAlert.reset()
     expect(eventCount).to.equal(2)
     expect(activeCount).to.equal(0)
@@ -210,7 +209,7 @@ describe('weacast-alert', () => {
     // Wait long enough to be sure the cron should have been called three times
     await utility.promisify(setTimeout)(15000)
     // Check due to expiration it has actually been called twice
-    expect(spyCheckAlert).to.have.been.called.twice
+    expect(spyCheckAlert).to.have.been.called.twice()
     spyCheckAlert.reset()
     expect(eventCount).to.equal(1)
     expect(activeCount).to.equal(1)
