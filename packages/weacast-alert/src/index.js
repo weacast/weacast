@@ -8,7 +8,7 @@ export default async function init () {
 
   // Setup custom events as service options
   let alertsService = app.createService('alerts', path.join(__dirname, 'models'), path.join(__dirname, 'services'), {
-    events: ['alert']
+    events: ['alerts']
   })
   
   // On startup restore alerts CRON tasks

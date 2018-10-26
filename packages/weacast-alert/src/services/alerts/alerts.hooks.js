@@ -1,18 +1,30 @@
-import { disallow } from 'feathers-hooks-common'
+import moment from 'moment'
+import { disallow, when } from 'feathers-hooks-common'
+import * as hooks from '../../hooks'
 
 module.exports = {
   before: {
     all: [],
     find: [],
     get: [],
-    create: [],
+    create: [
+      // Add default expiration date if none provided
+      when(hook => !hook.data.expireAt, hook => {
+        hook.data.expireAt = moment.utc().add({ days: 1 })
+        return hook
+      }),
+      hooks.marshallAlert
+    ],
     update: disallow(),
-    patch: disallow(),
+    patch: [
+      disallow('external'),
+      hooks.marshallAlert
+    ],
     remove: []
   },
 
   after: {
-    all: [],
+    all: [ hooks.unmarshallAlert ],
     find: [],
     get: [],
     create: [ hook => hook.service.registerAlert(hook.result) ],

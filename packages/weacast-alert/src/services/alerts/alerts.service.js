@@ -27,32 +27,50 @@ export default {
 	},
 
 	async checkAlert (alert) {
-		debug('Checking alert ', alert)
-		const probeResultService = this.app.getService('probe-results')
 		const now = moment.utc()
-		// Convert conditions to internal data model and Mongo operators
-		let conditions = _.mapKeys(alert.conditions, (value, key) => 'properties.' + key)
-		const operators= [ 'gte', 'gt', 'lte', 'lt' ]
-		conditions = _.mapValues(conditions, (value, key) =>
-			_.mapKeys(value, (value, key) => operators.includes(key) ? '$' + key : key))
-		// First perform aggregation over time range
+		debug('Checking alert at ' + now.format(), _.omit(alert, ['status']))
+		// First check if still valid
+		if (now.isAfter(alert.expireAt)) {
+			this.unregisterAlert(alert)
+			return
+		}
+		const probeResultService = this.app.getService('probe-results')
+		// Convert conditions to internal data model
+		const conditions = _.mapKeys(alert.conditions, (value, key) => {
+			return (alert.elements.includes(key) ? 'properties.' + key : key)
+		})
+		// Perform aggregation over time range
 		let query = Object.assign({
       probeId: alert.probeId,
       forecastTime: {
-        $gte: now.add(_.get(alert, 'period.start', { seconds: 0 })).toDate(),
+        $gte: now.clone().add(_.get(alert, 'period.start', { seconds: 0 })).toDate(),
         $lte: now.clone().add(_.get(alert, 'period.end', { seconds: 24 * 3600 })).toDate()
       },
       $groupBy: alert.featureId,
       $aggregate: alert.elements
     }, conditions)
-    console.log(await probeResultService.find({ paginate: false }))
-    console.log(query)
     let results = await probeResultService.find({ paginate: false, query })
-    console.log(results)
-    // Then check for time period
-
-    // Then flag alert
-    //let status = { active: true }
-    //await this.patch(alert._id.toString(), { status })
+    // FIXME: check for a specific duration where conditions are met
+    const isActive = (results.length > 0)
+    const wasActive = _.get(alert, 'status.active')
+    // Then update alert status
+    let status = {
+    	active: isActive,
+    	checkedAt: now
+    }
+    // If not previously active and it is now add first time stamp
+    if (!wasActive && isActive) {
+    	status.triggeredAt = now
+    } else if (wasActive) { // Else keep track of trigger time stamp
+    	status.triggeredAt = _.get(alert, 'status.triggeredAt')
+    }
+    debug('Alert ' + alert._id.toString() + ' status', status)
+    // Emit event
+    let event = { alert }
+    if (isActive) event.triggers = results
+    const result = await this.patch(alert._id.toString(), { status })
+    // Keep track of changes in memory as well
+    Object.assign(alert, result)
+    this.emit('alerts', event)
 	}
 }
