@@ -72,9 +72,9 @@ function marshallGeometryQuery (query) {
       // Geospatial parameters begin with $
       if (key.startsWith('$')) {
         // Some target coordinates
-        if (!_.isNil(value.coordinates)) {
+        if (!_.isNil(value.coordinates) && (value.coordinates.length > 0) && (typeof value.coordinates[0] === 'string')) {
           value.coordinates = value.coordinates.map(coordinate => _.toNumber(coordinate))
-        } else {
+        } else if (typeof value === 'string') {
           // Other simple values
           geoOperator[key] = _.toNumber(value)
         }
