@@ -88,7 +88,7 @@ export default {
     }
     // Check for processing function
     if (typeof this.element.transform === 'function') {
-      for (let i = 1; i < grid.length; i++) {
+      for (let i = 0; i < grid.length; i++) {
         grid[i] = this.element.transform({
           runTime, forecastTime, value: grid[i], index: i, data: grid, forecast: this.forecast, element: this.element
         })
