@@ -86,6 +86,14 @@ export default {
     if (this.element.dataStore === 'gridfs') {
       await this.saveToGridFS(this.getForecastTimeConvertedFilePath(runTime, forecastTime))
     }
+    // Check for processing function
+    if (typeof this.element.transform === 'function') {
+      for (let i = 1; i < grid.length; i++) {
+        grid[i] = this.element.transform({
+          runTime, forecastTime, value: grid[i], index: i, data: grid, forecast: this.forecast, element: this.element
+        })
+      }
+    }
     // Compute min/max values
     let forecast = Object.assign({
       runTime: runTime,
