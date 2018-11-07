@@ -8,7 +8,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-leaflet/badge.svg)](https://snyk.io/test/github/weacast/weacast-leaflet)
 [![Download Status](https://img.shields.io/npm/dm/weacast-leaflet.svg?style=flat-square)](https://www.npmjs.com/package/weacast-leaflet)
 
-> Basic utils to support Weacast-based clients
+> Basic utils to display Weacast forecast layers in Leaflet
 
 ## Installation
 
