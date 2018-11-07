@@ -5,7 +5,7 @@ import _ from 'lodash'
 import makeDebug from 'debug'
 import { getItems, replaceItems, discard } from 'feathers-hooks-common'
 import { marshallTime } from './marshall'
-import { Grid } from '../grid'
+import { Grid } from '../common/grid'
 
 const debug = makeDebug('weacast:weacast-core')
 const discardDataField = discard('data')

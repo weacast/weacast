@@ -6,7 +6,7 @@ import request from 'request'
 import errors from 'feathers-errors'
 import logger from 'winston'
 import makeDebug from 'debug'
-import { Grid } from '../grid'
+import { Grid } from '../common/grid'
 const debug = makeDebug('weacast:weacast-core')
 
 function getMinMax(grid) {

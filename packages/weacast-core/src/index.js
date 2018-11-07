@@ -10,7 +10,7 @@ export let elements = { filters, hooks }
 export { weacast }
 export { initializeElements, initializePlugin }
 export { Database } from './db'
-export * from './grid'
+export * from './common'
 export * as hooks from './hooks'
 export * from './mixins'
 
