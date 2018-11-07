@@ -59,7 +59,7 @@
     "lodash": "^4.17.4",
     "mathjs": "^5.2.2",
     "pixi.js": "^4.8.2",
-    "weacast-core": "^0.8.0"
+    "weacast-core": "^0.7.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
