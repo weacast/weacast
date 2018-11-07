@@ -1,0 +1,84 @@
+{
+  "name": "weacast-leaflet",
+  "description": "Basic utilitiess to support Weacast-based clients",
+  "version": "0.6.2",
+  "homepage": "https://github.com/weacast/weacast-leaflet",
+  "main": "lib/",
+  "keywords": [
+    "weacast",
+    "weacast-plugin"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/weacast/weacast-leaflet.git"
+  },
+  "author": {
+    "name": "Weacast contributors",
+    "url": "https://github.com/weacast"
+  },
+  "contributors": [],
+  "bugs": {
+    "url": "https://github.com/weacast/weacast-leaflet/issues"
+  },
+  "engines": {
+    "node": ">= 4.6.0"
+  },
+  "scripts": {
+    "prepublish": "npm run compile",
+    "publish": "git push origin --tags && npm run changelog && git push origin",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish",
+    "changelog": "github_changelog_generator -u weacast -p weacast-leaflet && git add CHANGELOG.md && git commit -am \"Updating changelog\"",
+    "compile": "shx rm -rf lib/ && babel -d lib/ src/ -s",
+    "watch": "npm run compile && babel --watch -d lib/ src/",
+    "lint": "standard src/**/*.js test/**/*.js --fix",
+    "mocha": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --opts mocha.opts",
+    "coverage": "cross-env NODE_CONFIG_DIR=./test/config/ node node_modules/istanbul/lib/cli cover node_modules/mocha/bin/_mocha -- --opts mocha.opts",
+    "test": "npm run compile && npm run lint && npm run coverage",
+    "start": "npm run compile && node lib"
+  },
+  "standard": {
+    "sourceType": "module",
+    "env": [
+      "mocha"
+    ]
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "chroma-js": "^1.3.4",
+    "jquery": "^3.2.1",
+    "leaflet": "^1.0.3",
+    "leaflet-heatmap": "^1.0.0",
+    "leaflet-pixi-overlay": "^1.5.1",
+    "leaflet-timedimension": "^1.1.0",
+    "leaflet-velocity": "^1.2.2",
+    "lodash": "^4.17.4",
+    "mathjs": "^5.2.2",
+    "pixi.js": "^4.8.2",
+    "weacast-core": "^0.8.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.24.1",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
+    "babel-plugin-transform-runtime": "^6.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^3.5.0",
+    "chai-lint": "^0.1.1",
+    "config": "^1.26.1",
+    "containerized": "^1.0.2",
+    "cross-env": "^4.0.0",
+    "isomorphic-fetch": "^2.2.1",
+    "istanbul": "^1.1.0-alpha.1",
+    "jsdom": "^10.1.0",
+    "jsdom-global": "^3.0.2",
+    "mocha": "^3.2.0",
+    "shx": "^0.2.2",
+    "standard": "^10.0.2"
+  }
+}
