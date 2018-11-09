@@ -33,6 +33,14 @@ export function weacast (config) {
   api.getService = function (path) {
     return api.service(config.apiPath + '/' + path)
   }
+  // Simple interface to manage current forecast time
+  api.setForecastTime = function (time) {
+    api.forecastTime = time
+    api.emit('forecast-time-changed', time)
+  }
+  api.getForecastTime = function () {
+    return api.forecastTime
+  }
 
   return api
 }

@@ -1,26 +1,17 @@
 import fs from 'fs-extra'
 import logger from 'winston'
+import { getNearestRunTime, getNearestForecastTime } from '../common'
 
-/*
-  Round hours to expected interval, e.g. we're currently using 6 hourly interval i.e. 00 || 06 || 12 || 18
-  @return {string}
- */
-function roundHours (hours, interval) {
-  return (Math.floor(hours / interval) * interval)
-}
 
 export default {
 
   getNearestRunTime (datetime) {
-    // Compute nearest run T0
-    return datetime.clone().hours(roundHours(datetime.hours(), this.forecast.runInterval / 3600)).minutes(0).seconds(0).milliseconds(0)
+    return getNearestRunTime(datetime, this.forecast.runInterval)
   },
 
   getNearestForecastTime (datetime) {
     const interval = this.element.interval || this.forecast.interval
-    // Compute nearest forecast T0
-    let offsetDateTime = datetime.clone().add({ seconds: 0.5 * interval })
-    return datetime.clone().hours(roundHours(offsetDateTime.hours(), interval / 3600)).minutes(0).seconds(0).milliseconds(0)
+    return getNearestForecastTime(datetime, interval)
   },
 
   readFromGridFS (filePath) {
