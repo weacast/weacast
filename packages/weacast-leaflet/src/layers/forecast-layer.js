@@ -1,60 +1,31 @@
 import L from 'leaflet'
-import 'leaflet-timedimension/dist/leaflet.timedimension.src.js'
-import 'leaflet-timedimension/dist/leaflet.timedimension.control.css'
+import { getNearestForecastTime } from 'weacast-core/common'
 
-let ForecastLayer = L.TimeDimension.Layer.extend({
+let ForecastLayer = L.Layer.extend({
 
   initialize (api, layer, options) {
     this.api = api
-    L.TimeDimension.Layer.prototype.initialize.call(this, layer, options)
+    this.baseLayer = layer
+    this.onForecastTimeChanged = this.fetchData.bind(this)
+    L.setOptions(this, options || {})
   },
 
   onAdd (map) {
-    L.TimeDimension.Layer.prototype.onAdd.call(this, map)
-    map.addLayer(this._baseLayer)
-    if (this._timeDimension && this._timeDimension.getCurrentTime()) {
-      this.currentForecastTime = new Date(this._timeDimension.getCurrentTime())
-      this.fetchData()
-    }
-  },
-
-  _onNewTimeLoading (event) {
-    this.currentForecastTime = new Date(event.time)
+    map.addLayer(this.baseLayer)
+    this.api.on('forecast-time-changed', this.onForecastTimeChanged)
     this.fetchData()
   },
 
-  isReady (time) {
-    return (this.downloadedForecastTime ? this.downloadedForecastTime.getTime() === time : false)
-  },
-
-  _update () {
-    // To be more reactive update is done directly after download not when the layer check is performed
-    return true
-  },
-
-  fetchAvailableTimes () {
-    if (!this.options.elements || this.options.elements.length === 0 || !this._timeDimension) return
-    // We assume that if multiple elements all have the same forecast times because sharing the underlying forecast model
-    const serviceName = this.forecastModel.name + '/' + this.options.elements[0]
-    // Check if we can use Weacast interface or basic Feathers interface
-    const service = (typeof this.api.getService === 'function' ? this.api.getService(serviceName) : this.api.service(serviceName))
-    return service.find({
-      query: {
-        $paginate: false,
-        $select: ['forecastTime']
-      }
-    })
-    .then(response => {
-      let times = response.map(item => item.forecastTime)
-      this._timeDimension.setAvailableTimes(times.join(), 'replace')
-    })
+  onRemove (map) {
+    map.removeLayer(this.baseLayer)
+    this.api.removeListener('forecast-time-changed', this.onForecastTimeChanged)
   },
 
   getQuery () {
     // Default implementation
     return {
       query: {
-        time: this.currentForecastTime.toISOString(),
+        time: this.currentForecastTime.format(),
         $select: ['forecastTime', 'data', 'minValue', 'maxValue'],
         $paginate: false,
         // Resample according to input parameters
@@ -76,24 +47,23 @@ let ForecastLayer = L.TimeDimension.Layer.extend({
 
   fetchData () {
     // Not yet ready
-    if (!this.forecastModel || !this.currentForecastTime) return
+    if (!this.forecastModel || !this.api.getForecastTime()) return
+    // Find nearest available data
+    this.currentForecastTime = getNearestForecastTime(this.api.getForecastTime(), this.forecastModel.interval)
     // Already up-to-date ?
-    if (this.downloadedForecastTime &&
-        (this.currentForecastTime.getTime() === this.downloadedForecastTime.getTime())) return
-    this.downloadedForecastTime = this.currentForecastTime
+    if (this.downloadedForecastTime && this.downloadedForecastTime.isSame(this.currentForecastTime)) return
+    this.downloadedForecastTime = this.currentForecastTime.clone()
     // Query data for current time
     let query = this.getQuery()
     let queries = []
     for (let element of this.options.elements) {
       const serviceName = this.forecastModel.name + '/' + element
-      // Check if we can use Weacast interface or basic Feathers interface
-      const service = (typeof this.api.getService === 'function' ? this.api.getService(serviceName) : this.api.service(serviceName))
-      queries.push(service.find(query))
+      queries.push(this.api.getService(serviceName).find(query))
     }
 
     return Promise.all(queries)
     .then(results => {
-      // To be reactive directly set data after download, flatten because find returns an array even if a sngle element is selected
+      // To be reactive directly set data after download, flatten because find returns an array even if a single element is selected
       this.setData([].concat(...results))
     })
   },
@@ -102,7 +72,7 @@ let ForecastLayer = L.TimeDimension.Layer.extend({
     this.forecastModel = model
     this.downloadedForecastTime = null
     // This will launch a refresh
-    if (!this.options.hasOwnProperty('visible') || this.options.visible) this.fetchAvailableTimes()
+    if (!this.options.hasOwnProperty('visible') || this.options.visible) this.fetchData()
   }
 
 })

@@ -177,7 +177,7 @@ let ScalarLayer = ForecastLayer.extend({
     if (this.options.colorClasses) this.colorMap.classes(this.options.colorClasses)
     this.grid.data = data[0].data
     this.pixiContainer.removeChildren()
-    this._baseLayer.redraw()
+    this.baseLayer.redraw()
     ForecastLayer.prototype.setData.call(this, data)
   },
 
