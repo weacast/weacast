@@ -188,5 +188,8 @@ let ScalarLayer = ForecastLayer.extend({
   }
 })
 
-L.Weacast.ScalarLayer = ScalarLayer
+L.weacast.ScalarLayer = ScalarLayer
+L.weacast.scalarLayer = function(api, options) {
+  return new L.weacast.ScalarLayer(api, options)
+}
 export { ScalarLayer }

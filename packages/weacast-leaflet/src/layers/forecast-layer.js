@@ -72,11 +72,14 @@ let ForecastLayer = L.Layer.extend({
     this.forecastModel = model
     this.downloadedForecastTime = null
     // This will launch a refresh
-    if (!this.options.hasOwnProperty('visible') || this.options.visible) this.fetchData()
+    this.fetchData()
   }
 
 })
 
-L.Weacast = {}
-L.Weacast.ForecastLayer = ForecastLayer
+L.weacast = {}
+L.weacast.ForecastLayer = ForecastLayer
+L.weacast.forecastLayer = function(api, layer, options) {
+  return new L.weacast.ForecastLayer(api, layer, options)
+}
 export { ForecastLayer }
