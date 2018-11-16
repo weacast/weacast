@@ -28,9 +28,10 @@ export async function aggregateResultsQuery (hook) {
           '$' + query.$groupBy :
           query.$groupBy.reduce((object, id) => Object.assign(object, { [id.replace('properties.', '')]: '$' + id }), {}),
         forecastTime: { $push: '$forecastTime' }, // Keep track of all forecast times
-        runTime: { $push: '$runTime' }, // Keep track of all run times
-        geometry: { $last: '$geometry' }, // geometry is similar for all results, keep last
-        properties: { $last: '$properties' } // properties are similar for all results, keep last
+        runTime: { $push: '$runTime' },           // Keep track of all run times
+        geometry: { $last: '$geometry' },         // geometry is similar for all results, keep last
+        type: { $last: '$type' },                 // type is similar for all results, keep last
+        properties: { $last: '$properties' }      // properties are similar for all results, keep last
       }
       // The query contains the match stage except options relevent to the aggregation pipeline
       let match = _.omit(query, ['$groupBy', '$aggregate'])
