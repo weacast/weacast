@@ -76,6 +76,11 @@ let FlowLayer = ForecastLayer.extend({
       this.vFlow.data = data[1].data
       this.baseLayer.setData([this.uFlow, this.vFlow])
       ForecastLayer.prototype.setData.call(this, data)
+    } else {
+      this.uFlow.data = []
+      this.vFlow.data = []
+      this.hasData = false
+      this.baseLayer.setData([this.uFlow, this.vFlow])
     }
   },
 
