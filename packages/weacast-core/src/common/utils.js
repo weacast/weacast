@@ -16,7 +16,7 @@ export function getNearestRunTime (datetime, runInterval) {
 }
 
 /*
-  Round hours to expected forecasr interval
+  Round hours to expected forecast interval
   @return {Date}
  */
 export function getNearestForecastTime (datetime, interval) {
