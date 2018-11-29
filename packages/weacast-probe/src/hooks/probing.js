@@ -23,10 +23,12 @@ export async function aggregateResultsQuery (hook) {
     // Perform aggregation
     if (query.$aggregate) {
       const collection = hook.service.Model
+      const ids = typeof query.$groupBy === 'string'  // Group by matching ID(s), ie single ID or array of field to create a compound ID
+        ? { [query.$groupBy.replace('properties.', '')]: '$' + query.$groupBy }
+        // Aggregated in an accumulator to avoid conflict with feature properties
+        : query.$groupBy.reduce((object, id) => Object.assign(object, { [id.replace('properties.', '')]: '$' + id }), {})
       let groupBy = {
-        _id: typeof query.$groupBy === 'string' ?  // Group by matching ID(s)
-          '$' + query.$groupBy :
-          query.$groupBy.reduce((object, id) => Object.assign(object, { [id.replace('properties.', '')]: '$' + id }), {}),
+        _id: ids,
         forecastTime: { $push: '$forecastTime' }, // Keep track of all forecast times
         runTime: { $push: '$runTime' },           // Keep track of all run times
         geometry: { $last: '$geometry' },         // geometry is similar for all results, keep last
@@ -39,7 +41,7 @@ export async function aggregateResultsQuery (hook) {
       // by separately querying each element then merging
       let aggregatedResults
       await Promise.all(query.$aggregate.map(async element => {
-        let partialResults = await collection.aggregate([
+        let elementResults = await collection.aggregate([
           // Find matching probre results only
           { $match: Object.assign({ ['properties.' + element]: { $exists: true } }, match) },
           // Ensure they are ordered by increasing forecast time
@@ -48,7 +50,7 @@ export async function aggregateResultsQuery (hook) {
           { $group: Object.assign({ [element]: { $push: '$properties.' + element } }, groupBy) }
         ]).toArray()
         // Rearrange data so that we get ordered arrays indexed by element
-        partialResults.forEach(result => {
+        elementResults.forEach(result => {
           result.forecastTime = { [element]: result.forecastTime }
           result.runTime = { [element]: result.runTime }
           // Set back the element values as properties because we aggregated in an accumulator
@@ -58,14 +60,20 @@ export async function aggregateResultsQuery (hook) {
           delete result[element]
         })
         // Now merge
-        if (!aggregatedResults) aggregatedResults = partialResults
+        if (!aggregatedResults) aggregatedResults = elementResults
         else {
-          partialResults.forEach(result => {
-            let previousResult = aggregatedResults.find(aggregatedResult => aggregatedResult[query.$groupBy] === result[query.$groupBy])
+          elementResults.forEach(result => {
+            let previousResult = aggregatedResults.find(aggregatedResult => {
+              const keys = _.keys(ids)
+              return (_.isEqual(_.pick(aggregatedResult, keys), _.pick(result, keys)))
+            })
+            // Merge with previous matching feature if any
             if (previousResult) {
               Object.assign(previousResult.forecastTime, result.forecastTime)
               Object.assign(previousResult.runTime, result.runTime)
               previousResult.properties[element] = result.properties[element]
+            } else {
+              aggregatedResults.push(result)
             }
           })
         }
