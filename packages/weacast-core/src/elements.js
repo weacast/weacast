@@ -27,13 +27,13 @@ export default function initializeElements (app, forecast, servicesPath) {
     if (!elementBuckets[bucket]) elementBuckets[bucket] = []
     elementBuckets[bucket].push(element)
   })
-  
+
   // Then generate services for each forecast element in buckets
   elementBuckets = _.mapValues(elementBuckets, elements => {
     return elements.map(element => app.createElementService(forecast, element, servicesPath, element.serviceOptions))
   })
-  
-  async function update() {
+
+  async function update () {
     // Iterate over buckets
     const buckets = _.keys(elementBuckets)
     for (let i = 0; i < buckets.length; i++) {

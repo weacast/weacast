@@ -9,7 +9,7 @@ import makeDebug from 'debug'
 import { Grid } from '../common/grid'
 const debug = makeDebug('weacast:weacast-core')
 
-function getMinMax(grid) {
+function getMinMax (grid) {
   let minValue = (grid && grid.length > 0 ? grid[0] : Number.NEGATIVE_INFINITY)
   let maxValue = (grid && grid.length > 0 ? grid[0] : Number.POSITIVE_INFINITY)
   for (let i = 1; i < grid.length; i++) {
@@ -190,7 +190,7 @@ export default {
             data: { $push: '$data' }, // Accumulate data
             minValue: { $push: '$minValue' }, // Accumulate min
             maxValue: { $push: '$maxValue' }, // Accumulate max
-            geometry: { $last: '$geometry' }, // geometry is similar for all results, keep last
+            geometry: { $last: '$geometry' } // geometry is similar for all results, keep last
           }
         }]).toArray()
         if (tiles.length !== 1) {

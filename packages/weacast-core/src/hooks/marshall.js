@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { getItems, replaceItems } from 'feathers-hooks-common'
 
 // Helper function to convert time objects or array of time objects
-export function marshallTime(item, property) {
+export function marshallTime (item, property) {
   if (!item) return
   const time = item[property]
   if (!time) return
@@ -17,14 +17,14 @@ export function marshallTime(item, property) {
     item[property] = new Date(time.format())
   } else if (typeof time === 'string') {
     item[property] = new Date(time)
-  }  else if (typeof time === 'object') { // Check if complex object such as comparison operator
+  } else if (typeof time === 'object') { // Check if complex object such as comparison operator
     // If so this will recurse
     _.keys(time).forEach(key => marshallTime(time, key))
   }
 }
 
 // Helper function to convert time objects or array of time objects
-export function unmarshallTime(item, property) {
+export function unmarshallTime (item, property) {
   if (!item) return
   const time = item[property]
   if (!time) return

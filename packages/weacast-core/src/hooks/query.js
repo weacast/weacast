@@ -26,7 +26,7 @@ function marshallComparisonFieldsInQuery (queryObject) {
         // try for dates as well
         let date = moment.utc(value)
         if (date.isValid()) {
-          queryObject[key] = new Date(date.format())
+          queryObject[key] = new Date(date.valueOf())
         }
       }
     }
@@ -48,7 +48,7 @@ export function marshallQuery (hook) {
     // Need to convert from client/server side types : string or moment dates
     marshallTime(query, 'runTime')
     marshallTime(query, 'forecastTime')
-    
+
     // In this case take care that we always internally require the file path, it will be removed for the client by another hook
     if (!_.isNil(query.$select) && !_.isNil(service.element) && (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs')) {
       query.$select.push('convertedFilePath')
@@ -145,7 +145,7 @@ export function processForecastTime (hook) {
     let time = (typeof query.time === 'string' ? moment.utc(query.time) : query.time)
     let forecastTime = service.getNearestForecastTime(time)
     delete query.time
-    query.forecastTime = new Date(forecastTime.format())
+    query.forecastTime = new Date(forecastTime.valueOf())
   }
   if (query && !_.isNil(query.from) && !_.isNil(query.to)) {
     // Find nearest forecast time corresponding to request time range
@@ -156,8 +156,8 @@ export function processForecastTime (hook) {
     delete query.from
     delete query.to
     query.forecastTime = {
-      $gte: new Date(fromForecastTime.format()),
-      $lte: new Date(toForecastTime.format())
+      $gte: new Date(fromForecastTime.valueOf()),
+      $lte: new Date(toForecastTime.valueOf())
     }
   }
 }

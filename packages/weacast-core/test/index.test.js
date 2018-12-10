@@ -4,7 +4,9 @@ import logger from 'winston'
 import fs from 'fs-extra'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
+import moment from 'moment'
 import core, { weacast } from '../src'
+import { getNearestRunTime, getNearestForecastTime } from '../src/common'
 
 describe('weacast-core', () => {
   let app
@@ -18,6 +20,19 @@ describe('weacast-core', () => {
 
   it('is CommonJS compatible', () => {
     expect(typeof core).to.equal('function')
+  })
+
+  it('rounds run/forecast times', () => {
+    let date = moment.utc('2018-11-07T14:07:23.847Z')
+    let runDate = getNearestRunTime(date, 3600 * 6)
+    expect(runDate.format()).to.equal(moment.utc('2018-11-07T12:00:00.000Z').format())
+    let forecastDate = getNearestForecastTime(date, 3600 * 1)
+    expect(forecastDate.format()).to.equal(moment.utc('2018-11-07T14:00:00.000Z').format())
+    date = moment.utc('2018-11-07T23:07:23.847Z')
+    runDate = getNearestRunTime(date, 3600 * 6)
+    expect(runDate.format()).to.equal(moment.utc('2018-11-07T18:00:00.000Z').format())
+    forecastDate = getNearestForecastTime(date, 3600 * 3) // Check day line crossing
+    expect(forecastDate.format()).to.equal(moment.utc('2018-11-08T00:00:00.000Z').format())
   })
 
   it('registers the forecasts service', () => {

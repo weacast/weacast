@@ -11,8 +11,9 @@ export function roundHours (hours, interval) {
   @return {Date}
  */
 export function getNearestRunTime (datetime, runInterval) {
-  // Compute nearest run T0
-  return datetime.clone().hours(roundHours(datetime.hours(), runInterval / 3600)).minutes(0).seconds(0).milliseconds(0)
+  // Compute nearest run T0, always in the past
+  const h = roundHours(datetime.hours(), runInterval / 3600)
+  return datetime.clone().hours(h).minutes(0).seconds(0).milliseconds(0)
 }
 
 /*
@@ -20,7 +21,8 @@ export function getNearestRunTime (datetime, runInterval) {
   @return {Date}
  */
 export function getNearestForecastTime (datetime, interval) {
-  // Compute nearest forecast T0
+  // Compute nearest forecast T0, can be in the past when between two forecast time
   let offsetDateTime = datetime.clone().add({ seconds: 0.5 * interval })
-  return datetime.clone().hours(roundHours(offsetDateTime.hours(), interval / 3600)).minutes(0).seconds(0).milliseconds(0)
+  const h = roundHours(offsetDateTime.hours(), interval / 3600)
+  return offsetDateTime.clone().hours(h).minutes(0).seconds(0).milliseconds(0)
 }

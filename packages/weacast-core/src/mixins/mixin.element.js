@@ -2,7 +2,6 @@ import fs from 'fs-extra'
 import logger from 'winston'
 import { getNearestRunTime, getNearestForecastTime } from '../common'
 
-
 export default {
 
   getNearestRunTime (datetime) {

@@ -23,7 +23,7 @@ describe('weacast-core:elements', () => {
   let dataStores = ['db', 'fs', 'gridfs']
   let services = []
 
-  function cleanup() {
+  function cleanup () {
     services.forEach(service => {
       service.Model.drop()
       // GridFS collections
