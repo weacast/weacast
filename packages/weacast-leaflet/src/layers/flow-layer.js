@@ -1,5 +1,4 @@
 import L from 'leaflet'
-import chroma from 'chroma-js'
 import 'leaflet-velocity'
 import 'leaflet-velocity/dist/leaflet-velocity.css'
 import { createColorMap } from 'weacast-core/common'
@@ -25,7 +24,7 @@ let FlowLayer = ForecastLayer.extend({
       velocityScale: 0.01,      // modifier for particle animations, arbitrarily defaults to 0.005
       colorScale: this.colorMap.colors(),
       data: null                // data will be requested on-demand
-    }, _.omit(options, ['scale', 'domain', 'classes']))
+    }, options)
     let layer = L.velocityLayer(layerOptions)
     ForecastLayer.prototype.initialize.call(this, api, layer, options)
 

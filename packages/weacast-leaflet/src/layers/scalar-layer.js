@@ -1,5 +1,4 @@
 import L from 'leaflet'
-import chroma from 'chroma-js'
 import * as PIXI from 'pixi.js'
 import 'leaflet-pixi-overlay'
 import { ForecastLayer } from './forecast-layer'
