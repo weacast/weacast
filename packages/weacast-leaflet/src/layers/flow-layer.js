@@ -1,11 +1,15 @@
 import L from 'leaflet'
+import chroma from 'chroma-js'
 import 'leaflet-velocity'
 import 'leaflet-velocity/dist/leaflet-velocity.css'
+import { createColorMap } from 'weacast-core/common'
 import { ForecastLayer } from './forecast-layer'
 
 let FlowLayer = ForecastLayer.extend({
 
   initialize (api, options) {
+    // FIXME : make this dynamic, ie relative mode based on min/max when data are set
+    this.colorMap = createColorMap(options)
     // Merge options with default for undefined ones
     const layerOptions = Object.assign({
       displayValues: true,
@@ -16,26 +20,12 @@ let FlowLayer = ForecastLayer.extend({
         angleConvention: 'bearingCW',
         speedUnit: 'kt'
       },
-      // FIXME : make this dynamic
-      minVelocity: 3,           // used to align color scale
-      maxVelocity: 20,          // used to align color scale
+      minVelocity: this.colorMap.domain()[0],
+      maxVelocity: this.colorMap.domain()[1],
       velocityScale: 0.01,      // modifier for particle animations, arbitrarily defaults to 0.005
-      colorScale: [
-        'rgb(36,104, 180)',
-        'rgb(60,157, 194)',
-        'rgb(128,205,193 )',
-        'rgb(151,218,168 )',
-        'rgb(252,217,125)',
-        'rgb(255,182,100)',
-        'rgb(252,150,75)',
-        'rgb(250,112,52)',
-        'rgb(245,64,32)',
-        'rgb(237,45,28)',
-        'rgb(220,24,32)',
-        'rgb(180,0,35)'
-      ],
+      colorScale: this.colorMap.colors(),
       data: null                // data will be requested on-demand
-    }, options)
+    }, _.omit(options, ['scale', 'domain', 'classes']))
     let layer = L.velocityLayer(layerOptions)
     ForecastLayer.prototype.initialize.call(this, api, layer, options)
 
@@ -54,20 +44,6 @@ let FlowLayer = ForecastLayer.extend({
       },
       data: []
     }
-  },
-
-  getColorMap () {
-    let colorMap = []
-    let colors = this.baseLayer.options.colorScale
-    let min = this.baseLayer.options.minVelocity
-    let max = this.baseLayer.options.maxVelocity
-    for (let i = 0; i < colors.length; i++) {
-      colorMap.push({
-        value: min + i * (max - min) / colors.length,
-        color: colors[i]
-      })
-    }
-    return colorMap
   },
 
   setData (data) {

@@ -3,10 +3,9 @@ import chroma from 'chroma-js'
 import * as PIXI from 'pixi.js'
 import 'leaflet-pixi-overlay'
 import { ForecastLayer } from './forecast-layer'
-import { Grid } from 'weacast-core/common'
+import { Grid, createColorMap } from 'weacast-core/common'
 import { GridViewer } from '../grid-viewer'
 
-window.chroma = chroma
 // WebGL limit
 const VERTEX_BUFFER_MAX_SIZE = 65536
 
@@ -78,7 +77,7 @@ let ScalarLayer = ForecastLayer.extend({
     // Merge options with default for undefined ones
     this.options = Object.assign({
       interpolate: true,
-      colorMap: 'OrRd',
+      scale: 'OrRd',
       opacity: 0.25,
       mesh: true
     }, options)
@@ -158,24 +157,11 @@ let ScalarLayer = ForecastLayer.extend({
     renderer.render(container)
   },
 
-  getColorMap () {
-    let colorMap = []
-    let colors = chroma.brewer[this.options.colorMap]
-    for (let i = 0; i < colors.length; i++) {
-      colorMap.push({
-        value: this.minValue + i * (this.maxValue - this.minValue) / colors.length,
-        color: colors[i]
-      })
-    }
-    return colorMap
-  },
-
   setData (data) {
     if (data.length > 0) {
       this.minValue = data[0].minValue
       this.maxValue = data[0].maxValue
-      this.colorMap = chroma.scale(this.options.colorMap).domain([this.minValue, this.maxValue])
-      if (this.options.colorClasses) this.colorMap.classes(this.options.colorClasses)
+      this.colorMap = createColorMap(this.options, [this.minValue, this.maxValue])
       this.grid.data = data[0].data
       this.pixiContainer.removeChildren()
       this.baseLayer.redraw()
