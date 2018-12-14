@@ -2,7 +2,7 @@ import L from 'leaflet'
 import * as PIXI from 'pixi.js'
 import 'leaflet-pixi-overlay'
 import { ForecastLayer } from './forecast-layer'
-import { Grid, createColorMap } from 'weacast-core/common'
+import { Grid, createColorMap } from 'weacast-core/client'
 import { GridViewer } from '../grid-viewer'
 
 // WebGL limit
