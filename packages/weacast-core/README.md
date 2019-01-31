@@ -4,7 +4,7 @@
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-core/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-core)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-core/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-core/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-core.svg?style=flat-square)](https://david-dm.org/weacast/weacast-core)
-[![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.gitbooks.io/weacast-docs/api/)
+[![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
 [![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-core/badge.svg)](https://snyk.io/test/github/weacast/weacast-core)
 [![Download Status](https://img.shields.io/npm/dm/weacast-core.svg?style=flat-square)](https://www.npmjs.com/package/weacast-core)
 
@@ -20,7 +20,7 @@ yarn add weacast-core
 
 ## Documentation
 
-The [Weacast docs](https://weacast.gitbooks.io/weacast-docs/) are loaded with awesome stuff and tell you everything you need to know about using and configuring Weacast.
+The [Weacast docs](https://weacast.github.io/weacast-docs/) are loaded with awesome stuff and tell you everything you need to know about using and configuring Weacast.
 
 ## License
 
