@@ -4,7 +4,7 @@
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-arpege/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-arpege)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-arpege/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-arpege/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-arpege.svg?style=flat-square)](https://david-dm.org/weacast/weacast-arpege)
-[![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.gitbooks.io/weacast-docs/api/)
+[![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
 [![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-arpege/badge.svg)](https://snyk.io/test/github/weacast/weacast-arpege)
 [![Download Status](https://img.shields.io/npm/dm/weacast-arpege.svg?style=flat-square)](https://www.npmjs.com/package/weacast-arpege)
 
@@ -20,7 +20,7 @@ yarn add weacast-arpege
 
 ## Documentation
 
-The [Weacast docs](https://weacast.gitbooks.io/weacast-docs/) are loaded with awesome stuff and tell you everything you need to know about using and configuring Weacast. Some details about this plugin can be found [here](https://weacast.gitbooks.io/weacast-docs/api/PLUGIN.html#arpege).
+The [Weacast docs](https://weacast.github.io/weacast-docs/) are loaded with awesome stuff and tell you everything you need to know about using and configuring Weacast. Some details about this plugin can be found [here](https://weacast.gitbooks.io/weacast-docs/api/PLUGIN.html#arpege).
 
 ## Complete Example
 
