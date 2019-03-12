@@ -24,8 +24,8 @@ export function weacast (config) {
   }
   api.configure(feathers.authentication({
     storage: window.localStorage,
-    cookie: 'weacast-jwt',
-    storageKey: 'weacast-jwt',
+    cookie: config.apiJwt || 'weacast-jwt',
+    storageKey: config.apiJwt || 'weacast-jwt',
     path: config.apiPath + '/authentication'
   }))
 
