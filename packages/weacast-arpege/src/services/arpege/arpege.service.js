@@ -9,6 +9,9 @@ export default {
 
   // Perform conversion from input TIFF to JSON
   convertForecastTime (runTime, forecastTime) {
+    // Limit precision because default accuracy is usually not required
+    const replacer = (key, value) => value.toFixed ? Number(value.toFixed(this.element.precision || 2)) : value
+
     let promise = new Promise((resolve, reject) => {
       const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
       const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
@@ -30,7 +33,7 @@ export default {
       .then(grid => {
         logger.verbose('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         // Change extension from tiff to json
-        fs.outputJson(convertedFilePath, grid, 'utf8')
+        fs.outputJson(convertedFilePath, grid, { encoding: 'utf8', replacer })
         .then(_ => {
           logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' converted forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
           resolve(grid)
