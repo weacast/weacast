@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.2.2](https://github.com/weacast/weacast-gtiff2json/tree/v0.2.2) (2019-03-15)
+
+[Full Changelog](https://github.com/weacast/weacast-gtiff2json/compare/v0.2.1...v0.2.2)
+
+**Implemented enhancements:**
+
+- Make output precision configurable [\#3](https://github.com/weacast/weacast-gtiff2json/issues/3)
+
 ## [v0.2.1](https://github.com/weacast/weacast-gtiff2json/tree/v0.2.1) (2018-07-02)
 
 [Full Changelog](https://github.com/weacast/weacast-gtiff2json/compare/v0.2.0...v0.2.1)
