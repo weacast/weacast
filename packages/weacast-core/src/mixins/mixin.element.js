@@ -13,6 +13,10 @@ export default {
     return getNearestForecastTime(datetime, interval)
   },
 
+  isExternalDataStorage () {
+    return ((this.element.dataStore === 'fs') || (this.element.dataStore === 'gridfs'))
+  },
+
   readFromGridFS (filePath) {
     let promise = new Promise((resolve, reject) => {
       this.gfs.openDownloadStreamByName(filePath)

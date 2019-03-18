@@ -12,7 +12,10 @@ describe('weacast-core:elements', () => {
   let forecast = {
     name: 'test-forecast',
     model: 'test-model',
-    size: [2, 2],
+    bounds: [-180, -90, 180, 90],
+    origin: [-180, 90],
+    size: [4, 3],
+    resolution: [90, 90],
     keepPastForecasts: true,        // We will keep past forecast times so that the number of forecasts is predictable for tests
     runInterval: 2 * interval * 3600,           // Produced every 6h
     oldestRunInterval: 2 * interval * 3600,     // Don't go back in time older than 6h
@@ -21,6 +24,11 @@ describe('weacast-core:elements', () => {
     upperLimit: (nbSteps - 1) * interval * 3600             // Up to T0+6h
   }
   let dataStores = ['db', 'fs', 'gridfs']
+  let data = JSON.stringify([
+    0, 1, 1, 0,
+    1, 2, 2, 1,
+    0, 1, 1, 0
+  ])
   let services = []
 
   function cleanup () {
@@ -67,7 +75,7 @@ describe('weacast-core:elements', () => {
       // Clear any previous data
       service.Model.remove()
       fs.emptyDirSync(service.getDataDirectory())
-      for (let j = 0; j < nbSteps; j++) nock('https://www.elements.com').get('/').reply(200, '{}')
+      for (let j = 0; j < nbSteps; j++) nock('https://www.elements.com').get('/').reply(200, data)
       let results = await service.updateForecastData()
       expect(results.length).to.equal(nbSteps)
       results.forEach(result => {
@@ -83,7 +91,7 @@ describe('weacast-core:elements', () => {
       if (service.element.dataStore === 'fs') {
         expect(files.length).to.equal(2 * nbSteps)
         expect(files.filter(item => path.extname(item) === '.json').length).to.equal(nbSteps)
-        expect(files.filter(item => path.extname(item) === '.html').length).to.equal(nbSteps)
+        expect(files.filter(item => path.extname(item) === '.data').length).to.equal(nbSteps)
       } else {
         // FIXME : when fixed in weacast, for now temporary files are removed before each update
         // Check for temporary files erasing
@@ -126,9 +134,37 @@ describe('weacast-core:elements', () => {
         })
         .then(response => {
           expect(response.data.length).to.equal(1)
-          expect(response.data[0].data.length).to.equal(4)
+          expect(response.data[0].data.length).to.equal(4 * 3)
           expect(response.data[0].minValue).to.equal(0)
-          expect(response.data[0].maxValue).to.equal(1)
+          expect(response.data[0].maxValue).to.equal(2)
+        })
+      )
+    })
+
+    return Promise.all(findPromises)
+  })
+
+  it('queries elements in DB with resampling', () => {
+    let findPromises = []
+    services.forEach(service => {
+      findPromises.push(
+        service.find({
+          query: {
+            time: new Date().toISOString(),
+            $select: ['forecastTime', 'data', 'minValue', 'maxValue'],
+            oLon: -135,
+            oLat: 45,
+            sLon: 3,
+            sLat: 2,
+            dLon: 90,
+            dLat: 90
+          }
+        })
+        .then(response => {
+          expect(response.data.length).to.equal(1)
+          expect(response.data[0].data.length).to.equal(3 * 2)
+          expect(response.data[0].minValue).to.equal(1)
+          expect(response.data[0].maxValue).to.equal(1.5)
         })
       )
     })
@@ -143,7 +179,7 @@ describe('weacast-core:elements', () => {
       // Clear any previous data
       service.Model.remove()
       fs.emptyDirSync(service.getDataDirectory())
-      for (let j = 0; j < (nbSteps - 1); j++) nock('https://www.elements.com').get('/').reply(200, '{}')
+      for (let j = 0; j < (nbSteps - 1); j++) nock('https://www.elements.com').get('/').reply(200, data)
       // Add one failed request per update
       nock('https://www.elements.com').get('/').reply(403)
       let results = await service.updateForecastData()
@@ -153,7 +189,7 @@ describe('weacast-core:elements', () => {
       if (service.element.dataStore === 'fs') {
         expect(files.length).to.equal(2 * (nbSteps - 1))
         expect(files.filter(item => path.extname(item) === '.json').length).to.equal(nbSteps - 1)
-        expect(files.filter(item => path.extname(item) === '.html').length).to.equal(nbSteps - 1)
+        expect(files.filter(item => path.extname(item) === '.data').length).to.equal(nbSteps - 1)
       } else {
         // FIXME : when fixed in weacast, for now temporary files are removed before each update
         // Check for temporary files erasing
@@ -171,7 +207,7 @@ describe('weacast-core:elements', () => {
       // Clear any previous data
       service.Model.remove()
       fs.emptyDirSync(service.getDataDirectory())
-      for (let j = 0; j < (nbSteps - 1); j++) nock('https://www.elements.com').get('/').reply(200, '{}')
+      for (let j = 0; j < (nbSteps - 1); j++) nock('https://www.elements.com').get('/').reply(200, data)
       // Add one failed request per update
       nock('https://www.elements.com').get('/').delay(10000).reply(403)
       let results = await service.updateForecastData()
@@ -181,7 +217,7 @@ describe('weacast-core:elements', () => {
       if (service.element.dataStore === 'fs') {
         expect(files.length).to.equal(2 * (nbSteps - 1))
         expect(files.filter(item => path.extname(item) === '.json').length).to.equal(nbSteps - 1)
-        expect(files.filter(item => path.extname(item) === '.html').length).to.equal(nbSteps - 1)
+        expect(files.filter(item => path.extname(item) === '.data').length).to.equal(nbSteps - 1)
       } else {
         // FIXME : when fixed in weacast, for now temporary files are removed before each update
         // Check for temporary files erasing
@@ -199,7 +235,7 @@ describe('weacast-core:elements', () => {
       // Clear any previous data
       service.Model.remove()
       fs.emptyDirSync(service.getDataDirectory())
-      for (let j = 0; j < nbSteps; j++) nock('https://www.elements.com').get('/').reply(200, '{}')
+      for (let j = 0; j < nbSteps; j++) nock('https://www.elements.com').get('/').reply(200, data)
       // Add one failed conversion per update
       service.throwOnConvert = true
       let results = await service.updateForecastData()
@@ -209,7 +245,7 @@ describe('weacast-core:elements', () => {
       if (service.element.dataStore === 'fs') {
         expect(files.length).to.equal(2 * nbSteps - 1)
         expect(files.filter(item => path.extname(item) === '.json').length).to.equal(nbSteps - 1)
-        expect(files.filter(item => path.extname(item) === '.html').length).to.equal(nbSteps)
+        expect(files.filter(item => path.extname(item) === '.data').length).to.equal(nbSteps)
       } else {
         // FIXME : when fixed in weacast, for now temporary files are removed before each update
         // Check for temporary files erasing

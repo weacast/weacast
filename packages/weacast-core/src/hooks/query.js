@@ -44,13 +44,14 @@ export function marshallComparisonQuery (hook) {
 export function marshallQuery (hook) {
   let query = hook.params.query
   let service = hook.service
+
   if (query) {
     // Need to convert from client/server side types : string or moment dates
     marshallTime(query, 'runTime')
     marshallTime(query, 'forecastTime')
 
     // In this case take care that we always internally require the file path, it will be removed for the client by another hook
-    if (!_.isNil(query.$select) && !_.isNil(service.element) && (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs')) {
+    if (!_.isNil(query.$select) && !_.isNil(service.element) && service.isExternalDataStorage()) {
       query.$select.push('convertedFilePath')
     }
     // When listing available forecast we might want to disable pagination
@@ -163,7 +164,7 @@ export function processForecastTime (hook) {
 }
 
 function readFile (service, item) {
-  let promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     fs.readJson(item.convertedFilePath, 'utf8')
     .then(grid => {
       item.data = grid
@@ -178,11 +179,9 @@ function readFile (service, item) {
       reject(error)
     })
   })
-
-  return promise
 }
 
-export function processData (hook) {
+export async function processData (hook) {
   let params = hook.params
   let query = params.query
   let service = hook.service
@@ -191,60 +190,56 @@ export function processData (hook) {
   items = (isArray ? items : [items])
 
   // If we use a file based storage we have to load data on demand
-  if (service.element.dataStore === 'fs' || service.element.dataStore === 'gridfs') {
+  if (service.isExternalDataStorage()) {
     // Process data files when required
     if (query && !_.isNil(query.$select) && query.$select.includes('data')) {
-      return new Promise((resolve, reject) => {
-        let dataPromises = []
-        items.forEach(item => {
-          // In this case we need to extract from GridFS first
-          if (service.element.dataStore === 'gridfs') {
-            dataPromises.push(
-              service.readFromGridFS(item.convertedFilePath)
-              .then(_ => readFile(service, item))
-            )
-          } else {
-            dataPromises.push(readFile(service, item))
-          }
-        })
-
-        Promise.all(dataPromises).then(_ => {
-          // In this case we need to remove extracted files
-          if (service.element.dataStore === 'gridfs') {
-            items.forEach(item => fs.remove(item.convertedFilePath))
-          }
-          // Remove as well any sensitive information about file path on the client side
-          // Must be done second as we need this information first to read data
-          discardFilepathField(hook)
-          discardConvertedFilepathField(hook)
-          replaceItems(hook, isArray ? items : items[0])
-          resolve(hook)
-        })
+      let dataPromises = []
+      items.forEach(item => {
+        // In this case we need to extract from GridFS first
+        if (service.element.dataStore === 'gridfs') {
+          dataPromises.push(
+            service.readFromGridFS(item.convertedFilePath)
+            .then(_ => readFile(service, item))
+          )
+        } else {
+          dataPromises.push(readFile(service, item))
+        }
       })
-    } else {
-      // Remove any sensitive information about file path on the client side
+
+      await Promise.all(dataPromises)
+      // In this case we need to remove extracted files as they are temporary
+      if (service.element.dataStore === 'gridfs') {
+        await Promise.all(items.map(item => fs.remove(item.convertedFilePath)))
+      }
+      // Remove as well any sensitive information about file path on the client side
+      // Must be done second as we need this information first to read data
       discardFilepathField(hook)
       discardConvertedFilepathField(hook)
+      replaceItems(hook, isArray ? items : items[0])
     }
+    // Remove any sensitive information about file path on the client side
+    discardFilepathField(hook)
+    discardConvertedFilepathField(hook)
+  }
+  // Only discard if not explicitely asked by $select
+  if (_.isNil(query) || _.isNil(query.$select) || !query.$select.includes('data')) {
+    discardDataField(hook)
   } else {
-    // Only discard if not explicitely asked by $select
-    if (_.isNil(query) || _.isNil(query.$select) || !query.$select.includes('data')) {
-      discardDataField(hook)
-    } else {
-      // Check for resampling on returned data
-      if (!_.isNil(params.oLon) && !_.isNil(params.oLat) && !_.isNil(params.sLon) && !_.isNil(params.sLat) && !_.isNil(params.dLon) && !_.isNil(params.dLat)) {
-        items.forEach(item => {
-          let grid = new Grid({
-            bounds: service.forecast.bounds,
-            origin: service.forecast.origin,
-            size: service.forecast.size,
-            resolution: service.forecast.resolution,
-            data: item.data
-          })
-          item.data = grid.resample([params.oLon, params.oLat], [params.dLon, params.dLat], [params.sLon, params.sLat])
+    // Check for resampling on returned data
+    if (!_.isNil(params.oLon) && !_.isNil(params.oLat) && !_.isNil(params.sLon) && !_.isNil(params.sLat) && !_.isNil(params.dLon) && !_.isNil(params.dLat)) {
+      items.forEach(item => {
+        let grid = new Grid({
+          bounds: service.forecast.bounds,
+          origin: service.forecast.origin,
+          size: service.forecast.size,
+          resolution: service.forecast.resolution,
+          data: item.data
         })
-        replaceItems(hook, isArray ? items : items[0])
-      }
+        item.data = grid.resample([params.oLon, params.oLat], [params.dLon, params.dLat], [params.sLon, params.sLat])
+        // Update statistics
+        Object.assign(item, Grid.getMinMax(item.data))
+      })
+      replaceItems(hook, isArray ? items : items[0])
     }
   }
 }

@@ -26,4 +26,3 @@ export function getNearestForecastTime (datetime, interval) {
   const h = roundHours(offsetDateTime.hours(), interval / 3600)
   return offsetDateTime.clone().hours(h).minutes(0).seconds(0).milliseconds(0)
 }
-

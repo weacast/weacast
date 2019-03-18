@@ -4,7 +4,7 @@ window.chroma = chroma
 /*
  Create a chromajs object from options
  */
-export function createColorMap(options, domain) {
+export function createColorMap (options, domain) {
   let colorMap = chroma.scale(options.scale)
   if (options.domain) colorMap.domain(options.domain)
   else if (domain) colorMap.domain(domain)

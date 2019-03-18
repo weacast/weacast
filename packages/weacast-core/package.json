@@ -40,6 +40,10 @@
     "start": "npm run compile && node lib"
   },
   "standard": {
+    "parser": "babel-eslint",
+    "plugins": [
+      "html"
+    ],
     "sourceType": "module",
     "env": [
       "mocha"
@@ -85,6 +89,7 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
+    "babel-eslint": "^7.2.3",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.0.0",
@@ -93,6 +98,7 @@
     "chai-lint": "^0.1.1",
     "containerized": "^1.0.2",
     "cross-env": "^4.0.0",
+    "eslint-plugin-html": "^3.1.1",
     "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.2.0",
     "nock": "^9.3.2",

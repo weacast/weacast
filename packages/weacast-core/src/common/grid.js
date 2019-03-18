@@ -229,4 +229,15 @@ export class Grid {
       }
     }
   }
+
+  static getMinMax (data) {
+    if (!data || (data.length === 0)) return undefined
+    let minValue = data[0]
+    let maxValue = data[0]
+    for (let i = 1; i < data.length; i++) {
+      minValue = Math.min(minValue, data[i])
+      maxValue = Math.max(maxValue, data[i])
+    }
+    return { minValue, maxValue }
+  }
 }

@@ -9,16 +9,6 @@ import makeDebug from 'debug'
 import { Grid } from '../common/grid'
 const debug = makeDebug('weacast:weacast-core')
 
-function getMinMax (grid) {
-  let minValue = (grid && grid.length > 0 ? grid[0] : Number.NEGATIVE_INFINITY)
-  let maxValue = (grid && grid.length > 0 ? grid[0] : Number.POSITIVE_INFINITY)
-  for (let i = 1; i < grid.length; i++) {
-    minValue = Math.min(minValue, grid[i])
-    maxValue = Math.max(maxValue, grid[i])
-  }
-  return { minValue, maxValue }
-}
-
 export default {
 
   // Retrieve the path where downloaded/persited data are
@@ -98,38 +88,38 @@ export default {
     let forecast = Object.assign({
       runTime: runTime,
       forecastTime: forecastTime
-    }, getMinMax(grid))
-    // Depending if we keep file as data storage include a link to files or data directly in the object
-    if (this.element.dataStore === 'fs' || this.element.dataStore === 'gridfs') {
-      return Object.assign(forecast, {
+    }, Grid.getMinMax(grid))
+    // Depending on data storage if we keep files include a link to files in addition to data directly in the object
+    if (this.isExternalDataStorage()) {
+      Object.assign(forecast, {
         filePath: this.getForecastTimeFilePath(runTime, forecastTime),
         convertedFilePath: this.getForecastTimeConvertedFilePath(runTime, forecastTime)
       })
-    } else {
-      return Object.assign(forecast, {
-        data: grid
-      })
     }
+    return Object.assign(forecast, { data: grid })
   },
 
-  async updateForecastTimeInDatabase (data, previousData) {
+  async updateForecastTimeInDatabase (forecast, previousForecast) {
     // Test if we have to remove existing data first
-    if (previousData) {
+    if (previousForecast) {
       await this.remove(null, {
         query: {
-          forecastTime: data.forecastTime,
+          forecastTime: forecast.forecastTime,
           geometry: { $exists: false } // Raw data doesn't have a geometry
         }
       })
       // Remove persistent file associated with data if any
       if (this.element.dataStore === 'fs') {
-        fs.remove(previousData.convertedFilePath)
+        fs.remove(previousForecast.convertedFilePath)
       } else if (this.element.dataStore === 'gridfs') {
-        this.removeFromGridFS(previousData.convertedFilePath)
+        this.removeFromGridFS(previousForecast.convertedFilePath)
       }
     }
 
-    let result = await this.create(data)
+    // Do not store in-memory data if delegated to external storage
+    const data = forecast.data
+    if (this.isExternalDataStorage()) delete forecast.data
+    let result = await this.create(forecast)
     // Save tiles if tiling is enabled
     if (this.forecast.tileResolution) {
       let grid = new Grid({
@@ -137,21 +127,21 @@ export default {
         origin: this.forecast.origin,
         size: this.forecast.size,
         resolution: this.forecast.resolution,
-        data: data.data
+        data
       })
       let tiles = grid.tileset(this.forecast.tileResolution)
       tiles = tiles.map(tile =>
         Object.assign(Grid.toGeometry(tile.bounds),
                       tile,
-                      getMinMax(tile.data),
-                      _.pick(data, ['runTime', 'forecastTime']),
+                      Grid.getMinMax(tile.data),
+                      _.pick(forecast, ['runTime', 'forecastTime']),
                       { timeseries: false }) // Tag this is not an aggregated tile
       )
       // Test if we have to remove existing data first
-      if (previousData) {
+      if (previousForecast) {
         await this.remove(null, {
           query: {
-            forecastTime: data.forecastTime,
+            forecastTime: forecast.forecastTime,
             geometry: { $exists: true } // Only tiles have a geometry
           }
         })
@@ -218,19 +208,19 @@ export default {
       paginate: false
     })
 
-    let previousData = (result.length > 0 ? result[0] : null)
+    let previousForecast = (result.length > 0 ? result[0] : null)
     // Check if we are already up-to-date
-    if (previousData && runTime.isSameOrBefore(previousData.runTime)) {
+    if (previousForecast && runTime.isSameOrBefore(previousForecast.runTime)) {
       logger.verbose('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')
-      return previousData
+      return previousForecast
     }
     // Otherwise download and process data
-    let data = await this.processForecastTime(runTime, forecastTime)
-    data = await this.updateForecastTimeInDatabase(data, previousData)
-    logger.verbose((previousData ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+    let forecast = await this.processForecastTime(runTime, forecastTime)
+    forecast = await this.updateForecastTimeInDatabase(forecast, previousForecast)
+    logger.verbose((previousForecast ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
     // Remove temporary file associated with data except when using fs data store
     // FIXME: trying to remove temporary files as soon as possible raises "EBUSY: resource busy or locked" because there is probably some async operation still running
-      // For now we remove temporary files as a whole by removing the data dir on each update process of the element
+    // For now we remove temporary files as a whole by removing the data dir on each update process of the element
     /*
     if (this.element.dataStore !== 'fs') {
       const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
@@ -239,7 +229,7 @@ export default {
       if (fs.existsSync(convertedFilePath)) fs.remove(convertedFilePath)
     }
     */
-    return data
+    return forecast
   },
 
   async harvestForecastTime (datetime, runTime, forecastTime) {
