@@ -88,7 +88,7 @@ export function marshallTileQuery (hook) {
   // Ensure we have a query object to update
   if (!params.query) params.query = {}
   let query = params.query
-// This ensure that when no geometry is specified we only access raw data
+  // This ensure that when no geometry is specified we only access raw data
   if (!query.geometry) {
     query.geometry = { $exists: false }
   }
