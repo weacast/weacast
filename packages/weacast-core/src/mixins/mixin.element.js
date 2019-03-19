@@ -1,4 +1,5 @@
 import fs from 'fs-extra'
+import path from 'path'
 import logger from 'winston'
 import { getNearestRunTime, getNearestForecastTime } from '../common'
 
@@ -18,9 +19,15 @@ export default {
   },
 
   readFromGridFS (filePath) {
-    let promise = new Promise((resolve, reject) => {
+    const outputPath = (path.isAbsolute(filePath) ?
+      filePath :
+      path.join(this.app.get('forecastPath'), filePath))
+    // Make sure we've got somewhere to put data
+    fs.ensureDirSync(path.dirname(outputPath))
+    
+    return new Promise((resolve, reject) => {
       this.gfs.openDownloadStreamByName(filePath)
-      .pipe(fs.createWriteStream(filePath))
+      .pipe(fs.createWriteStream(outputPath))
       .on('error', error => {
         logger.error('Unable to read ' + filePath + ' from GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
         reject(error)
@@ -30,13 +37,15 @@ export default {
         resolve()
       })
     })
-
-    return promise
   },
 
   saveToGridFS (filePath) {
-    let promise = new Promise((resolve, reject) => {
-      fs.createReadStream(filePath)
+    const inputPath = (path.isAbsolute(filePath) ?
+      filePath :
+      path.join(this.app.get('forecastPath'), filePath))
+    
+    return new Promise((resolve, reject) => {
+      fs.createReadStream(inputPath)
       .pipe(this.gfs.openUploadStream(filePath))
       .on('error', error => {
         logger.error('Unable to write file ' + filePath + ' to GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast', error)
@@ -47,20 +56,11 @@ export default {
         resolve()
       })
     })
-
-    return promise
   },
 
   removeFromGridFS (filePath) {
-    let promise = new Promise((resolve, reject) => {
-      this.gfs.find({ filename: filePath }).then((error, items) => {
-        if (error) reject(error)
-        if (items.length > 0) resolve(this.gfs.delete(items[0]._id))
-        else resolve()
-      })
-    })
-
-    return promise
+    return this.gfs.find({ filename: filePath }).toArray()
+    .then(items => (items.length > 0 ? this.gfs.delete(items[0]._id) : undefined))
   }
 
 }

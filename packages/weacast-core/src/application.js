@@ -212,7 +212,7 @@ export function createElementService (forecast, element, app, servicesPath, opti
       // GridFS is use to bypass the limit of 16MB documents in MongoDB
       // We are not specifically interested in splitting the file in small chunks
       chunkSizeBytes: 8 * 1024 * 1024,
-      bucketName: forecast.name + '/' + element.name
+      bucketName: `${forecast.name}-${element.name}`
     })
   }
 

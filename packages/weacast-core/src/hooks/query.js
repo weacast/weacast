@@ -2,6 +2,7 @@ import moment from 'moment'
 import fs from 'fs-extra'
 import logger from 'winston'
 import _ from 'lodash'
+import path from 'path'
 import makeDebug from 'debug'
 import { getItems, replaceItems, discard } from 'feathers-hooks-common'
 import { marshallTime } from './marshall'
@@ -164,8 +165,12 @@ export function processForecastTime (hook) {
 }
 
 function readFile (service, item) {
+  const inputPath = (path.isAbsolute(item.convertedFilePath) ?
+    item.convertedFilePath :
+    path.join(service.app.get('forecastPath'), item.convertedFilePath))
+  
   return new Promise((resolve, reject) => {
-    fs.readJson(item.convertedFilePath, 'utf8')
+    fs.readJson(inputPath, 'utf8')
     .then(grid => {
       item.data = grid
       resolve(item)
@@ -189,8 +194,9 @@ export async function processData (hook) {
   const isArray = Array.isArray(items)
   items = (isArray ? items : [items])
 
-  // If we use a file based storage we have to load data on demand
-  if (service.isExternalDataStorage()) {
+  // If we use a file based storage we have to load data on demand,
+  // except if we target tiles using a geometry
+  if (service.isExternalDataStorage() && (typeof query.geometry === 'object')) {
     // Process data files when required
     if (query && !_.isNil(query.$select) && query.$select.includes('data')) {
       let dataPromises = []

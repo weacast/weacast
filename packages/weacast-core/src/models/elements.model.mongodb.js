@@ -1,5 +1,5 @@
 module.exports = function (forecast, element, app, options) {
-  options.Model = app.db.collection(forecast.name + '-' + element.name)
+  options.Model = app.db.collection(`${forecast.name}-${element.name}`)
   // When a forecast is in the past we should not care anymore,
   // however it is still potentially valid at least until we reach the next forecast
   // Nota : adding a unique constraint on the field causes TTL not to work
