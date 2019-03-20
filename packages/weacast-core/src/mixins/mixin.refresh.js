@@ -74,7 +74,8 @@ export default {
     await this.downloadForecastTime(runTime, forecastTime)
     let grid = await this.convertForecastTime(runTime, forecastTime)
     if (this.element.dataStore === 'gridfs') {
-      await this.saveToGridFS(this.getForecastTimeConvertedFilePath(runTime, forecastTime))
+      await this.saveToGridFS(this.getForecastTimeConvertedFilePath(runTime, forecastTime),
+        { forecastTime: forecastTime.toDate() })
     }
     // Check for processing function
     if (typeof this.element.transform === 'function') {
@@ -302,6 +303,7 @@ export default {
       return
     }
     this.updateRunning = true
+    const now = moment.utc()
     logger.info('Checking for up-to-date forecast data on ' + this.forecast.name + '/' + this.element.name)
     // Make sure we've got somewhere to put data and clean it up if we only use file as a temporary data store
     let dataDir = this.getDataDirectory()
@@ -310,7 +312,6 @@ export default {
     } else {
       fs.emptyDirSync(dataDir)
     }
-    const now = moment.utc()
     // Try data refresh for current time
     try {
       let times = await this.refreshForecastData(now)
@@ -320,6 +321,27 @@ export default {
     } catch (error) {
       logger.error('Forecast data update on ' + this.forecast.name + '/' + this.element.name + ' failed')
       this.updateRunning = false
+      throw error
+    }
+  },
+
+  async cleanForecastData () {
+    // Avoid stacking cleanups
+    if (this.cleanupRunning) {
+      logger.info('Skipping forecast data cleanup on ' + this.forecast.name + '/' + this.element.name + ' as previous one is not yet finished')
+      return
+    }
+    this.cleanupRunning = true
+    const now = moment.utc()
+    logger.info('Cleaning up forecast data on ' + this.forecast.name + '/' + this.element.name)
+    // Try data cleanup for current time
+    try {
+      await this.cleanGridFS(now)
+      logger.info('Completed forecast data cleanup on ' + this.forecast.name + '/' + this.element.name)
+      this.cleanupRunning = false
+    } catch (error) {
+      logger.error('Forecast data cleanup on ' + this.forecast.name + '/' + this.element.name + ' failed')
+      this.cleanupRunning = false
       throw error
     }
   }

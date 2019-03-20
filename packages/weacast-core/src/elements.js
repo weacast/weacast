@@ -51,11 +51,41 @@ export default function initializeElements (app, forecast, servicesPath) {
   if (forecast.updateInterval >= 0) {
     // Trigger the initial harvesting, i.e. try data refresh for current time
     // Add a small offset to wait for everything being initialized
-    setTimeout(update, 5000)
+    setTimeout(update, 30 * 1000)
     // Then plan next updates according to provided update interval if required
     if (forecast.updateInterval > 0) {
       logger.info('Installing forecast update on ' + forecast.name + ' with interval (s) ' + forecast.updateInterval)
       setInterval(update, 1000 * forecast.updateInterval)
+    }
+  }
+
+  // Process elements with GridFS data store which requires manual cleanup
+  const elementsToClean = forecast.elements.filter(element => element.dataStore === 'gridfs')
+
+  async function clean () {
+    // Iterate over required elements
+    for (let i = 0; i < elementsToClean.length; i++) {
+      let service = app.getService(forecast.name + '/' + elementsToClean[i].name)
+      // Launch clean task
+      await service.cleanForecastData().catch(error => {
+        logger.error(error.message)
+        service.cleanupRunning = false
+      })
+    }
+  }
+
+  if (elementsToClean.length > 0) {
+    // Trigger the initial cleanup, i.e. try data cleanup for current time
+    // Add a small offset to wait for everything being initialized
+    setTimeout(clean, 10 * 1000)
+    // Then plan next cleanups according to provided clean interval if required, alternatively with data update
+    // Provide a default interval if no updates
+    const cleanInterval = (forecast.updateInterval >= 0 ? forecast.updateInterval : 30 * 60 * 1000)
+    if (cleanInterval > 0) {
+      setTimeout(() => {
+        logger.info('Installing forecast cleanup on ' + forecast.name + ' with interval (s) ' + forecast.updateInterval)
+        setInterval(clean, cleanInterval)
+      }, 0.5 * cleanInterval)
     }
   }
 }

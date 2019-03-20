@@ -39,14 +39,14 @@ export default {
     })
   },
 
-  saveToGridFS (filePath) {
+  saveToGridFS (filePath, metadata) {
     const inputPath = (path.isAbsolute(filePath) ?
       filePath :
       path.join(this.app.get('forecastPath'), filePath))
     
     return new Promise((resolve, reject) => {
       fs.createReadStream(inputPath)
-      .pipe(this.gfs.openUploadStream(filePath))
+      .pipe(this.gfs.openUploadStream(filePath, { metadata }))
       .on('error', error => {
         logger.error('Unable to write file ' + filePath + ' to GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast', error)
         reject(error)
@@ -58,9 +58,17 @@ export default {
     })
   },
 
-  removeFromGridFS (filePath) {
-    return this.gfs.find({ filename: filePath }).toArray()
-    .then(items => (items.length > 0 ? this.gfs.delete(items[0]._id) : undefined))
+  async removeFromGridFS (filePath) {
+    const items = await this.gfs.find({ filename: filePath }).toArray()
+    return (items.length > 0 ? this.gfs.delete(items[0]._id) : undefined)
+  },
+
+  async cleanGridFS (datetime) {
+    const interval = this.element.interval || this.forecast.interval
+    const items = await this.gfs.find({
+      'metadata.forecastTime': { $lte: datetime.clone().subtract(interval, 'seconds').toDate() }
+    }).toArray()
+    await Promise.all(items.map(item => this.gfs.delete(item._id)))
   }
 
 }
