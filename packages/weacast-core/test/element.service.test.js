@@ -16,6 +16,7 @@ describe('weacast-core:elements', () => {
     origin: [-180, 90],
     size: [4, 3],
     resolution: [90, 90],
+    tileResolution: [90, 90],
     keepPastForecasts: true,        // We will keep past forecast times so that the number of forecasts is predictable for tests
     runInterval: 2 * interval * 3600,           // Produced every 6h
     oldestRunInterval: 2 * interval * 3600,     // Don't go back in time older than 6h
@@ -31,16 +32,17 @@ describe('weacast-core:elements', () => {
   ])
   let services = []
 
-  function cleanup () {
-    services.forEach(service => {
-      service.Model.drop()
+  async function cleanup () {
+    for (let i = 0; i < services.length; i++) {
+      let service = services[i]
+      await service.Model.deleteMany({})
       // GridFS collections
       if (service.element.dataStore === 'gridfs') {
-        app.db.collection(service.forecast.name + '/' + service.element.name + '.chunks').drop()
-        app.db.collection(service.forecast.name + '/' + service.element.name + '.files').drop()
+        await app.db.collection(service.forecast.name + '/' + service.element.name + '.chunks').deleteMany({})
+        await app.db.collection(service.forecast.name + '/' + service.element.name + '.files').deleteMany({})
       }
       fs.removeSync(service.getDataDirectory())
-    })
+    }
   }
 
   before(() => {
@@ -70,10 +72,10 @@ describe('weacast-core:elements', () => {
   })
 
   it('performs the element download processes', async () => {
+    // Clear any previous data
+    await cleanup()
     for (let i = 0; i < services.length; i++) {
       let service = services[i]
-      // Clear any previous data
-      service.Model.remove()
       fs.emptyDirSync(service.getDataDirectory())
       for (let j = 0; j < nbSteps; j++) nock('https://www.elements.com').get('/').reply(200, data)
       let results = await service.updateForecastData()
@@ -110,11 +112,36 @@ describe('weacast-core:elements', () => {
         .then(response => {
           expect(response.data.length).to.equal(nbSteps)
           // Ensure correct data filtering
-          expect(response.data[0].runTime).toExist()
-          expect(response.data[0].forecastTime).toExist()
-          expect(response.data[0].minValue).toExist()
-          expect(response.data[0].maxValue).toExist()
-          expect(response.data[0].data).to.beUndefined()
+          response.data.forEach(result => {
+            expect(result.runTime).toExist()
+            expect(result.forecastTime).toExist()
+            expect(result.minValue).toExist()
+            expect(result.maxValue).toExist()
+            expect(result.data).to.beUndefined()
+          })
+        })
+      )
+    })
+
+    return Promise.all(findPromises)
+  })
+
+  it('stores element tiles in DB', () => {
+    let findPromises = []
+    services.forEach(service => {
+      findPromises.push(
+        service.find({ query: { geometry: { $exists: true } }, paginate: false })
+        .then(response => {
+          // We have one tile per each pixel
+          expect(response.length).to.equal(8 * nbSteps)
+          // Ensure correct data tiling
+          response.forEach(tile => {
+            expect(tile.runTime).toExist()
+            expect(tile.forecastTime).toExist()
+            expect(tile.minValue).toExist()
+            expect(tile.maxValue).toExist()
+            expect(tile.data).to.beUndefined()
+          })
         })
       )
     })
@@ -172,12 +199,41 @@ describe('weacast-core:elements', () => {
     return Promise.all(findPromises)
   })
 
+  it('queries element tiles in DB', () => {
+    let findPromises = []
+    services.forEach(service => {
+      findPromises.push(
+        service.find({
+          query: {
+            time: new Date().toISOString(),
+            $select: ['forecastTime', 'data', 'minValue', 'maxValue'],
+            geometry: {
+              $geoIntersects: {
+                $geometry: {
+                  type: 'Point',
+                  coordinates: [ -135, 45 ]
+                }
+              }
+            }
+          }
+        })
+        .then(response => {
+          expect(response.data.length).to.equal(1)
+          expect(response.data[0].data.length).to.equal(4)
+          expect(response.data[0].minValue).to.equal(0)
+          expect(response.data[0].maxValue).to.equal(2)
+        })
+      )
+    })
+
+    return Promise.all(findPromises)
+  })
+
   it('performs the element download processes with failed requests (403)', async () => {
-    cleanup()
+    // Clear any previous data
+    await cleanup()
     for (let i = 0; i < services.length; i++) {
       let service = services[i]
-      // Clear any previous data
-      service.Model.remove()
       fs.emptyDirSync(service.getDataDirectory())
       for (let j = 0; j < (nbSteps - 1); j++) nock('https://www.elements.com').get('/').reply(200, data)
       // Add one failed request per update
@@ -201,11 +257,10 @@ describe('weacast-core:elements', () => {
   .timeout(10000)
 
   it('performs the element download processes with failed requests (timeout)', async () => {
-    cleanup()
+    // Clear any previous data
+    await cleanup()
     for (let i = 0; i < services.length; i++) {
       let service = services[i]
-      // Clear any previous data
-      service.Model.remove()
       fs.emptyDirSync(service.getDataDirectory())
       for (let j = 0; j < (nbSteps - 1); j++) nock('https://www.elements.com').get('/').reply(200, data)
       // Add one failed request per update
@@ -229,11 +284,10 @@ describe('weacast-core:elements', () => {
   .timeout(10000)
 
   it('performs the element download processes with failed conversions', async () => {
-    cleanup()
+    // Clear any previous data
+    await cleanup()
     for (let i = 0; i < services.length; i++) {
       let service = services[i]
-      // Clear any previous data
-      service.Model.remove()
       fs.emptyDirSync(service.getDataDirectory())
       for (let j = 0; j < nbSteps; j++) nock('https://www.elements.com').get('/').reply(200, data)
       // Add one failed conversion per update
@@ -257,8 +311,8 @@ describe('weacast-core:elements', () => {
   .timeout(10000)
 
   // Cleanup
-  after(() => {
-    app.getService('forecasts').Model.drop()
-    cleanup()
+  after(async () => {
+    await  app.getService('forecasts').Model.drop()
+    await cleanup()
   })
 })

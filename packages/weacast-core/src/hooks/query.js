@@ -194,34 +194,34 @@ export async function processData (hook) {
   const isArray = Array.isArray(items)
   items = (isArray ? items : [items])
 
-  // If we use a file based storage we have to load data on demand,
-  // except if we target tiles using a geometry
-  if (service.isExternalDataStorage() && (typeof query.geometry === 'object')) {
+  // If we use a file based storage we have to load data on demand
+  if (service.isExternalDataStorage()) {
     // Process data files when required
     if (query && !_.isNil(query.$select) && query.$select.includes('data')) {
       let dataPromises = []
       items.forEach(item => {
-        // In this case we need to extract from GridFS first
-        if (service.element.dataStore === 'gridfs') {
-          dataPromises.push(
-            service.readFromGridFS(item.convertedFilePath)
-            .then(_ => readFile(service, item))
-          )
-        } else {
-          dataPromises.push(readFile(service, item))
+        // Except if we target tiles which have internal data
+        if (item.convertedFilePath) {
+          // In this case we need to extract from GridFS first
+          if (service.element.dataStore === 'gridfs') {
+            dataPromises.push(
+              service.readFromGridFS(item.convertedFilePath)
+              .then(_ => readFile(service, item))
+            )
+          } else {
+            dataPromises.push(readFile(service, item))
+          }
         }
       })
-
-      await Promise.all(dataPromises)
-      // In this case we need to remove extracted files as they are temporary
-      if (service.element.dataStore === 'gridfs') {
-        await Promise.all(items.map(item => fs.remove(item.convertedFilePath)))
+      // Something to be done ?
+      if (dataPromises.length > 0) {
+        await Promise.all(dataPromises)
+        // In this case we need to remove extracted files as they are temporary
+        if (service.element.dataStore === 'gridfs') {
+          await Promise.all(items.map(item => fs.remove(item.convertedFilePath)))
+        }
+        replaceItems(hook, isArray ? items : items[0])
       }
-      // Remove as well any sensitive information about file path on the client side
-      // Must be done second as we need this information first to read data
-      discardFilepathField(hook)
-      discardConvertedFilepathField(hook)
-      replaceItems(hook, isArray ? items : items[0])
     }
     // Remove any sensitive information about file path on the client side
     discardFilepathField(hook)
