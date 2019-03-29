@@ -87,6 +87,26 @@ let ForecastLayer = L.Layer.extend({
     this.downloadedForecastTime = null
     // This will launch a refresh
     this.fetchData()
+  },
+
+  getBounds () {
+    let bounds = new L.LatLngBounds()
+    if (this.baseLayer && this.baseLayer.getBounds) {
+      bounds.extend(this.baseLayer.getBounds())
+    } else if (this.forecastModel) {
+      let minLon = this.forecastModel.bounds[0]
+      let minLat = this.forecastModel.bounds[1]
+      let maxLon = this.forecastModel.bounds[2]
+      let maxLat = this.forecastModel.bounds[3]
+      // Take care that leaflet uses [-180, 180]
+      if (maxLon > 180) {
+        minLon -= 180
+        maxLon -= 180
+      }
+      bounds.extend([minLat, minLon])
+      bounds.extend([maxLat, maxLon])
+    }
+    return bounds
   }
 
 })
