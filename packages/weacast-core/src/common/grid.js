@@ -64,7 +64,13 @@ export class Grid {
 
   getValue (i, j) {
     if (!this.data) return 0
-
+    if (this.matrix) {
+      if (i < this.size[0] && j < this.size[1]) {
+        return this.data[j][i]
+      } else {
+        return undefined
+      }
+    }
     let index = i + j * this.size[0]
     if (index < this.data.length) {
       return this.data[index]

@@ -312,7 +312,7 @@ describe('weacast-core:elements', () => {
 
   // Cleanup
   after(async () => {
-    await  app.getService('forecasts').Model.drop()
+    await app.getService('forecasts').Model.drop()
     await cleanup()
   })
 })

@@ -165,10 +165,10 @@ export function processForecastTime (hook) {
 }
 
 function readFile (service, item) {
-  const inputPath = (path.isAbsolute(item.convertedFilePath) ?
-    item.convertedFilePath :
-    path.join(service.app.get('forecastPath'), item.convertedFilePath))
-  
+  const inputPath = (path.isAbsolute(item.convertedFilePath)
+    ? item.convertedFilePath
+    : path.join(service.app.get('forecastPath'), item.convertedFilePath))
+
   return new Promise((resolve, reject) => {
     fs.readJson(inputPath, 'utf8')
     .then(grid => {

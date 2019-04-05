@@ -19,12 +19,12 @@ export default {
   },
 
   readFromGridFS (filePath) {
-    const outputPath = (path.isAbsolute(filePath) ?
-      filePath :
-      path.join(this.app.get('forecastPath'), filePath))
+    const outputPath = (path.isAbsolute(filePath)
+      ? filePath
+      : path.join(this.app.get('forecastPath'), filePath))
     // Make sure we've got somewhere to put data
     fs.ensureDirSync(path.dirname(outputPath))
-    
+
     return new Promise((resolve, reject) => {
       this.gfs.openDownloadStreamByName(filePath)
       .pipe(fs.createWriteStream(outputPath))
@@ -40,10 +40,10 @@ export default {
   },
 
   saveToGridFS (filePath, metadata) {
-    const inputPath = (path.isAbsolute(filePath) ?
-      filePath :
-      path.join(this.app.get('forecastPath'), filePath))
-    
+    const inputPath = (path.isAbsolute(filePath)
+      ? filePath
+      : path.join(this.app.get('forecastPath'), filePath))
+
     return new Promise((resolve, reject) => {
       fs.createReadStream(inputPath)
       .pipe(this.gfs.openUploadStream(filePath, { metadata }))

@@ -15,6 +15,19 @@ describe('weacast-core:grid', () => {
     ]
   })
 
+  let matrix = new Grid({
+    bounds: [-180, -90, 180, 90],
+    origin: [-180, 90],
+    size: [4, 3],
+    resolution: [90, 90],
+    data: [
+      [0, 1, 2, 3],
+      [4, 5, 6, 7],
+      [8, 9, 10, 11]
+    ],
+    matrix: true
+  })
+
   before(() => {
     chailint(chai, util)
   })
@@ -25,9 +38,13 @@ describe('weacast-core:grid', () => {
 
   it('gets grid values', () => {
     expect(grid.getValue(0, 0), 'vertex [0,0]').to.equal(0)
-    expect(grid.getValue(1, 0), 'vertex [1,0]').to.equal(1)
+    expect(grid.getValue(3, 0), 'vertex [3,0]').to.equal(0)
     expect(grid.getValue(0, 1), 'vertex [0,1]').to.equal(1)
     expect(grid.getValue(1, 1), 'vertex [1,1]').to.equal(2)
+    expect(matrix.getValue(0, 0), 'vertex [0,0]').to.equal(0)
+    expect(matrix.getValue(3, 0), 'vertex [1,0]').to.equal(3)
+    expect(matrix.getValue(1, 2), 'vertex [0,1]').to.equal(9)
+    expect(matrix.getValue(1, 1), 'vertex [1,1]').to.equal(5)
   })
 
   it('interpolates grid values', () => {
