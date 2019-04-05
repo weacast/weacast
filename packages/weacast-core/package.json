@@ -76,7 +76,7 @@
     "moment": "^2.18.1",
     "mongodb": "^2.2.26",
     "passport-github": "^1.1.0",
-    "passport-google-oauth20": "^1.0.0",
+    "passport-google-oauth20": "^2.0.0",
     "passport-oauth2-cognito": "^0.1.0",
     "passport-openidconnect": "https://github.com/kalisio/passport-openidconnect",
     "request": "^2.81.0",
