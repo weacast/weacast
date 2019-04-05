@@ -22,5 +22,6 @@ describe('weacast-leaflet', () => {
 
   it('is CommonJS compatible', () => {
     expect(typeof weacast).to.equal('function')
+    expect(app).toExist()
   })
 })

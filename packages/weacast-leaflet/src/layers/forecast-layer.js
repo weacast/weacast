@@ -44,15 +44,15 @@ let ForecastLayer = L.Layer.extend({
     // Convert from chromajs object to value/color ramp
     const dm = this.colorMap.domain()[0]
     const dd = this.colorMap.domain()[1] - dm
-    
+
     let colorMap = []
     for (let i = 0; i < nbColors; i++) {
-      const value = dm + ((i/(nbColors-1)) * dd)
+      const value = dm + ((i / (nbColors - 1)) * dd)
       colorMap.push({ value, color: this.colorMap(value) })
     }
     return colorMap
   },
-  
+
   setData (data) {
     // To be overriden, call ancestor to set flag and send event
     this.hasData = true
@@ -113,7 +113,7 @@ let ForecastLayer = L.Layer.extend({
 
 L.weacast = {}
 L.weacast.ForecastLayer = ForecastLayer
-L.weacast.forecastLayer = function(api, layer, options) {
+L.weacast.forecastLayer = function (api, layer, options) {
   return new L.weacast.ForecastLayer(api, layer, options)
 }
 export { ForecastLayer }

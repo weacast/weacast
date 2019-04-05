@@ -77,7 +77,7 @@ let FlowLayer = ForecastLayer.extend({
 })
 
 L.weacast.FlowLayer = FlowLayer
-L.weacast.flowLayer = function(api, options) {
+L.weacast.flowLayer = function (api, options) {
   return new L.weacast.FlowLayer(api, options)
 }
 export { FlowLayer }
