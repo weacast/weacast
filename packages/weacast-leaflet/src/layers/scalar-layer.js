@@ -35,7 +35,6 @@ let ScalarLayer = ForecastLayer.extend({
   },
 
   setForecastModel (model) {
-    console.log(model)
     this.grid = new Grid(model)
     this.gridRenderer.setGrid(this.grid)
     ForecastLayer.prototype.setForecastModel.call(this, model)
