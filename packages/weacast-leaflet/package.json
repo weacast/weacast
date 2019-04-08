@@ -54,6 +54,7 @@
     "leaflet-pixi-overlay": "^1.5.1",
     "leaflet-velocity": "^1.2.2",
     "lodash": "^4.17.4",
+    "loglevel": "^1.6.1",
     "mathjs": "^5.2.2",
     "pixi.js": "^4.8.2",
     "weacast-core": "^0.7.0"

@@ -1,3 +1,4 @@
+import logger from 'loglevel'
 import L from 'leaflet'
 import * as PIXI from 'pixi.js'
 import 'leaflet-pixi-overlay'
@@ -132,12 +133,17 @@ export class GridRenderer {
   setGrid (grid) {
     this.pixiContainer.removeChildren()
     this.grid = grid
-    this.sew = (grid.bounds[2] - grid.bounds[0]) === 360
-    if (grid.data) this.setData(grid.data)
+    if (this.grid) {
+      this.sew = (grid.bounds[2] - grid.bounds[0]) === 360
+    }
   }
 
-  setData (data) {
+  setGridData (data) {
     this.pixiContainer.removeChildren()
+    if (!this.grid) {
+      logger.warn('you must specify a grid before assigning the data')
+      return
+    }
     this.grid.data = data
   }
 
@@ -226,8 +232,6 @@ export class GridRenderer {
           let cellValue = gridView.getValue(i, j)
           let color = chroma(this.nodata.color)
           if (cellValue !== this.nodata.value) color = this.colorMap(cellValue)
-
-          // if (cellValue > 0) color = this.colorMap(cellValue)
           let rgb = color.gl()
           colors[colorsIndex++] = rgb[0]
           colors[colorsIndex++] = rgb[1]

@@ -23,13 +23,13 @@ let ScalarLayer = ForecastLayer.extend({
       this.minValue = data[0].minValue
       this.maxValue = data[0].maxValue
       this.colorMap = createColorMap(this.options, [this.minValue, this.maxValue])
-      this.gridRenderer.setData(data[0].data)
+      this.gridRenderer.setGridData(data[0].data)
       this.gridRenderer.setColorMap(this.colorMap)
       this.gridRenderer.setOpacity(this.options.opacity)
       this.baseLayer.redraw()
       ForecastLayer.prototype.setData.call(this, data)
     } else {
-      this.gridRenderer.setData(null)
+      this.gridRenderer.setGridData(null)
       this.hasData = false
     }
   },
