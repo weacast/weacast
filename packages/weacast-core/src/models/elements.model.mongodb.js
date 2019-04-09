@@ -7,4 +7,5 @@ module.exports = function (forecast, element, app, options) {
   // To perform geo queries on tiles
   options.Model.ensureIndex({ geometry: '2dsphere' })
   options.Model.ensureIndex({ x: 1, y: 1 })
+  options.Model.ensureIndex({ forecastTime: 1, geometry: 1 })
 }
