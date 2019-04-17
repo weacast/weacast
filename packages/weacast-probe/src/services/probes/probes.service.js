@@ -115,7 +115,7 @@ export default {
     try {
       let response = await resultService.Model.bulkWrite(operations)
 
-      logger.verbose(`Produced ' + ${response.upsertedCount + response.modifiedCount} results (${response.upsertedCount} creates - ${response.modifiedCount} updates
+      logger.verbose(`Produced ${response.upsertedCount + response.modifiedCount} results (${response.upsertedCount} creates - ${response.modifiedCount} updates)
                       for probe ${probe._id} on element ${elementService.forecast.name + '/' + elementService.element.name}
                       at ${forecastTime.format()} for run ${runTime.format()}`)
 
@@ -127,7 +127,7 @@ export default {
     }
   },
 
-  pushTime(feature, timeName, elementName, time, value) {
+  pushTime (feature, timeName, elementName, time, value) {
     // For each element we store the list of available times
     const times = _.get(feature, timeName + '.' + elementName)
     // Initialize
@@ -137,7 +137,7 @@ export default {
     if (!_.isNil(value)) _.set(feature.properties, elementName + '.' + time.format(), value)
   },
 
-  getValueAtTime(feature, elementName, time) {
+  getValueAtTime (feature, elementName, time) {
     return _.get(feature.properties, elementName + '.' + time.format())
   },
 
@@ -155,7 +155,7 @@ export default {
     const bearingProperty = directionElement + 'BearingProperty'
     const bearingPropertyName = probe.hasOwnProperty(bearingProperty) ? probe[bearingProperty] : undefined
     const bearingDirectionProperty = directionElement + 'BearingDirection'
-    
+
     features.forEach(feature => {
       // Check if we process on-demand probing for a time range
       const isTimeRange = (feature.forecastTime && !moment.isMoment(feature.forecastTime))
@@ -414,7 +414,6 @@ export default {
     // Then run all probes
     try {
       for (let service of services) {
-        const elementName = service.element.name
         // Will get all available forecast times (probing stream) or selected one(s) (on-demand probe)
         let forecasts = await service.find({ paginate: false, query: forecastQuery })
         debug('Probing following forecasts for probe ' + (probe._id ? probe._id : 'on-demand '), forecasts)
@@ -435,7 +434,7 @@ export default {
             // Take care to initialize properties holder if not given in input feature
             if (!feature.properties) feature.properties = {}
           })
-          
+
           // Ask to retrieve forecast data and perform probing
           await this.probeForecastTime(features, probe, service, forecast)
           // When performing probing on-demand we do not store any result,

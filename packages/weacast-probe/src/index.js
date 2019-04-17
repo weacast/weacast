@@ -7,7 +7,7 @@ const debug = makeDebug('weacast:weacast-probe')
 
 export default async function init () {
   debug('Initializing weacast-probe')
-  
+
   let app = this
   const syncConfig = app.get('sync')
   // Setup sync with external loaders if any
