@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.0.0](https://github.com/weacast/weacast-gfs/tree/v1.0.0) (2019-04-17)
+
+[Full Changelog](https://github.com/weacast/weacast-gfs/compare/v0.5.0...v1.0.0)
+
+**Merged pull requests:**
+
+- \[Snyk\] Fix for 1 vulnerable dependencies [\#2](https://github.com/weacast/weacast-gfs/pull/2) ([snyk-bot](https://github.com/snyk-bot))
+
 ## [v0.5.0](https://github.com/weacast/weacast-gfs/tree/v0.5.0) (2018-06-28)
 
 [Full Changelog](https://github.com/weacast/weacast-gfs/compare/v0.4.0...v0.5.0)
