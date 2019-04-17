@@ -1,6 +1,6 @@
 {
   "name": "weacast-gtiff2json",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "Converts GeoTIFF images to JSON array",
   "main": "index.js",
   "bin": "index.js",
