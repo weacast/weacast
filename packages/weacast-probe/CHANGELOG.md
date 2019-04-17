@@ -1,5 +1,18 @@
 # Changelog
 
+## [v1.0.0](https://github.com/weacast/weacast-probe/tree/v1.0.0) (2019-04-17)
+
+[Full Changelog](https://github.com/weacast/weacast-probe/compare/v0.5.0...v1.0.0)
+
+**Implemented enhancements:**
+
+- Allow for "dynamic" probing at a given location [\#4](https://github.com/weacast/weacast-probe/issues/4)
+
+**Fixed bugs:**
+
+- Probing is not reliable when used across network [\#3](https://github.com/weacast/weacast-probe/issues/3)
+- Probing of direction elements can fail [\#2](https://github.com/weacast/weacast-probe/issues/2)
+
 ## [v0.5.0](https://github.com/weacast/weacast-probe/tree/v0.5.0) (2018-06-28)
 
 [Full Changelog](https://github.com/weacast/weacast-probe/compare/v0.4.0...v0.5.0)
