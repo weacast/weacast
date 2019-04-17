@@ -1,7 +1,7 @@
 {
   "name": "weacast-probe",
   "description": "Probing forecast model plugin for Weacast",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "homepage": "https://github.com/weacast/weacast-probe",
   "main": "lib/",
   "keywords": [
