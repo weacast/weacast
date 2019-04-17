@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.0.0](https://github.com/weacast/weacast-arpege/tree/v1.0.0) (2019-04-17)
+
+[Full Changelog](https://github.com/weacast/weacast-arpege/compare/v0.5.0...v1.0.0)
+
+**Implemented enhancements:**
+
+- Make output precision configurable [\#2](https://github.com/weacast/weacast-arpege/issues/2)
+
 ## [v0.5.0](https://github.com/weacast/weacast-arpege/tree/v0.5.0) (2018-06-28)
 
 [Full Changelog](https://github.com/weacast/weacast-arpege/compare/v0.4.0...v0.5.0)
