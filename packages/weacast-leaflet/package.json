@@ -57,7 +57,7 @@
     "loglevel": "^1.6.1",
     "mathjs": "^5.2.2",
     "pixi.js": "^4.8.2",
-    "weacast-core": "^0.7.0"
+    "weacast-core": "^1.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
