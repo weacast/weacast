@@ -1,5 +1,26 @@
 # Changelog
 
+## [v1.0.0](https://github.com/weacast/weacast-core/tree/v1.0.0) (2019-04-17)
+
+[Full Changelog](https://github.com/weacast/weacast-core/compare/v0.7.1...v1.0.0)
+
+**Implemented enhancements:**
+
+- The grid should be able to handle data stored as a matrix [\#13](https://github.com/weacast/weacast-core/issues/13)
+- Manage accumulated element values [\#5](https://github.com/weacast/weacast-core/issues/5)
+
+**Fixed bugs:**
+
+- Resampling does not work with GridFS data store [\#11](https://github.com/weacast/weacast-core/issues/11)
+- Tiling does not work with GridFS data store [\#10](https://github.com/weacast/weacast-core/issues/10)
+- Tiling generates real-time events [\#9](https://github.com/weacast/weacast-core/issues/9)
+- Google+ API deprecation [\#8](https://github.com/weacast/weacast-core/issues/8)
+- Nearest forecast hour rounding does not work on date line [\#7](https://github.com/weacast/weacast-core/issues/7)
+
+**Closed issues:**
+
+- feathers deprecated [\#4](https://github.com/weacast/weacast-core/issues/4)
+
 ## [v0.7.1](https://github.com/weacast/weacast-core/tree/v0.7.1) (2018-06-28)
 
 [Full Changelog](https://github.com/weacast/weacast-core/compare/v0.7.0...v0.7.1)
