@@ -62,8 +62,8 @@
     "mongodb": "^2.2.26",
     "request": "^2.81.0",
     "uberproto": "^1.2.0",
-    "weacast-core": "^0.7.1",
-    "weacast-gtiff2json": "^0.2.0",
+    "weacast-core": "^1.0.0",
+    "weacast-gtiff2json": "^1.0.0",
     "winston": "^2.3.1"
   },
   "devDependencies": {
