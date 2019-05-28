@@ -21,9 +21,6 @@
   "bugs": {
     "url": "https://github.com/weacast/weacast-probe/issues"
   },
-  "engines": {
-    "node": ">= 4.6.0"
-  },
   "scripts": {
     "prepublish": "npm run compile",
     "publish": "git push origin --tags && npm run changelog && git push origin",
