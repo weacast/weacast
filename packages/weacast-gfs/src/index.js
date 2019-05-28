@@ -1,5 +1,4 @@
 import path from 'path'
-import filters from './services/gfs/gfs.filters'
 import hooks from './services/gfs/gfs.hooks'
 import service from './services/gfs/gfs.service'
 import { initializePlugin } from 'weacast-core'
@@ -12,7 +11,6 @@ export default function init () {
 
 // Sub-exports
 Object.assign(init, {
-  filters,
   hooks,
   service
 })
