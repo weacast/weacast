@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  weacast-api:
+    build: .
+    image: weacast/weacast-api:dev
+    environment:
+      - LOG_LEVEL=verbose
+  weacast-mongodb:
+    ports:
+      - 27017:27017
+
+

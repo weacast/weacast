@@ -1,0 +1,10 @@
+{
+  "plugins": [ "add-module-exports", "transform-export-extensions" ],
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": "7.0"
+      }
+    }]
+  ]
+}

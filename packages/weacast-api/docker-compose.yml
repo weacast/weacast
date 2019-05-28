@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  weacast-api:
+    build: .
+    container_name: weacast-api
+    image: weacast/weacast-api
+    links:
+      - weacast-mongodb:mongodb
+    ports:
+      - 8081:8081
+    networks:
+      - weacast
+    environment:
+      - VIRTUAL_HOST=demo.weacast.xyz
+      - VIRTUAL_PORT=8081
+      - DB_URL=mongodb://mongodb:27017/weacast
+      - LOG_LEVEL
+      - DEBUG
+  weacast-mongodb:
+    container_name: weacast-mongodb
+    image: mongo
+    volumes:
+      - weacast_mongodb:/data/db
+    networks:
+      - weacast
+
+volumes:
+  weacast_mongodb:
+
+networks:
+  weacast:
