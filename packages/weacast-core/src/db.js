@@ -1,6 +1,6 @@
 import mongodb from 'mongodb'
 import logger from 'winston'
-import errors from 'feathers-errors'
+import errors from '@feathersjs/errors'
 
 export class Database {
   constructor (app) {

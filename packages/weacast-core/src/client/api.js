@@ -1,6 +1,5 @@
 import logger from 'loglevel'
-import feathers from 'feathers-client'
-import hooks from 'feathers-hooks'
+import feathers from '@feathersjs/client'
 import io from 'socket.io-client'
 
 export function weacast (config) {

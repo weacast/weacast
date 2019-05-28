@@ -8,16 +8,16 @@ import compress from 'compression'
 import cors from 'cors'
 import helmet from 'helmet'
 import bodyParser from 'body-parser'
-import feathers from 'feathers'
-import errors from 'feathers-errors'
-import configuration from 'feathers-configuration'
-import hooks from 'feathers-hooks'
-import rest from 'feathers-rest'
-import socketio from 'feathers-socketio'
-import authentication from 'feathers-authentication'
-import jwt from 'feathers-authentication-jwt'
-import local from 'feathers-authentication-local'
-import oauth2 from 'feathers-authentication-oauth2'
+import feathers from '@feathersjs/feathers'
+import errors from '@feathersjs/errors'
+import configuration from '@feathersjs/configuration'
+import express from '@feathersjs/express'
+import rest from '@feathersjs/express/rest'
+import socketio from '@feathersjs/socketio'
+import authentication from '@feathersjs/authentication'
+import jwt from '@feathersjs/authentication-jwt'
+import local from '@feathersjs/authentication-local'
+import oauth2 from '@feathersjs/authentication-oauth2'
 import GithubStrategy from 'passport-github'
 import GoogleStrategy from 'passport-google-oauth20'
 import OpenIDStrategy from 'passport-openidconnect'
@@ -115,11 +115,14 @@ function configureService (name, service, servicesPath) {
   }
 
   try {
-    const filters = require(path.join(servicesPath, name, name + '.filters'))
-    service.filter(filters)
-    debug(name + ' service filters configured on path ' + servicesPath)
+    const channels = require(path.join(servicesPath, name, name + '.channels'))
+    _.forOwn(channels, (publisher, event) => {
+      if (event === 'all') service.publish(publisher)
+      else service.publish(event, publisher)
+    })
+    debug(name + ' service channels configured on path ' + servicesPath)
   } catch (error) {
-    debug('No ' + name + ' service filters configured on path ' + servicesPath)
+    debug('No ' + name + ' service channels configured on path ' + servicesPath)
     if (error.code !== 'MODULE_NOT_FOUND') {
       // Log error in this case as this might be linked to a syntax error in required file
       debug(error)
@@ -245,7 +248,8 @@ function setupLogger (logsConfig) {
   try {
     logger.remove(logger.transports.Console)
   } catch (error) {
-
+    // Logger might be down, use console
+    console.error('Could not remove default logger transport', error)
   }
   // We have one entry per log type
   let logsTypes = logsConfig ? Object.getOwnPropertyNames(logsConfig) : []
@@ -259,13 +263,14 @@ function setupLogger (logsConfig) {
     try {
       logger.add(logger.transports[logType], options)
     } catch (error) {
-
+      // Logger might be down, use console
+      console.error('Could not setup default log levels', error)
     }
   })
 }
 
 export default function weacast () {
-  let app = feathers()
+  let app = express(feathers())
   // Load app configuration first
   app.configure(configuration())
   // Then setup logger
@@ -302,12 +307,8 @@ export default function weacast () {
   app.use(bodyParser.urlencoded({ extended: true }))
 
   // Set up plugins and providers
-  app.configure(hooks())
   app.configure(rest())
-  app.configure(socketio({
-    path: app.get('apiPath') + 'ws'
-  }))
-
+  app.configure(socketio({ path: app.get('apiPath') + 'ws' }))
   app.configure(auth)
 
   // Initialize DB
