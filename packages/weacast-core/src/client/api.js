@@ -10,7 +10,6 @@ export function weacast (config) {
   } else {
     logger.setLevel('info')
   }
-  api.configure(hooks())
   const origin = config.apiUrl || window.location.origin
   if (config.transport === 'http') {
     api.configure(feathers.rest(origin).fetch(window.fetch.bind(window)))
