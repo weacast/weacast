@@ -6,6 +6,7 @@ const express = require('@feathersjs/express')
 const middlewares = require('./middlewares')
 const services = require('./services')
 const hooks = require('./hooks')
+const channels = require('./channels')
 
 import logger from 'winston'
 import { weacast } from 'weacast-core'
@@ -16,7 +17,7 @@ export class Server {
 
     // Serve pure static assets if any
     const staticPath = this.app.get('staticPath')
-    if (staticPath) {
+    if (staticPath && fs.pathExistsSync(staticPath)) {
       this.app.use('/', express.static(staticPath))
     }
 
@@ -32,7 +33,7 @@ export class Server {
     })
   }
 
-  async run (callback) {
+  async run () {
     let app = this.app
     // First try to connect to DB
     await app.db.connect()

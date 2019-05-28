@@ -5,10 +5,14 @@ import core, { initializeElements } from 'weacast-core'
 import probe from 'weacast-probe'
 import alert from 'weacast-alert'
 
+const modelPath = path.join(__dirname, 'models')
+const servicePath = path.join(__dirname, 'services')
+
 module.exports = async function () {
   const app = this
-  // Set up elements services
+  // Setup app services
   try {
+    let usersService = app.createService('users', modelPath, servicePath)
     app.configure(core)
     // Setup if we use local loaders
     const loaders = app.get('loaders')
@@ -19,6 +23,7 @@ module.exports = async function () {
         app.configure(plugin)
       })
     } else { 
+      // Set up elements services
       const forecasts = app.get('forecasts')
       // Iterate over configured forecast models
       for (let forecast of forecasts) {

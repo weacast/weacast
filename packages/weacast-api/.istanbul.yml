@@ -2,7 +2,7 @@ verbose: false
 instrumentation:
   root: ./src/
   excludes:
-    - dist/
+    - lib/
   include-all-sources: true
 reporting:
   print: summary
