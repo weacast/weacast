@@ -13,7 +13,7 @@ WORKDIR /opt/weacast-api
 COPY . /opt/weacast-api
 
 RUN yarn install
-RUN npm run build
+RUN npm run compile
 
 EXPOSE 8081
 

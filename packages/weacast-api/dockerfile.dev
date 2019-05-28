@@ -28,7 +28,7 @@ RUN yarn link weacast-alert
 RUN yarn link weacast-arpege
 RUN yarn link weacast-arome
 RUN yarn link weacast-gfs
-RUN npm run build
+RUN npm run compile
 
 EXPOSE 8081
 

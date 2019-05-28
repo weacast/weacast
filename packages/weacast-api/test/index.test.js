@@ -24,6 +24,11 @@ describe('weacast-api', () => {
   // Let enough time to process
   .timeout(10000)
 
+  it('registers the users service', () => {
+    let service = server.app.getService('users')
+    expect(service).toExist()
+  })
+  
   it('infos appear in logs', (done) => {
     let log = 'Checking for up-to-date forecast data on arpege-world/u-wind'
     // FIXME: need to let some time to proceed with log file

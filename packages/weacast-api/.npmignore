@@ -6,5 +6,7 @@
 .idea/
 src/
 test/
+dist/
+logs/
 !lib/
 !config/

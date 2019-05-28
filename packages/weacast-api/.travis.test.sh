@@ -19,5 +19,5 @@ else
 	yarn link weacast-arpege
 	yarn link weacast-arome
 	yarn link weacast-gfs
-	npm run build
+	npm run compile
 fi
