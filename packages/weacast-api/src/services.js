@@ -10,20 +10,21 @@ const servicePath = path.join(__dirname, 'services')
 
 module.exports = async function () {
   const app = this
+  const authConfig = app.get('authentication')
   // Setup app services
   try {
-    let usersService = app.createService('users', modelPath, servicePath)
+    if (authConfig) app.createService('users', modelPath, servicePath)
     app.configure(core)
     // Setup if we use local loaders
     const loaders = app.get('loaders')
     if (loaders && loaders.length > 0) {
-      // Setup plugins by dynamically require them
+      // Setup loader plugins by dynamically require them
       loaders.forEach(loader => {
         const plugin = require(`weacast-${loader}`)
         app.configure(plugin)
       })
     } else { 
-      // Set up elements services
+      // Set up only elements services otherwise
       const forecasts = app.get('forecasts')
       // Iterate over configured forecast models
       for (let forecast of forecasts) {
@@ -38,7 +39,6 @@ module.exports = async function () {
   }
 
   // Create default users if not already done
-  const authConfig = app.get('authentication')
   let usersService = app.getService('users')
   if (usersService && authConfig) {
     let defaultUsers = authConfig.defaultUsers
