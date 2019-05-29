@@ -10,8 +10,8 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 RUN $JAVA_HOME/bin/java -version
 
 COPY . /opt/weacast-api
-
 WORKDIR /opt/weacast-modules
+
 RUN git clone https://github.com/weacast/weacast-core.git -b master --single-branch && cd weacast-core && yarn install && yarn link && cd ..
 RUN git clone https://github.com/weacast/weacast-probe.git -b master --single-branch && cd weacast-probe && yarn install && yarn link weacast-core && yarn link && cd ..
 RUN git clone https://github.com/weacast/weacast-alert.git -b master --single-branch && cd weacast-alert && yarn install && yarn link weacast-core && yarn link weacast-probe && yarn link && cd ..
