@@ -1,35 +1,39 @@
-const fs = require('fs-extra')
-const https = require('https')
-const proxyMiddleware = require('http-proxy-middleware')
-
-const express = require('@feathersjs/express')
-const middlewares = require('./middlewares')
-const services = require('./services')
-const hooks = require('./hooks')
-const channels = require('./channels')
-
+import fs from 'fs-extra'
+import https from 'https'
+import proxyMiddleware from 'http-proxy-middleware'
+import express from '@feathersjs/express'
+import middlewares from './middlewares'
+import services from './services'
+import hooks from './hooks'
+import channels from './channels'
 import logger from 'winston'
 import { weacast } from 'weacast-core'
+import distribution from '@kalisio/feathers-distributed'
 
 export class Server {
   constructor () {
     this.app = weacast()
+    let app = this.app
+
+    // Distribute services
+    const distConfig = app.get('distribution')
+    if (distConfig) app.configure(distribution(distConfig))
 
     // Serve pure static assets if any
-    const staticPath = this.app.get('staticPath')
+    const staticPath = app.get('staticPath')
     if (staticPath && fs.pathExistsSync(staticPath)) {
-      this.app.use('/', express.static(staticPath))
+      app.use('/', express.static(staticPath))
     }
 
     // Define HTTP proxies to your custom API backend. See /config/index.js -> proxyTable
     // https://github.com/chimurai/http-proxy-middleware
-    const proxyTable = this.app.get('proxyTable') || {}
+    const proxyTable = app.get('proxyTable') || {}
     Object.keys(proxyTable).forEach(context => {
       let options = proxyTable[context]
       if (typeof options === 'string') {
         options = { target: options }
       }
-      this.app.use(proxyMiddleware(context, options))
+      app.use(proxyMiddleware(context, options))
     })
   }
 

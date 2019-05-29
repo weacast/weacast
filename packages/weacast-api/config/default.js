@@ -1,9 +1,14 @@
-var path = require('path')
-var containerized = require('containerized')()
+const path = require('path')
+const containerized = require('containerized')()
 const forecasts = require('./forecasts')
 
-var API_PREFIX = '/api'
+const API_PREFIX = '/api'
 const loaders = [] // To embed local loaders: ['arpege', 'arome', 'gfs']
+// If using local loaders enable update only on selected loaders
+for (let [key, forecast] of Object.entries(forecasts)) {
+  if (!loaders.includes(forecast.model)) forecast.updateInterval = -1
+}
+
 const serverPort = process.env.PORT || process.env.HTTPS_PORT || 8081
 // Required to know webpack port so that in dev we can build correct URLs
 const clientPort = process.env.CLIENT_PORT || process.env.HTTPS_CLIENT_PORT || 8080
@@ -40,6 +45,9 @@ module.exports = {
   */
   apiPath: API_PREFIX,
   staticPath: path.join(__dirname, '..', 'dist'),
+  distribution: { // Distribute every service except those related to authentication
+    services: (service) => !service.path.endsWith('users') && !service.path.endsWith('authentication')
+  },
   paginate: {
     default: 10,
     max: 50
