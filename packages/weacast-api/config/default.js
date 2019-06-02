@@ -3,7 +3,8 @@ const containerized = require('containerized')()
 const forecasts = require('./forecasts')
 
 const API_PREFIX = '/api'
-const loaders = [] // To embed local loaders: ['arpege', 'arome', 'gfs']
+let loaders = [] // To embed local loaders: ['arpege', 'arome', 'gfs']
+if (process.env.LOADERS) loaders = process.env.LOADERS.split(',')
 // If using local loaders enable update only on selected loaders
 for (let [key, forecast] of Object.entries(forecasts)) {
   if (!loaders.includes(forecast.model)) forecast.updateInterval = -1
