@@ -9,7 +9,6 @@ RUN apt-get clean
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 RUN $JAVA_HOME/bin/java -version
 
-COPY . /opt/weacast-api
 WORKDIR /opt/weacast-modules
 
 RUN git clone https://github.com/weacast/weacast-core.git -b master --single-branch && cd weacast-core && yarn install && yarn link && cd ..
@@ -20,6 +19,7 @@ RUN git clone https://github.com/weacast/weacast-arome.git -b master --single-br
 RUN git clone https://github.com/weacast/weacast-gfs.git -b master --single-branch && cd weacast-gfs && yarn install && yarn link weacast-core && yarn link && cd ..
 
 WORKDIR /opt/weacast-api
+COPY . /opt/weacast-api
 
 RUN yarn install
 RUN yarn link weacast-core
