@@ -14,7 +14,7 @@ else
 	#git clone https://github.com/weacast/weacast-arome.git -b master --single-branch && cd weacast-arome && yarn install && yarn link weacast-arpege && yarn link weacast-core && yarn link && cd ..
 	#git clone https://github.com/weacast/weacast-gfs.git -b master --single-branch && cd weacast-gfs && yarn install && yarn link weacast-core && yarn link && cd ..
 	
-	#yarn install
+	yarn install
 	#yarn link weacast-core
 	#yarn link weacast-probe
 	#yarn link weacast-alert
