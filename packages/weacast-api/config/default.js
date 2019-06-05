@@ -123,10 +123,16 @@ module.exports = {
   db: {
     adapter: 'mongodb',
     path: path.join(__dirname, '..', 'db-data'),
-    url: process.env.DB_URL || (containerized ? 'mongodb://mongodb:27017/weacast' : 'mongodb://127.0.0.1:27017/weacast')
+    url: process.env.DB_URL || (containerized ? 'mongodb://mongodb:27017/weacast' : 'mongodb://127.0.0.1:27017/weacast'),
+    // We allow for a separate DB to hold weather data
+    secondaries: (process.env.DATA_DB_URL ? { data: process.env.DATA_DB_URL } : undefined)
+  },
+  services: {
+    forecasts: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) },
+    elements: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) }
   },
   loaders,
-  sync: (loaders.length > 0 ? false : { url: process.env.SYNC_DB_URL || process.env.DB_URL }),
+  sync: (loaders.length > 0 ? false : { url: process.env.SYNC_DB_URL || process.env.DATA_DB_URL || process.env.DB_URL }),
   defaultProbes: [
     {
       fileName: path.join(__dirname, '..', 'probe-data', 'ne_10m_airports.geojson'),
