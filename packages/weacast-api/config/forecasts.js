@@ -54,6 +54,7 @@ module.exports = {
     description: 'World-wide',
     attribution: 'Forecast data from <a href="http://www.emc.ncep.noaa.gov/index.php?branch=GFS">NCEP</a>',
     model: 'gfs',
+    isDefault: true,
     baseUrl: 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p50.pl',
     bounds: [0, -90, 360, 90],
     origin: [0, 90],

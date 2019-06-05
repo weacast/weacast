@@ -22,7 +22,7 @@ describe('weacast-api', () => {
     server.run().then(() => done())
   })
   // Let enough time to process
-  .timeout(10000)
+  .timeout(20000)
 
   it('registers the users service', () => {
     let service = server.app.getService('users')
@@ -47,6 +47,6 @@ describe('weacast-api', () => {
   // Cleanup
   after(() => {
     fs.emptyDirSync(path.join(__dirname, 'logs'))
-    server.app.db._db.dropDatabase()
+    server.app.db.db().dropDatabase()
   })
 })
