@@ -1,5 +1,6 @@
 import path from 'path'
 import makeDebug from 'debug'
+import _ from 'lodash'
 import logger from 'winston'
 import 'winston-daily-rotate-file'
 import proto from 'uberproto'
@@ -142,6 +143,7 @@ export function createService (name, app, modelsPath, servicesPath, options) {
     name: name,
     paginate
   }, options || {})
+  if (serviceOptions.disabled) return undefined
   configureModel(app, serviceOptions)
 
   // Initialize our service with any options it requires
@@ -180,6 +182,7 @@ export function createElementService (forecast, element, app, servicesPath, opti
     name: serviceName,
     paginate
   }, options || {})
+  if (serviceOptions.disabled) return undefined
   configureModel(forecast, element, app, serviceOptions)
 
   // Initialize our service with any options it requires
@@ -211,7 +214,7 @@ export function createElementService (forecast, element, app, servicesPath, opti
     if (app.get('db').adapter !== 'mongodb') {
       throw new errors.GeneralError('GridFS store is only available for MongoDB adapter')
     }
-    service.gfs = new mongo.GridFSBucket(app.db._db, {
+    service.gfs = new mongo.GridFSBucket(app.db.db(serviceOptions.dbName), {
       // GridFS is use to bypass the limit of 16MB documents in MongoDB
       // We are not specifically interested in splitting the file in small chunks
       chunkSizeBytes: 8 * 1024 * 1024,
@@ -276,6 +279,12 @@ export default function weacast () {
   // Then setup logger
   setupLogger(app.get('logs'))
 
+  // This retrieve corresponding service options from app config if any
+  app.getServiceOptions = function (name) {
+    const services = app.get('services')
+    if (!services) return {}
+    return _.get(services, name, {})
+  }
   // This avoid managing the API path before each service name
   app.getService = function (path) {
     return app.service(app.get('apiPath') + '/' + path)

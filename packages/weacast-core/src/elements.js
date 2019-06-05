@@ -29,8 +29,11 @@ export default function initializeElements (app, forecast, servicesPath) {
   })
 
   // Then generate services for each forecast element in buckets
+  // Retrieve generic elements options if any
+  const elementServiceOptions = app.getServiceOptions('elements')
   elementBuckets = _.mapValues(elementBuckets, elements => {
-    return elements.map(element => app.createElementService(forecast, element, servicesPath, element.serviceOptions))
+    return elements.map(element => app.createElementService(forecast, element, servicesPath,
+      Object.assign({}, element.serviceOptions, elementServiceOptions)))
   })
 
   async function update () {

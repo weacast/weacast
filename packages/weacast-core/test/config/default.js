@@ -36,7 +36,14 @@ module.exports = {
   db: {
     adapter: 'mongodb',
     path: path.join(__dirname, '../db-data'),
-    url: (containerized ? 'mongodb://mongodb:27017/weacast-test' : 'mongodb://127.0.0.1:27017/weacast-test')
+    url: (containerized ? 'mongodb://mongodb:27017/weacast-test' : 'mongodb://127.0.0.1:27017/weacast-test'),
+    secondaries: {
+      elements: (containerized ? 'mongodb://mongodb:27017/weacast-test-elements' : 'mongodb://127.0.0.1:27017/weacast-test-elements')
+    }
+  },
+  services: {
+    forecasts: {},
+    elements: { dbName: 'elements' }
   },
   forecastPath: path.join(__dirname, '../forecast-data')
 }

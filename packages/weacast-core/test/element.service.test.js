@@ -38,8 +38,8 @@ describe('weacast-core:elements', () => {
       await service.Model.deleteMany({})
       // GridFS collections
       if (service.element.dataStore === 'gridfs') {
-        await app.db.collection(service.forecast.name + '/' + service.element.name + '.chunks').deleteMany({})
-        await app.db.collection(service.forecast.name + '/' + service.element.name + '.files').deleteMany({})
+        await app.db.collection(service.forecast.name + '/' + service.element.name + '.chunks', 'elements').deleteMany({})
+        await app.db.collection(service.forecast.name + '/' + service.element.name + '.files', 'elements').deleteMany({})
       }
       fs.removeSync(service.getDataDirectory())
     }
@@ -62,7 +62,7 @@ describe('weacast-core:elements', () => {
       let service = app.createElementService(forecast, {
         name: 'test-element-' + dataStore,
         dataStore
-      }, path.join(__dirname, 'test-services'))
+      }, path.join(__dirname, 'test-services'), { dbName: 'elements' })
       expect(service).toExist()
       // Test as well if correctly registered into app
       service = app.getService('test-forecast/test-element-' + dataStore)
