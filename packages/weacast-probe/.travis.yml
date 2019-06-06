@@ -15,5 +15,5 @@ notifications:
     on_success: always
     on_failure: always
 install: travis_wait yarn
-before_script: travis_wait .travis.sh
+before_script: travis_wait bash .travis.sh
 after_script: codeclimate-test-reporter < coverage/lcov.info
