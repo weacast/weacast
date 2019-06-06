@@ -36,4 +36,4 @@ jobs:
     services:
     - docker
     script:
-    - travis_wait bash .travis.build.sh
+    - travis_wait 50 bash .travis.build.sh
