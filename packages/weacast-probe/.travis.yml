@@ -17,9 +17,9 @@ notifications:
 install: travis_wait yarn
 before_script:
 - npm install -g codeclimate-test-reporter
-- git clone https://github.com/weacast/weacast-core.git && cd weacast-core && yarn install && yarn
+- travis_wait git clone https://github.com/weacast/weacast-core.git && cd weacast-core && yarn install && yarn
   link && cd .. && yarn link weacast-core
-- git clone https://github.com/weacast/weacast-arpege.git && cd weacast-arpege && yarn install && yarn
+- travis_wait git clone https://github.com/weacast/weacast-arpege.git && cd weacast-arpege && yarn install && yarn
   link && yarn link weacast-core && cd .. && yarn link weacast-arpege
 after_script:
 - codeclimate-test-reporter < coverage/lcov.info
