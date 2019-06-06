@@ -14,6 +14,7 @@ jobs:
     language: node_js
     node_js:
     - '8'
+    cache: yarn
     sudo: required
     services:
     - mongodb
@@ -30,6 +31,7 @@ jobs:
     language: node_js
     node_js:
     - '8'
+    cache: yarn
     sudo: required
     services:
     - docker
