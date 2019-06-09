@@ -46,8 +46,11 @@ module.exports = {
   */
   apiPath: API_PREFIX,
   staticPath: path.join(__dirname, '..', 'dist'),
-  distribution: { // Distribute every service except those related to authentication
-    services: (service) => !service.path.endsWith('users') && !service.path.endsWith('authentication')
+  distribution: {
+    // Distribute every service except those related to authentication
+    services: (service) => !service.path.endsWith('users') && !service.path.endsWith('authentication'),
+    // We only produce services we don't consume any
+    remoteServices: (service) => false
   },
   paginate: {
     default: 10,
