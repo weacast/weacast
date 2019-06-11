@@ -77,6 +77,7 @@ module.exports = {
         password: 'weacast'
       }
     ],
+    disallowRegistration: false,
     github: {
       clientID: process.env.GITHUB_CLIENT_ID || '20da06587907b8048edb',
       clientSecret: process.env.GITHUB_CLIENT_SECRET || '22029773f71829af8eaba6c0d6599843026cbf15',
@@ -139,6 +140,7 @@ module.exports = {
   defaultProbes: [
     {
       fileName: path.join(__dirname, '..', 'probe-data', 'ne_10m_airports.geojson'),
+      filter: (forecast, element) => false,
       options: {
         featureId: 'properties.iata_code'
       }
@@ -147,6 +149,7 @@ module.exports = {
   defaultAlerts: [
     {
       fileName: path.join(__dirname, '..', 'probe-data', 'paris.geojson'),
+      filter: (forecast, element) => false,
       options: {
         cron: '0 */1 * * * *', // Every minute
         expireAt: new Date(Date.now() + 99 * 365 * 24 * 60 * 60 * 1000).toISOString(), // 99 years validity
