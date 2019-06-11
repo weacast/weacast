@@ -140,7 +140,7 @@ module.exports = {
   defaultProbes: [
     {
       fileName: path.join(__dirname, '..', 'probe-data', 'ne_10m_airports.geojson'),
-      filter: (forecast, element) => false,
+      filter: (forecast) => forecast.elements.map(element => element.name),
       options: {
         featureId: 'properties.iata_code'
       }
@@ -149,7 +149,7 @@ module.exports = {
   defaultAlerts: [
     {
       fileName: path.join(__dirname, '..', 'probe-data', 'paris.geojson'),
-      filter: (forecast, element) => false,
+      filter: (probe) => true,
       options: {
         cron: '0 */1 * * * *', // Every minute
         expireAt: new Date(Date.now() + 99 * 365 * 24 * 60 * 60 * 1000).toISOString(), // 99 years validity
