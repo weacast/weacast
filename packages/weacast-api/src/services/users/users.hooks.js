@@ -1,14 +1,16 @@
-const { hashPassword } = require('@feathersjs/authentication-local').hooks
-const commonHooks = require('feathers-hooks-common')
-const gravatar = require('../../hooks/gravatar')
+import commonHooks from 'feathers-hooks-common'
+import _ from 'lodash'
+import gravatar from '../../hooks/gravatar'
 import { github, google, oidc, cognito } from '../../hooks/provider'
+const { hashPassword } = require('@feathersjs/authentication-local').hooks
 
 module.exports = {
   before: {
     all: [],
     find: [],
     get: [],
-    create: [ github(), google(), oidc(), cognito(), hashPassword(), gravatar() ],
+    create: [ commonHooks.when(hook => _.get(hook.app.get('authentication'), 'disallowRegistration'), commonHooks.disallow('external')),
+              github(), google(), oidc(), cognito(), hashPassword(), gravatar() ],
     update: [],
     patch: [],
     remove: []
