@@ -24,6 +24,6 @@ The [Weacast docs](https://weacast.github.io/weacast-docs/) are loaded with awes
 
 ## License
 
-Copyright (c) 2018
+Copyright (c) 2019
 
 Licensed under the [MIT license](LICENSE).
