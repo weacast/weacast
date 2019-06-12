@@ -45,7 +45,8 @@ export default {
     // We don't use service level operations like update to avoid concurrency issues,
     // eg see https://github.com/weacast/weacast-probe/issues/2.
     // We also want good performances so we use a bulkWrite
-    features.forEach(feature => {
+    for (let i = 0; i < features.length; i++) {
+      const feature = features[i]
       // Check if something to store for the element
       if (_.has(feature, propertyName)) {
         let data = { [propertyName]: _.get(feature, propertyName) }
@@ -60,6 +61,8 @@ export default {
         if (feature._id) {
           debugResults('Updating probe result for probe ' + feature.probeId + ' at ' + forecastTime.format() +
                        ' on run ' + runTime.format(), feature)
+          // Call service hooks (DB update is skipped when bulk param is used)
+          await resultService.update(feature._id, data, { bulk: true })
           // Create bulk operation for update
           operations.push({
             updateOne: {
@@ -97,7 +100,8 @@ export default {
           ids.forEach(id => {
             filter[id] = _.get(feature, id)
           })
-
+          // Call service hooks (DB update is skipped when bulk param is used)
+          await resultService.create(data, { bulk: true })
           operations.push({
             updateOne: {
               filter,
@@ -110,7 +114,7 @@ export default {
           })
         }
       }
-    })
+    }
     // Run DB updates
     try {
       let response = await resultService.Model.bulkWrite(operations)
