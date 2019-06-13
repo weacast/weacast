@@ -83,9 +83,12 @@ export default {
           // MongoDB requires the dot notation here so we perform conversion
           // Take care that ObjectIDs are not basic types so we remove it before
           delete baseFeature.probeId
+          // The same for coordinates array
+          _.unset(baseFeature, 'geometry.coordinates')
           baseFeature = dot.dot(baseFeature)
           // And add it back after conversion
           baseFeature.probeId = probe._id
+          baseFeature['geometry.coordinates'] = _.get(feature, 'geometry.coordinates')
           // Create bulk operation for insert or update
           let filter = { // In this case we query by forecastTime/runTime/probeId
             runTime: new Date(runTime.format()),
