@@ -234,9 +234,10 @@ ajv@^5.0.0:
     co "^4.6.0"
     json-stable-stringify "^1.0.1"
 
-ajv@^5.1.0:
+ajv@^5.1.0, ajv@^5.2.0:
   version "5.5.2"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-5.5.2.tgz#73b5eeca3fab653e3d3f9422b341ad42205dc965"
+  integrity sha1-c7Xuyj+rZT49P5Qis0GtQiBdyWU=
   dependencies:
     co "^4.6.0"
     fast-deep-equal "^1.0.0"
@@ -2207,9 +2208,10 @@ fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
-feathers-commons@^0.8.0, feathers-commons@^0.8.4:
+feathers-commons@^0.8.0, feathers-commons@^0.8.4, feathers-commons@^0.8.6:
   version "0.8.7"
   resolved "https://registry.yarnpkg.com/feathers-commons/-/feathers-commons-0.8.7.tgz#11c6f25b537745a983e8d61552d7db8932d53782"
+  integrity sha1-EcbyW1N3RamD6NYVUtfbiTLVN4I=
 
 feathers-errors@^2.0.1, feathers-errors@^2.4.0:
   version "2.9.2"
@@ -2225,6 +2227,25 @@ feathers-hooks-common@^3.0.0:
     debug "^2.2.0"
     feathers-errors "^2.4.0"
     traverse "^0.6.6"
+
+feathers-hooks-common@^3.5.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/feathers-hooks-common/-/feathers-hooks-common-3.10.0.tgz#2ae7dc54091ffa4609df8479c0bfa29dcd31d1a7"
+  integrity sha512-xuyTH69e0bs9r7ntQJiayBy8uC47mbGXeAsO7nkMXLGn+nYhjuw6z/ekQywnY+DeqvRWAgmy+LC4SzieIjIUiw==
+  dependencies:
+    ajv "^5.2.0"
+    debug "^3.0.0"
+    feathers-errors "^2.4.0"
+    feathers-hooks "^2.0.1"
+    traverse "^0.6.6"
+
+feathers-hooks@^2.0.1:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/feathers-hooks/-/feathers-hooks-2.1.2.tgz#f97af10f38621df816d754766c5c2e180b7df951"
+  integrity sha512-XQKhbo4d4TuXyco+tbHmKn5wo8QhdSNslJ/+zckNYfUzLmrN8L3uB4Utf0/ivcgwWxJtS1kVhEETBN4TDxuWFg==
+  dependencies:
+    feathers-commons "^0.8.6"
+    uberproto "^1.2.0"
 
 feathers-mongodb@^2.8.0:
   version "2.9.1"
@@ -3964,9 +3985,9 @@ passport-oauth2@1.x.x, passport-oauth2@^1.4.0:
     uid2 "0.0.x"
     utils-merge "1.x.x"
 
-"passport-openidconnect@git+https://github.com/kalisio/passport-openidconnect.git":
+"passport-openidconnect@https://github.com/kalisio/passport-openidconnect":
   version "0.0.2"
-  resolved "git+https://github.com/kalisio/passport-openidconnect.git#82d9f0653334a0538b2c3dc2a8119eefc2eca237"
+  resolved "https://github.com/kalisio/passport-openidconnect#82d9f0653334a0538b2c3dc2a8119eefc2eca237"
   dependencies:
     oauth "0.9.x"
     passport-strategy "1.x.x"

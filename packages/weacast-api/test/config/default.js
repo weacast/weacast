@@ -1,6 +1,9 @@
 const path = require('path')
 
-// USe default app config
+// Set we use local loaders
+process.env.LOADERS='arpege,gfs'
+
+// Use default app config
 let config = require(path.join(__dirname, '../../config/default'))
 
 // Simply changes outputs so we don't pollute DB, logs, etc.

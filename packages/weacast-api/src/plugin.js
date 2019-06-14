@@ -1,3 +1,5 @@
+const logger = require('winston')
+
 module.exports = function () {
   // Add your custom code here.
   const app = this
