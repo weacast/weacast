@@ -1,7 +1,7 @@
 {
   "name": "weacast-api",
   "description": "Weacast Microservice",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "homepage": "https://github.com/weacast/weacast-api",
   "main": "lib/",
   "bin": "lib/main.js",
