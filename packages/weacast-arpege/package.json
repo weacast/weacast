@@ -1,7 +1,7 @@
 {
   "name": "weacast-arpege",
   "description": "ARPEGE weather forecast model plugin for Weacast",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/weacast/weacast-arpege",
   "main": "lib/",
   "keywords": [
