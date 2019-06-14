@@ -6,6 +6,7 @@
 
 **Implemented enhancements:**
 
+- Upgrade dependencies (Feathers V3, etc.) [\#1](https://github.com/weacast/weacast/issues/1)
 - Allow to target different databases [\#14](https://github.com/weacast/weacast-core/issues/14)
 
 ## [v1.0.0](https://github.com/weacast/weacast-core/tree/v1.0.0) (2019-04-17)
