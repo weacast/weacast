@@ -1,5 +1,17 @@
 # Changelog
 
+## [v1.1.0](https://github.com/weacast/weacast-probe/tree/v1.1.0) (2019-06-14)
+
+[Full Changelog](https://github.com/weacast/weacast-probe/compare/v1.0.0...v1.1.0)
+
+**Implemented enhancements:**
+
+- Allow to apply hooks on bulk write [\#8](https://github.com/weacast/weacast-probe/issues/8)
+
+**Fixed bugs:**
+
+- Malformed probe results coordinates [\#9](https://github.com/weacast/weacast-probe/issues/9)
+
 ## [v1.0.0](https://github.com/weacast/weacast-probe/tree/v1.0.0) (2019-04-17)
 
 [Full Changelog](https://github.com/weacast/weacast-probe/compare/v0.5.0...v1.0.0)
