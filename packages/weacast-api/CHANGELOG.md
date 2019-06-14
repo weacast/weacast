@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.0.1](https://github.com/weacast/weacast-api/tree/v1.0.1) (2019-06-14)
+
+[Full Changelog](https://github.com/weacast/weacast-api/compare/v1.0.0...v1.0.1)
+
 ## [v1.0.0](https://github.com/weacast/weacast-api/tree/v1.0.0) (2019-06-14)
 
 [Full Changelog](https://github.com/weacast/weacast-api/compare/df4f188610cfaa3644b9ac82920d5effa87ca0bf...v1.0.0)
