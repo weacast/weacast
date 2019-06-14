@@ -4,6 +4,8 @@
 
 [Full Changelog](https://github.com/weacast/weacast-alert/compare/v0.2.0...v1.0.0)
 
+- Upgrade dependencies (Feathers V3, etc.) [\#1](https://github.com/weacast/weacast/issues/1)
+
 ## [v0.2.0](https://github.com/weacast/weacast-alert/tree/v0.2.0) (2019-04-17)
 
 [Full Changelog](https://github.com/weacast/weacast-alert/compare/1d40b6f92d23d118d2a80414658c67816316b77b...v0.2.0)
