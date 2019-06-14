@@ -5270,10 +5270,10 @@ weacast-core@^1.1.0:
     winston "^2.3.1"
     winston-daily-rotate-file "^1.7.2"
 
-weacast-gfs@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/weacast-gfs/-/weacast-gfs-1.1.0.tgz#db3d0a80be357a28ee113fc863288ac78e248723"
-  integrity sha512-pR5Fo2l8LTeKiOgMG60a2z1syByxdNAeXqNzaEU0e3bdZwbbwefTiOOIq92I445zK/kA0L75Ms4FwUchQ9YlWw==
+weacast-gfs@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/weacast-gfs/-/weacast-gfs-1.1.1.tgz#6174274f1bca17de482dbac7cc52fa71b675c6ed"
+  integrity sha512-5TDZw5m+sQW9aMwJ7J/HwItQFgQUSe+pltHwgtSrfa3FFldgcvPMyw0ANOQwGI7PYvvYNNRwOhON8vHIbRHccQ==
   dependencies:
     "@feathersjs/errors" "^3.3.6"
     debug "^3.1.0"

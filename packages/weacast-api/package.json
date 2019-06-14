@@ -68,7 +68,7 @@
     "weacast-arome": "^1.1.0",
     "weacast-arpege": "^1.1.0",
     "weacast-core": "^1.1.0",
-    "weacast-gfs": "^1.1.0",
+    "weacast-gfs": "^1.1.1",
     "weacast-probe": "^1.1.0",
     "winston": "^2.3.1"
   },
