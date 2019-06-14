@@ -7,6 +7,7 @@
 **Implemented enhancements:**
 
 - Allow to apply hooks on bulk write [\#8](https://github.com/weacast/weacast-probe/issues/8)
+- Upgrade dependencies (Feathers V3, etc.) [\#1](https://github.com/weacast/weacast/issues/1)
 
 **Fixed bugs:**
 
