@@ -8,5 +8,6 @@ src/
 test/
 dist/
 logs/
+forecast-data/
 !lib/
 !config/
