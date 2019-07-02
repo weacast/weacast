@@ -64,7 +64,7 @@ describe('weacast-probe', () => {
     ])
   })
   // Let enough time to download a couple of data
-  .timeout(30000)
+  .timeout(60000)
 
   it('performs probing element on-demand at forecast time', (done) => {
     uService.find({ paginate: false })
@@ -100,7 +100,7 @@ describe('weacast-probe', () => {
     // For debug purpose only
     // .then(data => fs.outputJsonSync(path.join(__dirname, 'data', 'runways-probe.geojson'), data.layer))
   })
-  // Let enough time to download a couple of data
+  // Let enough time to process
   .timeout(10000)
 
   it('performs probing element on-demand at specific location for forecast time range', (done) => {
@@ -120,14 +120,7 @@ describe('weacast-probe', () => {
       }
     }
 
-    probeService.create(Object.assign({
-      type: 'FeatureCollection',
-      features: [{
-        type: 'Feature',
-        properties: {},
-        geometry
-      }]
-    }, probeOptions), { query })
+    probeService.create(Object.assign({}, probeOptions), { query })
     .then(data => {
       expect(data.features.length).to.equal(1)
       const feature = data.features[0]
@@ -154,7 +147,52 @@ describe('weacast-probe', () => {
       done()
     })
   })
-  // Let enough time to download a couple of data
+  // Let enough time to process
+  .timeout(10000)
+
+  it('performs probing element on-demand at specific location for forecast time range without aggregation', (done) => {
+    const geometry = {
+      type: 'Point',
+      coordinates: [ 1.5, 43 ]
+    }
+    const query = {
+      forecastTime: {
+        $gte: firstForecastTime,
+        $lte: nextForecastTime
+      },
+      geometry: {
+        $geoIntersects: {
+          $geometry: geometry
+        }
+      },
+      aggregate: false
+    }
+
+    probeService.create(Object.assign({}, probeOptions), { query })
+    .then(data => {
+      expect(data.features.length).to.equal(2)
+      const features = data.features
+      expect(spyProbe).to.have.been.called()
+      expect(spyUpdate).not.to.have.been.called()
+      // This will insure spies are properly reset before jumping to next test due to async ops
+      spyProbe.reset()
+      spyUpdate.reset()
+      expect(features[0].forecastTime).toExist()
+      expect(features[1].forecastTime).toExist()
+      expect(features[0].forecastTime.isBefore(features[1].forecastTime)).beTrue()
+      expect(features[0].forecastTime.isBefore(features[1].forecastTime)).beTrue()
+      expect(features[0].properties['u-wind']).toExist()
+      expect(features[0].properties['v-wind']).toExist()
+      expect(features[1].properties['u-wind']).toExist()
+      expect(features[1].properties['v-wind']).toExist()
+      expect(typeof features[0].properties['u-wind']).to.equal('number')
+      expect(typeof features[0].properties['v-wind']).to.equal('number')
+      expect(typeof features[1].properties['u-wind']).to.equal('number')
+      expect(typeof features[1].properties['v-wind']).to.equal('number')
+      done()
+    })
+  })
+  // Let enough time to process
   .timeout(10000)
 
   it('performs probing stream on element', () => {

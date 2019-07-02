@@ -145,7 +145,7 @@ export default {
   },
 
   getValueAtTime (feature, elementName, time) {
-    return _.get(feature.properties, elementName + '.' + time.format())
+    return _.get(feature.properties, elementName + '.' + (moment.isMoment(time) ? time.format() : time))
   },
 
   // Update the given features, for given probe, with interpolated values according to given forecast grid, run/forecast time
@@ -386,6 +386,7 @@ export default {
   async probe (probe, query = {}) {
     const forecastTime = query.forecastTime
     const isTimeRange = (forecastTime && (forecastTime.$lt || forecastTime.$lte || forecastTime.$gt || forecastTime.$gte))
+    const aggregate = _.get(query, 'aggregate', true)
     const geometry = _.get(query, 'geometry.$geoIntersects.$geometry')
     // If querying at a specific location automatically generate the GeoJSON feature
     if (geometry) {
@@ -416,7 +417,7 @@ export default {
     debug('Probing following services for probe ' + (probe._id ? probe._id : 'on-demand '), services.map(service => service.name))
     // When probing a location we use tiles, take care to use only single time tiles not aggregated if any
     let forecastQuery = (geometry ? { timeseries: false } : {})
-    Object.assign(forecastQuery, query)
+    Object.assign(forecastQuery, _.omit(query, ['aggregate']))
     debug('Probing query', forecastQuery)
     // Then run all probes
     try {
@@ -461,22 +462,54 @@ export default {
     if (!forecastTime) {
       this.registerForecastUpdates(probe)
     } else if (isTimeRange) {
+      // If we do not aggregate and generate a separated feature per time
+      let features =  {}
       // Rearrange data so that we get ordered arrays indexed by element instead of maps
       probe.features.forEach(feature => {
-        // Create the arrays of ordered times
-        feature.forecastTime = _.mapValues(feature.forecastTime,
-          (times, element) => times.map(time => moment.utc(time)).sort((a, b) => a - b))
-        feature.runTime = _.mapValues(feature.runTime,
-          (times, element) => times.map(time => moment.utc(time)).sort((a, b) => a - b))
-        // Then build the associated array of interpolated values
-        let properties = {}
-        _.forOwn(feature.forecastTime, (times, element) => {
-          properties[element] = []
-          times.forEach(time => properties[element].push(this.getValueAtTime(feature, element, time)))
-        })
-        // Update feature
-        Object.assign(feature.properties, properties)
+        // Split data according to time if required
+        if (!aggregate) {
+          _.forOwn(feature.forecastTime, (times, element) => {
+            times.forEach((time, index) => {
+              const featureId = (Array.isArray(probe.featureId) ?
+                probe.featureId.map(id => _.get(feature, id)).join('-') :
+                _.get(feature, probe.featureId))
+              let featuresForId = features[featureId]
+              let featureForTime
+              if (featuresForId) featureForTime = featuresForId[time]
+              if (!featureForTime) {
+                featureForTime = Object.assign({}, _.pick(feature, ['type', 'geometry']))
+                featureForTime.forecastTime = moment.utc(time)
+                featureForTime.runTime = moment.utc(feature.runTime[element][index])
+                featureForTime.properties = _.omit(feature.properties, probe.elements)
+                if (featuresForId) features[featureId][time] = featureForTime
+                else features[featureId] = { [time]: featureForTime }
+              }
+              featureForTime.properties[element] = this.getValueAtTime(feature, element, time)
+            })
+          })
+        } else {
+          // Create the arrays of ordered times
+          feature.forecastTime = _.mapValues(feature.forecastTime,
+            (times, element) => times.map(time => moment.utc(time)).sort((a, b) => a - b))
+          feature.runTime = _.mapValues(feature.runTime,
+            (times, element) => times.map(time => moment.utc(time)).sort((a, b) => a - b))
+          // Then build the associated array of interpolated values
+          let properties = {}
+          _.forOwn(feature.forecastTime, (times, element) => {
+            properties[element] = []
+            times.forEach(time => properties[element].push(this.getValueAtTime(feature, element, time)))
+          })
+          // Update feature
+          Object.assign(feature.properties, properties)
+        }
       })
+      // If we do not aggregate update output with a separated feature per time
+      if (!aggregate) {
+        probe.features = []
+        _.forOwn(features, (times, id) => {
+          probe.features = probe.features.concat(_.values(times).sort((a, b) => a.forecastTime - b.forecastTime))
+        })
+      }
     }
   }
 }
