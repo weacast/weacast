@@ -133,7 +133,8 @@ module.exports = {
     secondaries: (process.env.DATA_DB_URL ? { data: process.env.DATA_DB_URL } : undefined)
   },
   services: {
-    forecasts: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) },
+    // Different apps might use different forecasts but target the same element database
+    //forecasts: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) },
     elements: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) }
   },
   loaders,
