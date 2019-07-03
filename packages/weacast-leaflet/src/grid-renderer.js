@@ -73,54 +73,29 @@ export class GridRenderer {
   initialize (options) {
     Object.assign(this, options)
     if (this.mesh) {
-      // If the rendered mode is equal to mesh, we create an dedicated PIXI Renderer
-      var _pixiGlCore2 = PIXI.glCore
-      PIXI.mesh.MeshRenderer.prototype.onContextChange = function onContextChange () {
-        var gl = this.renderer.gl
-        this.shader = new PIXI.Shader(gl,
-          'attribute vec2 aVertexPosition;\n' +
-          'attribute vec4 aVertexColor;\n' +
-          'uniform mat3 projectionMatrix;\n' +
-          'uniform mat3 translationMatrix;\n' +
-          'varying vec4 vColor;\n' +
-          'void main(void)\n{\n' +
-          '  vColor = aVertexColor;\n' +
-          '  gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n' +
-          '}\n',
-          'precision mediump float;' +
-          'varying vec4 vColor;\n' +
-          'uniform float alpha;\n' +
-          'void main(void)\n{\n' +
-          '  gl_FragColor.rgb = vec3(vColor[0]*alpha, vColor[1]*alpha, vColor[2]*alpha);\n' +
-          '  gl_FragColor.a = vColor[3]*alpha;\n' +
-          '}\n'
-        )
-      }
-      PIXI.mesh.MeshRenderer.prototype.render = function render (mesh) {
-        var renderer = this.renderer
-        var gl = renderer.gl
-        var glData = mesh._glDatas[renderer.CONTEXT_UID]
-        if (!glData) {
-          renderer.bindVao(null)
-          glData = {
-            shader: this.shader,
-            vertexBuffer: _pixiGlCore2.GLBuffer.createVertexBuffer(gl, mesh.vertices, gl.STREAM_DRAW),
-            colorBuffer: _pixiGlCore2.GLBuffer.createVertexBuffer(gl, mesh.colors, gl.STREAM_DRAW),
-            indexBuffer: _pixiGlCore2.GLBuffer.createIndexBuffer(gl, mesh.indices, gl.STATIC_DRAW)
-          }
-          // build the vao object that will render..
-          glData.vao = new _pixiGlCore2.VertexArrayObject(gl)
-            .addIndex(glData.indexBuffer)
-            .addAttribute(glData.vertexBuffer, glData.shader.attributes.aVertexPosition, gl.FLOAT, false, 4 * 2, 0)
-            .addAttribute(glData.colorBuffer, glData.shader.attributes.aVertexColor, gl.FLOAT, false, 4 * 4, 0)
-          mesh._glDatas[renderer.CONTEXT_UID] = glData
+      this.shader = PIXI.Shader.from(`
+        precision mediump float;
+        attribute vec2 aVertexPosition;
+        attribute vec4 aVertexColor;
+        uniform mat3 translationMatrix;
+        uniform mat3 projectionMatrix;
+        varying vec4 vColor;
+
+        void main() {
+          vColor = aVertexColor;
+          gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+        }`,`
+        precision mediump float;
+        varying vec4 vColor;
+        uniform float alpha;
+
+        void main() {
+          gl_FragColor.rgb = vec3(vColor[0]*alpha, vColor[1]*alpha, vColor[2]*alpha);
+          gl_FragColor.a = vColor[3]*alpha;
+        }`, {
+          alpha: this.opacity
         }
-        renderer.bindVao(glData.vao)
-        renderer.bindShader(glData.shader)
-        glData.shader.uniforms.alpha = mesh.alpha
-        glData.shader.uniforms.translationMatrix = mesh.worldTransform.toArray(true)
-        glData.vao.draw(gl.TRIANGLES, mesh.indices.length, 0)
-      }
+      )
     }
     // Create an empty container
     this.pixiContainer = new PIXI.Container()
@@ -205,6 +180,7 @@ export class GridRenderer {
   }
 
   buildMesh (gridView, utils) {
+    console.log(gridView)
     if ((gridView.size[0] * gridView.size[1]) > VERTEX_BUFFER_MAX_SIZE) {
       let subgridViews = gridView.cut()
       subgridViews.forEach(subgridView => this.buildMesh(subgridView, utils))
@@ -252,9 +228,14 @@ export class GridRenderer {
           }
         }
       }
-      let mesh = new PIXI.mesh.Mesh(null, vertices, null, indices, PIXI.mesh.Mesh.DRAW_MODES.TRIANGLES)
-      mesh.colors = colors
-      mesh.alpha = this.opacity
+      // Build the corresponding geometry
+      let geometry=new PIXI.Geometry()
+      .addAttribute('aVertexPosition', vertices, 2)
+      .addAttribute('aVertexColor', colors, 4)
+      .addIndex(indices)
+      // Build the corresponding mesh
+      let mesh=new PIXI.Mesh(geometry, this.shader)
+      // Add the mesh to the container
       this.pixiContainer.addChild(mesh)
     }
   }

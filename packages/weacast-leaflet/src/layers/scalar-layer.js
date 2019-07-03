@@ -10,7 +10,7 @@ let ScalarLayer = ForecastLayer.extend({
     this.options = Object.assign({
       interpolate: true,
       scale: 'OrRd',
-      opacity: 0.5,
+      opacity: 0.6,
       mesh: true
     }, options)
     this.gridRenderer = new GridRenderer()
