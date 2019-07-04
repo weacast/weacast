@@ -1,12 +1,10 @@
+dist: trusty
 language: node_js
 node_js:
 - '8'
 services:
 - mongodb
 addons:
-  apt:
-    packages:
-    - oracle-java9-set-default
   code_climate:
     repo_token: e112f5c3b1faeea91159d0f4176745addb2ceb254eb69d5ba4a53c2f06e19b25
 notifications:
@@ -17,7 +15,6 @@ notifications:
     on_success: always
     on_failure: always
 before_script:
-- export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 - "$JAVA_HOME/bin/java -version"
 - npm install -g codeclimate-test-reporter
 - git clone https://github.com/weacast/weacast-core.git && cd weacast-core && yarn install && yarn
