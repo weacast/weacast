@@ -27,10 +27,16 @@ module.exports = {
     all: [ hooks.unmarshallAlert ],
     find: [],
     get: [],
-    create: [ hook => hook.service.registerAlert(hook.result) ],
+    create: [ hook => {
+      hook.service.registerAlert(hook.result)
+      return hook
+    } ],
     update: [],
     patch: [],
-    remove: [ hook => hook.service.unregisterAlert(hook.result) ]
+    remove: [ hook => {
+      hook.service.unregisterAlert(hook.result)
+      return hook
+    } ]
   },
 
   error: {

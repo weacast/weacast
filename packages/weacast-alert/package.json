@@ -51,6 +51,7 @@
     "feathers-hooks-common": "^3.0.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
+    "sift": "^8.5.0",
     "weacast-core": "^1.1.0",
     "weacast-probe": "^1.1.0"
   },
@@ -70,6 +71,6 @@
     "mocha": "^3.2.0",
     "shx": "^0.2.2",
     "standard": "^10.0.2",
-    "weacast-arpege": "^1.1.0"
+    "weacast-gfs": "^1.1.0"
   }
 }
