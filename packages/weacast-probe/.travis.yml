@@ -1,10 +1,12 @@
 language: node_js
 node_js:
 - '8'
-cache: yarn
 services:
 - mongodb
 addons:
+  apt:
+    packages:
+    - oracle-java9-set-default
   code_climate:
     repo_token: 21b6b52941e1f3a7919d2a9448451cb0491da6644c38d2c99b9a60f8d1558a2b
 notifications:
@@ -14,6 +16,13 @@ notifications:
       secure: iIreVId8fcMpHuzL0f1wqvECZyONKzx/Y6jS6rCLUeMoXsbEfPr1y2D7uUmmhrf9LSZsBN+H/OSvL537y5oX+hkOkUPKyVcWSw7Rga5J0icZa11HDbFBKaSGrFn2pKhUARITaJaZXACmABewaI1XkvZIeNXtcS77K55ru7TqbII+3nGMd9nLofRce5mOefcDV6hifuRlf7oWtfMxA3mj20XdEs7rSouodCrz9nX31acb0arN1ki48ovapUWjzmvOCW5PwDB3iUHX7PTeBGGnFFr/xeId4yA5wHTN4QVVjVJ6CcnlOCW97NVsHHkgj9ky+wzNIwr5pT59XGIboY1RtwbZVDh7z8WP9Ye5L4AdSNv0L7hPQXY0WoQIZFZYFIeyoE2ugXgjrfcDfV7g/fwYIuMmi8romXGhPSFbSu9jmFfKeW9wS5SoBQzHjbUwLXO//H9UG/p38SBfAiF2wnsb6GzYQ0nZcL36kie7BKw3HFES0AWJBMo1CZ/MhuVCAszurFwIE2OUxkjmdJiXcG9lzkraEpsZV534moWiymjPuqmEHQVkjXieL/WUP0AH+neUHRY99aFZUp1ylCRYBQl27v74Ph081vptnOtorUgOA1zo4ToRNDjpMVwXRm71PAy6fJo4NdZNxFyTk437InUeTWpNl7AFhg/Ogky5CZNLj9A=
     on_success: always
     on_failure: always
-install: travis_wait yarn
-before_script: travis_wait bash .travis.sh
-after_script: codeclimate-test-reporter < coverage/lcov.info
+before_script:
+- export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+- "$JAVA_HOME/bin/java -version"
+- npm install -g codeclimate-test-reporter
+- git clone https://github.com/weacast/weacast-core.git && cd weacast-core && yarn install && yarn
+  link && cd .. && yarn link weacast-core
+- git clone https://github.com/weacast/weacast-gfs.git && cd weacast-gfs && yarn install && yarn
+  link && cd .. && yarn link weacast-gfs
+after_script:
+- codeclimate-test-reporter < coverage/lcov.info
