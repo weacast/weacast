@@ -4,14 +4,14 @@ import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
 import spies from 'chai-spies'
 import core, { weacast } from 'weacast-core'
-import arpege from 'weacast-arpege'
+import gfs from 'weacast-gfs'
 import probe from '../src'
 
 describe('weacast-probe', () => {
   let app, uService, vService, probeService, probeResultService,
     geojson, probeId, probeFeatures, spyProbe, spyUpdate, firstForecastTime, nextForecastTime
   const probeOptions = {
-    forecast: 'arpege-world',
+    forecast: 'gfs-world',
     elements: ['u-wind', 'v-wind'],
     featureId: ['properties.Airport', 'properties.Ident', 'properties.RevCode']
   }
@@ -36,10 +36,10 @@ describe('weacast-probe', () => {
 
   it('registers the probes service', () => {
     app.configure(core)
-    app.configure(arpege)
-    uService = app.getService('arpege-world/u-wind')
+    app.configure(gfs)
+    uService = app.getService('gfs-world/u-wind')
     expect(uService).toExist()
-    vService = app.getService('arpege-world/v-wind')
+    vService = app.getService('gfs-world/v-wind')
     expect(vService).toExist()
     app.configure(probe)
     probeService = app.getService('probes')

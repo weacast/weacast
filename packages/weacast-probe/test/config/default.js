@@ -36,15 +36,14 @@ module.exports = {
   forecastPath: path.join(__dirname, '../forecast-data'),
   forecasts: [
     {
-      name: 'arpege-world',
-      label: 'ARPEGE - 0.5°',
+      name: 'gfs-world',
+      label: 'GFS - 0.5°',
       description: 'World-wide',
-      attribution: 'Forecast data from <a href="http://www.meteofrance.com">Météo-France</a>',
-      model: 'arpege',
-      token: '__qEMDoIC2ogPRlSoRQLGUBOomaxJyxdEd__',
-      wcsBaseUrl: 'https://geoservices.meteofrance.fr/services/MF-NWP-GLOBAL-ARPEGE-05-GLOBE-WCS?SERVICE=WCS&version=2.0.1',
-      bounds: [-180, -90, 180, 90],
-      origin: [-180, 90],
+      attribution: 'Forecast data from <a href="http://www.emc.ncep.noaa.gov/index.php?branch=GFS">NCEP</a>',
+      model: 'gfs',
+      baseUrl: 'http://nomads.ncep.noaa.gov/cgi-bin/filter_gfs_0p50.pl',
+      bounds: [0, -90, 360, 90],
+      origin: [0, 90],
       size: [720, 361],
       resolution: [0.5, 0.5],
       tileResolution: [20, 20],
@@ -58,21 +57,13 @@ module.exports = {
       elements: [
         {
           name: 'u-wind',
-          coverageid: 'U_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-          subsets: {
-            height: 10,
-            long: [-180, 180],
-            lat: [-90, 90]
-          }
+          variable: 'var_UGRD',
+          levels: ['lev_10_m_above_ground']
         },
         {
           name: 'v-wind',
-          coverageid: 'V_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-          subsets: {
-            height: 10,
-            long: [-180, 180],
-            lat: [-90, 90]
-          }
+          variable: 'var_VGRD',
+          levels: ['lev_10_m_above_ground']
         }
       ]
     }
