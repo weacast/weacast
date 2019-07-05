@@ -6,6 +6,8 @@ module.exports = function (forecast, element, app, options) {
   options.Model.ensureIndex({ forecastTime: 1 }, { expireAfterSeconds: element.interval || forecast.interval })
   // To perform geo queries on tiles
   options.Model.ensureIndex({ geometry: '2dsphere' })
+  // To perform $exists requests
+  options.Model.ensureIndex({ geometry: 1 })
   options.Model.ensureIndex({ x: 1, y: 1 })
   options.Model.ensureIndex({ forecastTime: 1, geometry: 1 })
 }
