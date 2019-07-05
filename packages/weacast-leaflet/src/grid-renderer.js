@@ -100,9 +100,8 @@ export class GridRenderer {
     // Create an empty container
     this.pixiContainer = new PIXI.Container()
     // Create the overlay layer
-    return L.pixiOverlay(utils => this.render(utils), this.pixiContainer, {
-      autoPreventDefault: false
-    })
+    let pixiOverlayOptions = Object.assign({ autoPreventDefault: false }, options)
+    return L.pixiOverlay(utils => this.render(utils), this.pixiContainer, pixiOverlayOptions)
   }
 
   setGrid (grid) {
