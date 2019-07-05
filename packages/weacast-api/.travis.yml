@@ -24,7 +24,7 @@ jobs:
     install:
     - npm install -g codeclimate-test-reporter
     script:
-    - travis_wait bash .travis.test.sh
+    - bash .travis.test.sh
     after_script:
     - codeclimate-test-reporter < coverage/lcov.info
   - stage: BUILD
