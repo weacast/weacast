@@ -180,7 +180,6 @@ export class GridRenderer {
   }
 
   buildMesh (gridView, utils) {
-    console.log(gridView)
     if ((gridView.size[0] * gridView.size[1]) > VERTEX_BUFFER_MAX_SIZE) {
       let subgridViews = gridView.cut()
       subgridViews.forEach(subgridView => this.buildMesh(subgridView, utils))
