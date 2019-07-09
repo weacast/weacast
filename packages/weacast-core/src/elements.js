@@ -2,23 +2,22 @@ import _ from 'lodash'
 import logger from 'winston'
 
 // Create all element services
-export default function initializeElements (app, forecast, servicesPath) {
+export default async function initializeElements (app, forecast, servicesPath) {
   logger.info('Initializing ' + forecast.name + ' forecast')
   const forecastsService = app.getService('forecasts')
   // Register the forecast model if not already done
-  forecastsService.find({
+  const result = await forecastsService.find({
     query: {
       name: forecast.name,
-      $select: ['_id', 'runTime', 'runTimeOffset', 'forecastTime'] // We only need object ID
+      $select: ['_id'] // We only need object ID
     }
   })
-  .then(result => {
-    if (result.data.length > 0) {
-      forecastsService.patch(result.data[0]._id, forecast)
-    } else {
-      forecastsService.create(forecast)
-    }
-  })
+  if (result.data.length > 0) {
+    await forecastsService.patch(result.data[0]._id, forecast)
+  } else {
+    await forecastsService.create(forecast)
+  }
+
   // Create download buckets
   let elementBuckets = {}
   forecast.elements.forEach(element => {
