@@ -28,8 +28,8 @@ module.exports = async function () {
       // Set up only elements services otherwise
       const forecasts = app.get('forecasts')
       // Iterate over configured forecast models
-      for (let forecast of forecasts) {
-        initializeElements(app, forecast)
+      for (let i = 0; i < forecasts.length; i++) {
+        await initializeElements(app, forecasts[i])
       }
     }
     app.configure(probe)
