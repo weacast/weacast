@@ -19,10 +19,10 @@ describe('weacast-arpege', () => {
     expect(typeof arpege).to.equal('function')
   })
 
-  it('registers the element services', () => {
+  it('registers the element services', async () => {
     expect(typeof arpege).to.equal('function')
     app.configure(core)
-    app.configure(arpege)
+    await app.configure(arpege)
     service = app.getService('arpege-world/temperature')
     expect(service).toExist()
   })
