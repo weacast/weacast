@@ -8,6 +8,7 @@ let ForecastLayer = L.Layer.extend({
     this.baseLayer = layer
     this.onForecastTimeChanged = this.fetchData.bind(this)
     L.setOptions(this, options || {})
+    this.forecastElements = this.options.elements
   },
 
   onAdd (map) {
@@ -70,7 +71,7 @@ let ForecastLayer = L.Layer.extend({
     // Query data for current time
     let query = this.getQuery()
     let queries = []
-    for (let element of this.options.elements) {
+    for (let element of this.forecastElements) {
       const serviceName = this.forecastModel.name + '/' + element
       queries.push(this.api.getService(serviceName).find(query))
     }
@@ -84,6 +85,13 @@ let ForecastLayer = L.Layer.extend({
 
   setForecastModel (model) {
     this.forecastModel = model
+    this.downloadedForecastTime = null
+    // This will launch a refresh
+    this.fetchData()
+  },
+
+  setForecastElements (elements) {
+    this.forecastElements = elements
     this.downloadedForecastTime = null
     // This will launch a refresh
     this.fetchData()
