@@ -23,8 +23,17 @@ function getElementPrefix (elementName) {
   return isUComponentOfDirection ? uComponentPrefix : (isVComponentOfDirection ? vComponentPrefix : '') // e.g. 'u-' for u-wind'
 }
 
+function getElementSuffix (elementName) {
+  // e.g. will generate 'wind-1000' for 'u-wind-1000'/'v-wind-1000'
+  const suffix = elementName.replace(getElementPrefix(elementName), '')
+  const index = suffix.indexOf('-')
+  // e.g. will generate '-1000' for 'wind-1000'
+  return (index >= 0 ? suffix.substring(index) : '')
+}
+
 function getDirectionElement (elementName) {
-  return elementName.replace(getElementPrefix(elementName), '') // e.g. will generate 'wind' for 'u-wind'/'v-wind'
+  // e.g. will generate 'wind' for 'u-wind'/'v-wind' or 'u-wind-1000'/'v-wind-1000'
+  return elementName.replace(getElementPrefix(elementName), '').replace(getElementSuffix(elementName), '')
 }
 
 export default {
@@ -39,9 +48,11 @@ export default {
     const propertyName = 'properties.' + elementName
     const isComponentOfDirection = isDirectionElement(elementName)
     const directionElement = getDirectionElement(elementName) // e.g. will generate 'wind' for 'u-wind'/'v-wind'
-    const speedPropertyName = 'properties.' + directionElement + 'Speed'
-    const directionPropertyName = 'properties.' + directionElement + 'Direction'
-    const bearingPropertyName = 'properties.' + directionElement + 'BearingDirection'
+    const suffix = getElementSuffix(elementName) // e.g. will generate '-1000' for 'u-wind-1000'/'v-wind-1000'
+    // e.g. will generate '-1000' for 'u-wind-1000'/'v-wind-1000'
+    const speedPropertyName = 'properties.' + directionElement + 'Speed' + suffix
+    const directionPropertyName = 'properties.' + directionElement + 'Direction' + suffix
+    const bearingPropertyName = 'properties.' + directionElement + 'BearingDirection' + suffix
     // We don't use service level operations like update to avoid concurrency issues,
     // eg see https://github.com/weacast/weacast-probe/issues/2.
     // We also want good performances so we use a bulkWrite
@@ -156,12 +167,14 @@ export default {
     const elementName = elementService.element.name
     const isComponentOfDirection = isDirectionElement(elementName)
     const directionElement = getDirectionElement(elementName) // e.g. will generate 'wind' for 'u-wind'/'v-wind'
-    const speedProperty = directionElement + 'Speed'
-    const directionProperty = directionElement + 'Direction'
+    const suffix = getElementSuffix(elementName) // e.g. will generate '-1000' for 'u-wind-1000'/'v-wind-1000'
+    // e.g. will generate '-1000' for 'u-wind-1000'/'v-wind-1000'
+    const speedProperty = directionElement + 'Speed' + suffix
+    const directionProperty = directionElement + 'Direction' + suffix
     // Check if a bearing property is given to compute direction relatively to
     const bearingProperty = directionElement + 'BearingProperty'
     const bearingPropertyName = probe.hasOwnProperty(bearingProperty) ? probe[bearingProperty] : undefined
-    const bearingDirectionProperty = directionElement + 'BearingDirection'
+    const bearingDirectionProperty = directionElement + 'BearingDirection' + suffix
 
     features.forEach(feature => {
       // Check if we process on-demand probing for a time range
@@ -182,11 +195,11 @@ export default {
         if (isComponentOfDirection) {
           let u, v
           if (isTimeRange) {
-            u = this.getValueAtTime(feature, uComponentPrefix + directionElement, forecastTime)
-            v = this.getValueAtTime(feature, vComponentPrefix + directionElement, forecastTime)
+            u = this.getValueAtTime(feature, uComponentPrefix + directionElement + suffix, forecastTime)
+            v = this.getValueAtTime(feature, vComponentPrefix + directionElement + suffix, forecastTime)
           } else {
-            u = feature.properties[uComponentPrefix + directionElement]
-            v = feature.properties[vComponentPrefix + directionElement]
+            u = feature.properties[uComponentPrefix + directionElement + suffix]
+            v = feature.properties[vComponentPrefix + directionElement + suffix]
           }
           // Only possible if both elements are already computed
           if (!_.isNil(u) && !_.isNil(v) && isFinite(u) && isFinite(v)) {
