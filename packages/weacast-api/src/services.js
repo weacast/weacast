@@ -19,11 +19,12 @@ module.exports = async function () {
     // Setup if we use local loaders
     const loaders = app.get('loaders')
     if (loaders && loaders.length > 0) {
-      // Setup loader plugins by dynamically require them
-      loaders.forEach(loader => {
-        const plugin = require(`weacast-${loader}`)
-        app.configure(plugin)
-      })
+      // Iterate over configured loaders
+      for (let i = 0; i < loaders.length; i++) {
+        // Setup loader plugins by dynamically require them
+        const plugin = require(`weacast-${loaders[i]}`)
+        await app.configure(plugin)
+      }
     } else { 
       // Set up only elements services otherwise
       const forecasts = app.get('forecasts')
