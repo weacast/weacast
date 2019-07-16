@@ -3,11 +3,13 @@ import hooks from './services/gfs/gfs.hooks'
 import service from './services/gfs/gfs.service'
 import { initializePlugin } from 'weacast-core'
 
-export default function init () {
+const init = async function () {
   const app = this
 
-  initializePlugin(app, 'gfs', path.join(__dirname, 'services'))
+  await initializePlugin(app, 'gfs', path.join(__dirname, 'services'))
 }
+
+export default init
 
 // Sub-exports
 Object.assign(init, {
