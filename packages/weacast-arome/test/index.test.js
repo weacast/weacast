@@ -19,10 +19,10 @@ describe('weacast-arome', () => {
     expect(typeof arome).to.equal('function')
   })
 
-  it('registers the element services', () => {
+  it('registers the element services', async () => {
     expect(typeof arome).to.equal('function')
     app.configure(core)
-    app.configure(arome)
+    await app.configure(arome)
     service = app.getService('arome-france/temperature')
     expect(service).toExist()
   })
