@@ -19,10 +19,10 @@ describe('weacast-gfs', () => {
     expect(typeof gfs).to.equal('function')
   })
 
-  it('registers the element services', () => {
+  it('registers the element services', async () => {
     expect(typeof gfs).to.equal('function')
     app.configure(core)
-    app.configure(gfs)
+    await app.configure(gfs)
     service = app.getService('gfs-world/temperature')
     expect(service).toExist()
   })
