@@ -22,7 +22,7 @@ let FlowLayer = ForecastLayer.extend({
       minVelocity: this.colorMap.domain()[0],
       maxVelocity: this.colorMap.domain()[1],
       velocityScale: 0.01,      // modifier for particle animations, arbitrarily defaults to 0.005
-      colorScale: this.colorMap.colors(),
+      colorScale: (this.options.invertScale ? this.colorMap.colors().reverse() : this.colorMap.colors()),
       data: null                // data will be requested on-demand
     }, options)
     let layer = L.velocityLayer(layerOptions)

@@ -22,7 +22,8 @@ let ScalarLayer = ForecastLayer.extend({
     if (data.length > 0) {
       this.minValue = data[0].minValue
       this.maxValue = data[0].maxValue
-      this.colorMap = createColorMap(this.options, [this.minValue, this.maxValue])
+      this.colorMap = createColorMap(this.options,
+        (this.options.invertScale ? [this.maxValue, this.minValue] : [this.minValue, this.maxValue]))
       this.gridRenderer.setGridData(data[0].data)
       this.gridRenderer.setColorMap(this.colorMap)
       this.gridRenderer.setOpacity(this.options.opacity)
