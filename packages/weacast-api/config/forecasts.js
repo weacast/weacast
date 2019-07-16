@@ -1,3 +1,132 @@
+const _ = require('lodash')
+const pressureLevels = [ 1000, 700, 450, 300, 200 ] // unit is mb
+
+const gfsGroundElements = [{
+  name: 'u-wind',
+  variable: 'var_UGRD',
+  levels: ['lev_10_m_above_ground'],
+  bucket: 0
+},
+{
+  name: 'v-wind',
+  variable: 'var_VGRD',
+  levels: ['lev_10_m_above_ground'],
+  bucket: 1
+},
+{
+  name: 'gust',
+  variable: 'var_GUST',
+  levels: ['surface'],
+  bucket: 0
+},
+{
+  name: 'precipitations',
+  variable: 'var_APCP',
+  levels: ['surface'],
+  bucket: 1,
+  lowerLimit: 3 * 3600, // Accumulation from T to T-3H
+  // For forecast hours evenly divisible by 6, the accumulation period is from T-6h to T,
+  // while for other forecast hours (divisible by 3 but not 6) it is from T-3h to T.
+  // We unify everything to 3H accumulation period.
+  transform: (options) => (options.forecastTime.hours() % 6 === 0 ? 0.5 * options.value : options.value)
+},
+{
+  name: 'temperature',
+  variable: 'var_TMP',
+  levels: ['surface'],
+  bucket: 0,
+  // Convert temperature from K to C°
+  transform: (options) => options.value - 273.15
+}]
+
+const gfsIsobaricElements = pressureLevels.map(level =>({
+  name: `u-wind-${level}`,
+  variable: 'var_UGRD',
+  levels: [`lev_${level}_mb`],
+  bucket: 0
+})).concat(pressureLevels.map(level =>({
+  name: `v-wind-${level}`,
+  variable: 'var_VGRD',
+  levels: [`lev_${level}_mb`],
+  bucket: 1
+}))).concat(pressureLevels.map(level =>({
+  name: `temperature-${level}`,
+  variable: 'var_TMP',
+  levels: [`lev_${level}_mb`],
+  bucket: 0,
+  // Convert temperature from K to C°
+  transform: (options) => options.value - 273.15
+})))
+
+const arpegeGroundElements = [{
+  name: 'u-wind',
+  coverageid: 'U_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
+  subsets: {
+    height: 10
+  },
+  bucket: 0
+},
+{
+  name: 'v-wind',
+  coverageid: 'V_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
+  subsets: {
+    height: 10
+  },
+  bucket: 1
+},
+{
+  name: 'gust',
+  coverageid: 'WIND_SPEED_GUST__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
+  subsets: {
+    height: 10
+  },
+  bucket: 0
+},
+{
+  name: 'precipitations',
+  coverageid: 'TOTAL_PRECIPITATION__GROUND_OR_WATER_SURFACE',
+  subsets: {
+  },
+  bucket: 1,
+  lowerLimit: 3 * 3600, // Accumulation from T to T-3H
+  accumulationPeriod: 3 * 3600
+},
+{
+  name: 'temperature',
+  coverageid: 'TEMPERATURE__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
+  subsets: {
+    height: 2
+  },
+  bucket: 0,
+  // Convert temperature from K to C°
+  transform: (options) => options.value - 273.15
+}]
+
+const arpegeIsobaricElements = pressureLevels.map(level =>({
+  name: `u-wind-${level}`,
+  coverageid: 'U_COMPONENT_OF_WIND__ISOBARIC_SURFACE',
+  subsets: {
+    pressure: level
+  },
+  bucket: 0
+})).concat(pressureLevels.map(level =>({
+  name: `v-wind-${level}`,
+  coverageid: 'V_COMPONENT_OF_WIND__ISOBARIC_SURFACE',
+  subsets: {
+    pressure: level
+  },
+  bucket: 1
+}))).concat(pressureLevels.map(level =>({
+  name: `temperature-${level}`,
+  coverageid: 'TEMPERATURE__ISOBARIC_SURFACE',
+  subsets: {
+    pressure: level
+  },
+  bucket: 0,
+  // Convert temperature from K to C°
+  transform: (options) => options.value - 273.15
+})))
+
 module.exports = {
   gfs1:  {
     name: 'gfs-world-low',
@@ -16,37 +145,7 @@ module.exports = {
     lowerLimit: 0,                  // From T0
     upperLimit: 240 * 3600,         // Up to T0+240
     updateInterval: 15 * 60,        // Check for update every 15 minutes
-    elements: [
-      {
-        name: 'u-wind',
-        variable: 'var_UGRD',
-        levels: ['lev_10_m_above_ground'],
-        bucket: 0
-      },
-      {
-        name: 'v-wind',
-        variable: 'var_VGRD',
-        levels: ['lev_10_m_above_ground'],
-        bucket: 1
-      },
-      {
-        name: 'gust',
-        variable: 'var_GUST',
-        levels: ['surface'],
-        bucket: 0
-      },
-      {
-        name: 'precipitations',
-        variable: 'var_APCP',
-        levels: ['surface'],
-        bucket: 1,
-        lowerLimit: 3 * 3600, // Accumulation from T to T-3H
-        // For forecast hours evenly divisible by 6, the accumulation period is from T-6h to T,
-        // while for other forecast hours (divisible by 3 but not 6) it is from T-3h to T.
-        // We unify everything to 3H accumulation period.
-        transform: (options) => (options.forecastTime.hours() % 6 === 0 ? 0.5 * options.value : options.value)
-      }
-    ]
+    elements: gfsGroundElements
   },
   gfs05: {
     name: 'gfs-world',
@@ -68,37 +167,7 @@ module.exports = {
     lowerLimit: 0,                  // From T0
     upperLimit: 240 * 3600,         // Up to T0+240
     updateInterval: 15 * 60,        // Check for update every 15 minutes
-    elements: [
-      {
-        name: 'u-wind',
-        variable: 'var_UGRD',
-        levels: ['lev_10_m_above_ground'],
-        bucket: 0
-      },
-      {
-        name: 'v-wind',
-        variable: 'var_VGRD',
-        levels: ['lev_10_m_above_ground'],
-        bucket: 1
-      },
-      {
-        name: 'gust',
-        variable: 'var_GUST',
-        levels: ['surface'],
-        bucket: 0
-      },
-      {
-        name: 'precipitations',
-        variable: 'var_APCP',
-        levels: ['surface'],
-        bucket: 1,
-        lowerLimit: 3 * 3600, // Accumulation from T to T-3H
-        // For forecast hours evenly divisible by 6, the accumulation period is from T-6h to T,
-        // while for other forecast hours (divisible by 3 but not 6) it is from T-3h to T.
-        // We unify everything to 3H accumulation period.
-        transform: (options) => (options.forecastTime.hours() % 6 === 0 ? 0.5 * options.value : options.value)
-      }
-    ]
+    elements: gfsGroundElements
   },
   gfs025: {
     name: 'gfs-world-high',
@@ -118,37 +187,7 @@ module.exports = {
     lowerLimit: 0,                  // From T0
     upperLimit: 16 * 3600,          // Up to T0+16
     updateInterval: 15 * 60,        // Check for update every 15 minutes
-    elements: [
-      {
-        name: 'u-wind',
-        variable: 'var_UGRD',
-        levels: ['lev_10_m_above_ground'],
-        bucket: 0
-      },
-      {
-        name: 'v-wind',
-        variable: 'var_VGRD',
-        levels: ['lev_10_m_above_ground'],
-        bucket: 1
-      },
-      {
-        name: 'gust',
-        variable: 'var_GUST',
-        levels: ['surface'],
-        bucket: 0
-      },
-      {
-        name: 'precipitations',
-        variable: 'var_APCP',
-        levels: ['surface'],
-        bucket: 1,
-        lowerLimit: 3 * 3600, // Accumulation from T to T-3H
-        // For forecast hours evenly divisible by 6, the accumulation period is from T-6h to T,
-        // while for other forecast hours (divisible by 3 but not 6) it is from T-3h to T.
-        // We unify everything to 3H accumulation period.
-        transform: (options) => (options.forecastTime.hours() % 6 === 0 ? 0.5 * options.value : options.value)
-      }
-    ]
+    elements: gfsGroundElements
   },
   arpege05: {
     name: 'arpege-world',
@@ -169,51 +208,7 @@ module.exports = {
     lowerLimit: 0,                  // From T0
     upperLimit: 102 * 3600,         // Up to T0+102
     updateInterval: 15 * 60,        // Check for update every 15 minutes
-    elements: [
-      {
-        name: 'u-wind',
-        // Use 'db' (or remove this property as it is default) to store data directly as JSON object in DB instead of files
-        //dataStore: 'fs',
-        coverageid: 'U_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [0, 360],
-          lat: [-90, 90]
-        },
-        bucket: 0
-      },
-      {
-        name: 'v-wind',
-        coverageid: 'V_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [0, 360],
-          lat: [-90, 90]
-        },
-        bucket: 1
-      },
-      {
-        name: 'gust',
-        coverageid: 'WIND_SPEED_GUST__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [0, 360],
-          lat: [-90, 90]
-        },
-        bucket: 0
-      },
-      {
-        name: 'precipitations',
-        coverageid: 'TOTAL_PRECIPITATION__GROUND_OR_WATER_SURFACE',
-        subsets: {
-          long: [0, 360],
-          lat: [-90, 90]
-        },
-        bucket: 1,
-        lowerLimit: 3 * 3600, // Accumulation from T to T-3H
-        accumulationPeriod: 3 * 3600
-      }
-    ]
+    elements: arpegeGroundElements.map(element => _.merge({ subsets: { long: [0, 360], lat: [-90, 90] } }, element))
   },
   arpege01: {
     name: 'arpege-europe',
@@ -235,49 +230,7 @@ module.exports = {
     lowerLimit: 0,                    // From T0
     upperLimit: 102 * 3600,           // Up to T0+102
     updateInterval: 15 * 60,          // Check for update every 15 minutes
-    elements: [
-      {
-        name: 'u-wind',
-        coverageid: 'U_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [-32, 42],
-          lat: [20, 72]
-        },
-        bucket: 0
-      },
-      {
-        name: 'v-wind',
-        coverageid: 'V_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [-32, 42],
-          lat: [20, 72]
-        },
-        bucket: 1
-      },
-      {
-        name: 'gust',
-        coverageid: 'WIND_SPEED_GUST__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [-32, 42],
-          lat: [20, 72]
-        },
-        bucket: 0
-      },
-      {
-        name: 'precipitations',
-        coverageid: 'TOTAL_PRECIPITATION__GROUND_OR_WATER_SURFACE',
-        subsets: {
-          long: [-32, 42],
-          lat: [20, 72]
-        },
-        bucket: 1,
-        lowerLimit: 3 * 3600, // Accumulation from T to T-3H
-        accumulationPeriod: 3 * 3600
-      }
-    ]
+    elements: arpegeGroundElements.map(element => _.merge({ subsets: { long: [-32, 42], lat: [20, 72] } }, element))
   },
   arome025: {
     name: 'arome-france',
@@ -297,49 +250,7 @@ module.exports = {
     lowerLimit: 0,                    // From T0
     upperLimit: 42 * 3600,            // Up to T0+42
     updateInterval: 15 * 60,          // Check for update every 15 minutes
-    elements: [
-      {
-        name: 'u-wind',
-        coverageid: 'U_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [-8, 12],
-          lat: [38, 53]
-        },
-        bucket: 0
-      },
-      {
-        name: 'v-wind',
-        coverageid: 'V_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [-8, 12],
-          lat: [38, 53]
-        },
-        bucket: 1
-      },
-      {
-        name: 'gust',
-        coverageid: 'WIND_SPEED_GUST__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [-8, 12],
-          lat: [38, 53]
-        },
-        bucket: 0
-      },
-      {
-        name: 'precipitations',
-        coverageid: 'TOTAL_PRECIPITATION__GROUND_OR_WATER_SURFACE',
-        subsets: {
-          long: [-8, 12],
-          lat: [38, 53]
-        },
-        bucket: 1,
-        lowerLimit: 3 * 3600, // Accumulation from T to T-3H
-        accumulationPeriod: 3 * 3600
-      }
-    ]
+    elements: arpegeGroundElements.map(element => _.merge({ subsets: { long: [-8, 12], lat: [38, 53] } }, element))
   },
   // This model generates too much data to be stored in MongoDB documents (limited to 16 MB)
   // It requires the use of the 'gridfs' data store
@@ -361,52 +272,6 @@ module.exports = {
     lowerLimit: 0,                    // From T0
     upperLimit: 42 * 3600,            // Up to T0+42
     updateInterval: 15 * 60,          // Check for update every 15 minutes
-    elements: [
-      {
-        name: 'u-wind',
-        dataStore: 'gridfs',
-        coverageid: 'U_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [-8, 12],
-          lat: [38, 53]
-        },
-        bucket: 0
-      },
-      {
-        name: 'v-wind',
-        dataStore: 'gridfs',
-        coverageid: 'V_COMPONENT_OF_WIND__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [-8, 12],
-          lat: [38, 53]
-        },
-        bucket: 1
-      },
-      {
-        name: 'gust',
-        dataStore: 'gridfs',
-        coverageid: 'WIND_SPEED_GUST__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
-        subsets: {
-          height: 10,
-          long: [-8, 12],
-          lat: [38, 53]
-        },
-        bucket: 0
-      },
-      {
-        name: 'precipitations',
-        dataStore: 'gridfs',
-        coverageid: 'TOTAL_PRECIPITATION__GROUND_OR_WATER_SURFACE',
-        subsets: {
-          long: [-8, 12],
-          lat: [38, 53]
-        },
-        bucket: 1,
-        lowerLimit: 3 * 3600, // Accumulation from T to T-3H
-        accumulationPeriod: 3 * 3600
-      }
-    ]
+    elements: arpegeGroundElements.map(element => _.merge({ dataStore: 'gridfs', subsets: { long: [-8, 12], lat: [38, 53] } }, element))
   }
 }
