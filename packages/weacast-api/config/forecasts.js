@@ -33,7 +33,7 @@ const gfsGroundElements = [{
 {
   name: 'temperature',
   variable: 'var_TMP',
-  levels: ['surface'],
+  levels: ['lev_2_m_above_ground'],
   bucket: 0,
   // Convert temperature from K to C°
   transform: (options) => options.value - 273.15
@@ -97,9 +97,10 @@ const arpegeGroundElements = [{
   subsets: {
     height: 2
   },
-  bucket: 0,
+  bucket: 0
   // Convert temperature from K to C°
-  transform: (options) => options.value - 273.15
+  // Although it would be required according to documentation it does not seem to be
+  //transform: (options) => options.value - 273.15
 }]
 
 const arpegeIsobaricElements = pressureLevels.map(level =>({
@@ -122,9 +123,10 @@ const arpegeIsobaricElements = pressureLevels.map(level =>({
   subsets: {
     pressure: level
   },
-  bucket: 0,
+  bucket: 0
   // Convert temperature from K to C°
-  transform: (options) => options.value - 273.15
+  // Although it would be required according to documentation it does not seem to be
+  //transform: (options) => options.value - 273.15
 })))
 
 module.exports = {
