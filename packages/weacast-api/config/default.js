@@ -168,7 +168,7 @@ module.exports = {
     }
   ],
   forecastPath: path.join(__dirname, '..', 'forecast-data'),
-  forecasts: [ forecasts.gfs05, forecasts.arpege05 ]
+  forecasts: [ forecasts.gfs05, forecasts.arpege01 ]
 }
 
 /*
