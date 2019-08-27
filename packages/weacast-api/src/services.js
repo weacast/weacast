@@ -14,6 +14,11 @@ module.exports = async function () {
   const authConfig = app.get('authentication')
   // Setup app services
   try {
+    // Healthcheck
+    app.get(app.get('apiPath') + '/healthcheck', (req, res) => {
+      res.set('Content-Type', 'application/json')
+      return res.status(200).json({ isRunning: true })
+    })
     if (authConfig) app.createService('users', modelPath, servicePath)
     app.configure(core)
     // Setup if we use local loaders
