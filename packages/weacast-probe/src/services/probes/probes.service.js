@@ -314,7 +314,7 @@ export default {
     // Retrieve target elements for all models or specified one
     let services = this.app.getElementServices(probe.forecast)
     services = services.filter(service => {
-      return probe.elements.reduce((contains, element) => contains || service.name.includes(element), false)
+      return probe.elements.reduce((contains, element) => contains || (service.name === probe.forecast + '/' + element), false)
     })
     return services
   },
