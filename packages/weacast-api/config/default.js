@@ -51,7 +51,10 @@ module.exports = {
     // Distribute every service except those related to authentication
     services: (service) => !service.path.endsWith('users') && !service.path.endsWith('authentication'),
     // We only produce services we don't consume any
-    remoteServices: (service) => false
+    remoteServices: (service) => false,
+    // When called internally from remote service do not authenticate,
+    // this assumes a gateway scenario where authentication is performed externally
+    authentication: false
   },
   paginate: {
     default: 10,
