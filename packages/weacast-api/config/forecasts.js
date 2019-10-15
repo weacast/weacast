@@ -196,18 +196,18 @@ let gfs025 = {
 }
 let gfs025IsobaricElements = gfsIsobaricElements
 
-let arpege05 = {
+let arpege025 = {
   name: 'arpege-world',
-  label: 'ARPEGE - 0.5°',
+  label: 'ARPEGE - 0.25°',
   description: 'World-wide',
   model: 'arpege',
   token: process.env.METEO_FRANCE_TOKEN || '__qEMDoIC2ogPRlSoRQLGUBOomaxJyxdEd__',
-  wcsBaseUrl: 'https://geoservices.meteofrance.fr/services/MF-NWP-GLOBAL-ARPEGE-05-GLOBE-WCS?SERVICE=WCS&version=2.0.1',
+  wcsBaseUrl: 'https://geoservices.meteofrance.fr/services/MF-NWP-GLOBAL-ARPEGE-025-GLOBE-WCS?SERVICE=WCS&version=2.0.1',
   bounds: [0, -90, 360, 90],
   origin: [0, 90],
-  size: [720, 361],
-  resolution: [0.5, 0.5],
-  tileResolution: [20, 20],
+  size: [1440, 721],
+  resolution: [0.25, 0.25],
+  tileResolution: [10, 10],
   timeseries: false,
   runInterval: 6 * 3600,          // Produced every 6h
   oldestRunInterval: 24 * 3600,   // Don't go back in time older than 1 day
@@ -217,7 +217,7 @@ let arpege05 = {
   updateInterval: 15 * 60,        // Check for update every 15 minutes
   elements: arpegeGroundElements.map(element => _.merge({ subsets: { long: [0, 360], lat: [-90, 90] } }, element))
 }
-let arpege05IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ subsets: { long: [0, 360], lat: [-90, 90] } }, element))
+let arpege025IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ subsets: { long: [0, 360], lat: [-90, 90] } }, element))
 
 let arpege01 = {
   name: 'arpege-europe',
@@ -293,7 +293,7 @@ module.exports = {
   gfs1,
   gfs05,
   gfs025,
-  arpege05,
+  arpege025,
   arpege01,
   arome025,
   arome01,
@@ -301,7 +301,7 @@ module.exports = {
     gfs1: gfs1IsobaricElements,
     gfs05: gfs05IsobaricElements,
     gfs025: gfs025IsobaricElements,
-    arpege05: arpege05IsobaricElements,
+    arpege025: arpege025IsobaricElements,
     arpege01: arpege01IsobaricElements,
     arome025: arome025IsobaricElements,
     arome01: arome01IsobaricElements
