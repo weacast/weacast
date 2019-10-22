@@ -9,6 +9,10 @@ RUN apt-get clean
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 RUN $JAVA_HOME/bin/java -version
 
+WORKDIR /opt/kalisio-modules
+
+RUN git clone https://github.com/kalisio/feathers-distributed.git -b master --single-branch && cd feathers-distributed && yarn install && yarn link && cd ..
+
 WORKDIR /opt/weacast-modules
 
 RUN git clone https://github.com/weacast/weacast-core.git -b master --single-branch && cd weacast-core && yarn install && yarn link && cd ..
@@ -22,6 +26,7 @@ WORKDIR /opt/weacast-api
 COPY . /opt/weacast-api
 
 RUN yarn install
+RUN yarn link @kalisio/feathers-distributed
 RUN yarn link weacast-core
 RUN yarn link weacast-probe
 RUN yarn link weacast-alert
