@@ -5,7 +5,7 @@ import logger from 'winston'
 import _ from 'lodash'
 import { Server } from './server'
 
-function main () {
+async function main () {
 	let server = new Server()
 
 	const config = server.app.get('logs')
@@ -19,13 +19,12 @@ function main () {
 	  logger.error('Unhandled Rejection at: Promise ', p, reason)
 	)
 
-	server.run().then(_ => {
-	  logger.info('Server started listening')
-	})
+	await server.run()
+	logger.info('Server started listening')
 }
 
 if (process.env.LAUNCH_DELAY) {
-	logger.info('Waiting for server to start')
+	logger.info(`Waiting ${process.env.LAUNCH_DELAY/1000}s for server to start...`)
 	setTimeout(main, process.env.LAUNCH_DELAY)
 } else {
 	main()
