@@ -425,56 +425,43 @@ export default {
     if (!forecastTime && !probe.featureId) {
       throw new errors.BadRequest('Unique identifier for probe features not specified')
     }
-    // Retrieve target elements
-    let services = this.getElementServicesForProbe(probe)
-    debug('Probing following services for probe ' + (probe._id ? probe._id : 'on-demand '), services.map(service => service.name))
-    // When probing a location we use tiles, take care to use only single time tiles not aggregated if any
-    let forecastQuery = (geometry ? { timeseries: false } : {})
-    Object.assign(forecastQuery, _.omit(query, ['aggregate']))
-    debug('Probing query', forecastQuery)
-    // Then run all probes
-    try {
-      for (let service of services) {
-        // Will get all available forecast times (probing stream) or selected one(s) (on-demand probe)
-        let forecasts = await service.find({ paginate: false, query: forecastQuery })
-        debug('Probing following forecasts for probe ' + (probe._id ? probe._id : 'on-demand '), forecasts)
-        for (let forecast of forecasts) {
-          let features = []
-          // Retrieve previously stored features to perform update if any when streaming
-          if (!forecastTime) {
-            features = await this.getResultsForProbe(probe, forecast.forecastTime)
-          }
-          // Otherwise this means we have to create new ones starting from given template collection
-          // First probing for streaming or always on-demand
-          if (features.length === 0) {
-            features = probe.features
-          }
-          features.forEach(feature => {
-            // If we have a time range for on-demand probing tag features using an array
-            if (isTimeRange && !feature.forecastTime) feature.forecastTime = {}
-            // Take care to initialize properties holder if not given in input feature
-            if (!feature.properties) feature.properties = {}
-          })
-
-          // Ask to retrieve forecast data and perform probing
-          await this.probeForecastTime(features, probe, service, forecast)
-          // When performing probing on-demand we do not store any result,
-          // the returned features contain the probe values
-          if (!forecastTime) {
-            await this.updateFeaturesInDatabase(features, probe, service, forecast)
-            // Send a message so that clients know there are new results, indeed for performance reasons standard events have been disabled on results
-            this.emit('results', { probe, forecast })
-          }
-        }
-      }
-    } catch (error) {
-      logger.error(error.message)
-    }
 
     // Register for forecast data updates on probing streams
     if (!forecastTime) {
       this.registerForecastUpdates(probe)
-    } else if (isTimeRange) {
+    } else {
+      // Retrieve target elements
+      let services = this.getElementServicesForProbe(probe)
+      debug('Probing following services for on-demand probe', services.map(service => service.name))
+      // When probing a location we use tiles, take care to use only single time tiles not aggregated if any
+      let forecastQuery = (geometry ? { timeseries: false } : {})
+      Object.assign(forecastQuery, _.omit(query, ['aggregate']))
+      debug('Probing query', forecastQuery)
+      // Then run all probes
+      try {
+        // Initialize features data
+        let features = probe.features
+        features.forEach(feature => {
+          // If we have a time range for on-demand probing tag features using an array
+          if (isTimeRange && !feature.forecastTime) feature.forecastTime = {}
+          // Take care to initialize properties holder if not given in input feature
+          if (!feature.properties) feature.properties = {}
+        })
+        for (let service of services) {
+          // Will get all available forecast times (probing stream) or selected one(s) (on-demand probe)
+          let forecasts = await service.find({ paginate: false, query: forecastQuery })
+          debug('Probing following forecasts for probe ' + (probe._id ? probe._id : 'on-demand '), forecasts)
+          for (let forecast of forecasts) {
+            // Ask to retrieve forecast data and perform probing
+            await this.probeForecastTime(features, probe, service, forecast)
+          }
+        }
+      } catch (error) {
+        logger.error(error.message)
+      }
+    }
+
+    if (forecastTime && isTimeRange) {
       // If we do not aggregate and generate a separated feature per time
       let features =  {}
       // Rearrange data so that we get ordered arrays indexed by element instead of maps
