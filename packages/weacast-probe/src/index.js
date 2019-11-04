@@ -21,7 +21,8 @@ export default async function init () {
   let probesService = app.createService('probes',
     path.join(__dirname, 'models'),
     path.join(__dirname, 'services'), Object.assign({
-    events: ['results']
+    events: ['results'],
+    distributedEvents: ['results']
   }, app.getServiceOptions('probes')))
   app.createService('probe-results',
     path.join(__dirname, 'models'),
