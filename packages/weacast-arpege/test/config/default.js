@@ -42,11 +42,11 @@ module.exports = {
       attribution: 'Forecast data from <a href="http://www.meteofrance.com">Météo-France</a>',
       model: 'arpege',
       token: '__qEMDoIC2ogPRlSoRQLGUBOomaxJyxdEd__',
-      wcsBaseUrl: 'https://geoservices.meteofrance.fr/services/MF-NWP-GLOBAL-ARPEGE-05-GLOBE-WCS?SERVICE=WCS&version=2.0.1',
-      bounds: [-180, -90, 180, 90],
-      origin: [-180, 90],
-      size: [720, 361],
-      resolution: [0.5, 0.5],
+      wcsBaseUrl: 'https://geoservices.meteofrance.fr/services/MF-NWP-GLOBAL-ARPEGE-025-GLOBE-WCS?SERVICE=WCS&version=2.0.1',
+      bounds: [0, -90, 360, 90],
+      origin: [0, 90],
+      size: [1440, 721],
+      resolution: [0.25, 0.25],
       runInterval: 6 * 3600,          // Produced every 6h
       oldestRunInterval: 24 * 3600,   // Don't go back in time older than 1 day
       interval: 3 * 3600,             // Steps of 3h
@@ -60,7 +60,7 @@ module.exports = {
           coverageid: 'TEMPERATURE__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
           subsets: {
             height: 2,
-            long: [-180, 180],
+            long: [0, 360],
             lat: [-90, 90]
           },
           dataStore: 'fs'             // So that we can check for output files
