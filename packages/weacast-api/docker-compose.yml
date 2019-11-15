@@ -19,7 +19,7 @@ services:
       - DEBUG
   weacast-mongodb:
     container_name: weacast-mongodb
-    image: mongo
+    image: mongo:3
     volumes:
       - weacast_mongodb:/data/db
     networks:

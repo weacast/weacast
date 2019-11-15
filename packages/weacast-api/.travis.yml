@@ -5,11 +5,26 @@ notifications:
       secure: MjNqcgkuwcpKJfA/LzPJO6ce4tqVOACRzrZZXCm8oxcNo7NmchldR9MFAErQm7ZhCzLOCIPivRZ4vG9Mbd2mXx7XIhJnvO2pFf1yZNP2AtU1z60f9vWxXrj8TdvI+BVB6NhlmCbPvVecaNw9c6PrcKG8TNF7syzVa44XtpuRB8bMDQa7qGyy9hp3IGtPcmGZpxNIsqLN2RUzatwaTQnWoLj1bCmQAQTuULp6Y4cQvTMLWmMKlKcP2PQF5ov4ZbN1UmC1HwZwWlMHcsE7QHYfwlOnpfTjYjNxN1HHJ9ZZwwO3s1gi3an4XM6OEGyV8g6wPBJIvmrSs2OHP33Ab+QFeew2TLCi3UfRBETjY2KKIRKYcYCrRTPvYpo2NzY/NDW0D6kllrcY6fy6UlXKR0ACe4jiRDz6P8WumV2YRpCgoBpFbtKUUiJFTk7hCfpPYDacBe8Nneg0WkhXOfiqma03sU+56mDyoKatefnEadMVttCsfricSBkr4m+Yk9QSRLt988QMG8Yh8KNbxGybjZBXq90NMZncdL/VNKyqSGLiP2/qagglTw6tZyUsQRx6hmNxn6Vut8tCQCObxBu0gYmttMlfG4lX+nwFEn8EzrTyyXpbvEi7zFqe3HpoDxSa0cQwuqeuQZrm5uVoCytPbgNWY4nUBPKU2URNCE6fN4mOM74=
     on_success: always
     on_failure: always
+
 stages:
-- name: TEST
 - name: BUILD
+  if: commit_message !~ /\[skip build\]/
+- name: TEST
+  if: commit_message !~ /\[skip test\]/
+
 jobs:
   include:
+  - stage: BUILD
+    language: node_js
+    node_js:
+    - '8'
+    cache: yarn
+    sudo: required
+    services:
+    - docker
+    install: skip
+    script:
+    - travis_wait 50 bash .travis.build.sh
   - stage: TEST
     language: node_js
     node_js:
@@ -27,14 +42,3 @@ jobs:
     - travis_wait bash .travis.test.sh
     after_script:
     - codeclimate-test-reporter < coverage/lcov.info
-  - stage: BUILD
-    language: node_js
-    node_js:
-    - '8'
-    cache: yarn
-    sudo: required
-    services:
-    - docker
-    install: skip
-    script:
-    - travis_wait 50 bash .travis.build.sh
