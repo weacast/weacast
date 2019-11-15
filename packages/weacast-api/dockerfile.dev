@@ -1,31 +1,59 @@
-FROM  node:8-stretch
-
-MAINTAINER Luc Claustres <luc.claustres@orange.fr>
-
-# We need Java for the GFS plugin
-RUN apt-get update -y
-RUN apt install -y openjdk-8-jre-headless ca-certificates-java
-RUN apt-get clean
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
-RUN $JAVA_HOME/bin/java -version
+FROM  node:8-buster AS Build
 
 WORKDIR /opt/kalisio-modules
 
-RUN git clone https://github.com/kalisio/feathers-distributed.git -b master --single-branch && cd feathers-distributed && yarn install && yarn link && cd ..
+RUN git clone https://github.com/kalisio/feathers-distributed.git -b master --single-branch && cd feathers-distributed && yarn install && cd ..
 
 WORKDIR /opt/weacast-modules
 
-RUN git clone https://github.com/weacast/weacast-core.git -b master --single-branch && cd weacast-core && yarn install && yarn link && cd ..
-RUN git clone https://github.com/weacast/weacast-probe.git -b master --single-branch && cd weacast-probe && yarn install && yarn link weacast-core && yarn link && cd ..
-RUN git clone https://github.com/weacast/weacast-alert.git -b master --single-branch && cd weacast-alert && yarn install && yarn link weacast-core && yarn link weacast-probe && yarn link && cd ..
-RUN git clone https://github.com/weacast/weacast-arpege.git -b master --single-branch && cd weacast-arpege && yarn install && yarn link weacast-core && yarn link && cd ..
-RUN git clone https://github.com/weacast/weacast-arome.git -b master --single-branch && cd weacast-arome && yarn install && yarn link weacast-arpege && yarn link weacast-core && yarn link && cd ..
-RUN git clone https://github.com/weacast/weacast-gfs.git -b master --single-branch && cd weacast-gfs && yarn install && yarn link weacast-core && yarn link && cd ..
+RUN git clone https://github.com/weacast/weacast-core.git -b master --single-branch && cd weacast-core && yarn install && cd ..
+RUN git clone https://github.com/weacast/weacast-probe.git -b master --single-branch && cd weacast-probe && yarn install && cd ..
+RUN git clone https://github.com/weacast/weacast-alert.git -b master --single-branch && cd weacast-alert && yarn install && cd ..
+RUN git clone https://github.com/weacast/weacast-arpege.git -b master --single-branch && cd weacast-arpege && yarn install && cd ..
+RUN git clone https://github.com/weacast/weacast-arome.git -b master --single-branch && cd weacast-arome && yarn install && cd ..
+RUN git clone https://github.com/weacast/weacast-gfs.git -b master --single-branch && cd weacast-gfs && yarn install && cd ..
 
 WORKDIR /opt/weacast-api
 COPY . /opt/weacast-api
 
 RUN yarn install
+RUN npm run compile
+
+FROM  node:8-buster-slim
+
+LABEL maintainer="Kalisio <contact@kalisio.xyz>"
+
+# Install Java
+RUN apt-get update -y
+# See http://debian.2.n7.nabble.com/Bug-863199-error-creating-symbolic-link-usr-share-man-man1-rmid-1-gz-dpkg-tmp-td4120571.html#a4283276
+RUN mkdir -p /usr/share/man/man1
+RUN apt install -y openjdk-11-jre-headless
+RUN apt-get clean
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+RUN $JAVA_HOME/bin/java -version
+
+# Install GDAL
+RUN apt-get update && apt-get -y install gdal-bin
+
+COPY --from=Build /opt/kalisio-modules /opt/kalisio-modules
+COPY --from=Build /opt/weacast-modules /opt/weacast-modules
+COPY --from=Build /opt/weacast-api /opt/weacast-api
+
+WORKDIR /opt/kalisio-modules
+
+RUN cd feathers-distributed && yarn link && cd ..
+
+WORKDIR /opt/weacast-modules
+
+RUN cd weacast-core && yarn link && cd ..
+RUN cd weacast-probe && yarn link weacast-core && yarn link && cd ..
+RUN cd weacast-alert && yarn link weacast-core && yarn link weacast-probe && yarn link && cd ..
+RUN cd weacast-arpege && yarn link weacast-core && yarn link && cd ..
+RUN cd weacast-arome && yarn link weacast-arpege && yarn link weacast-core && yarn link && cd ..
+RUN cd weacast-gfs && yarn link weacast-core && yarn link && cd ..
+
+WORKDIR /opt/weacast-api
+
 RUN yarn link @kalisio/feathers-distributed
 RUN yarn link weacast-core
 RUN yarn link weacast-probe
@@ -33,7 +61,6 @@ RUN yarn link weacast-alert
 RUN yarn link weacast-arpege
 RUN yarn link weacast-arome
 RUN yarn link weacast-gfs
-RUN npm run compile
 
 EXPOSE 8081
 
