@@ -7,6 +7,7 @@
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
 [![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-api/badge.svg)](https://snyk.io/test/github/weacast/weacast-api)
 [![Download Status](https://img.shields.io/npm/dm/weacast-api.svg?style=flat-square)](https://www.npmjs.com/package/weacast-api)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api?ref=badge_shield)
 
 > Microservice to expose Weacast API
 
@@ -27,3 +28,6 @@ The [Weacast docs](https://weacast.github.io/weacast-docs/) are loaded with awes
 Copyright (c) 2019
 
 Licensed under the [MIT license](LICENSE).
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api?ref=badge_large)
