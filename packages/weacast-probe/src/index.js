@@ -26,8 +26,12 @@ export default async function init () {
   }, app.getServiceOptions('probes')))
   app.createService('probe-results',
     path.join(__dirname, 'models'),
-    path.join(__dirname, 'services'),
-    app.getServiceOptions('probe-results'))
+    path.join(__dirname, 'services'), Object.assign({
+    // There is no real way to disable default events in Feathers v3 (see https://github.com/feathersjs/feathers/issues/922)
+    // This is actually handled by hooks on the service itself
+    events: [],
+    distributedEvents: []
+  }, app.getServiceOptions('probe-results')))
 
   // On startup restore listeners for forecast data updates required to update probe results
   if (probesService) {

@@ -22,10 +22,10 @@ module.exports = {
     all: [ hooks.unmarshall ],
     find: [],
     get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
+    create: [hooks.skipEvents], // Avoid emitting events on result edition
+    update: [hooks.skipEvents],
+    patch: [hooks.skipEvents],
+    remove: [hooks.skipEvents]
   },
 
   error: {
