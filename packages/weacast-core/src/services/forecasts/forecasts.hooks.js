@@ -1,4 +1,5 @@
 import { disallow } from 'feathers-hooks-common'
+import * as hooks from '../../hooks'
 
 module.exports = {
   before: {
@@ -12,7 +13,7 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [hooks.skipEvents],
     find: [],
     get: [],
     create: [],
