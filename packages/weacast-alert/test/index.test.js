@@ -52,9 +52,9 @@ describe('weacast-alert', () => {
     expect(typeof probe).to.equal('function')
   })
 
-  it('registers the alerts service', () => {
+  it('registers the alerts service', async () => {
     app.configure(core)
-    app.configure(gfs)
+    await app.configure(gfs)
     app.configure(probe)
     uService = app.getService('gfs-world/u-wind')
     expect(uService).toExist()
