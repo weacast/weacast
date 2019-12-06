@@ -138,7 +138,8 @@ module.exports = {
   services: {
     // Different apps might use different forecasts but target the same element database
     //forecasts: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) },
-    elements: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) }
+    elements: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) },
+    'probe-results': { ttl: 6 * 3600 }
   },
   loaders,
   sync: (loaders.length > 0 ? false : { url: process.env.SYNC_DB_URL || process.env.DATA_DB_URL || process.env.DB_URL }),
