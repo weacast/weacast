@@ -31,3 +31,5 @@ Licensed under the [MIT license](LICENSE).
 
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api?ref=badge_large)
+
+The detailed list of Open Source dependencies can be found in our [3rd-party software report](https://app.fossa.com/reports/6606f220-aa41-4cc5-a4e2-88bbf0596435).
