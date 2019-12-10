@@ -176,22 +176,23 @@ export function createElementService (forecast, element, app, servicesPath, opti
   const createFeathersService = require('feathers-' + app.db.adapter)
   const configureModel = require(path.join(__dirname, 'models', 'elements.model.' + app.db.adapter))
   let serviceName = forecast.name + '/' + element.name
-
+  // The service object can be directly provided
+  const isService = servicesPath && (typeof servicesPath === 'object')
   const paginate = app.get('paginate')
   const serviceOptions = Object.assign({
     name: serviceName,
     paginate
   }, options || {})
   if (serviceOptions.disabled) return undefined
-  configureModel(forecast, element, app, serviceOptions)
+  if (!isService) configureModel(forecast, element, app, serviceOptions)
 
   // Initialize our service with any options it requires
-  let service = createFeathersService(serviceOptions)
+  let service = (isService ? servicesPath : createFeathersService(serviceOptions))
   // Get our initialized service so that we can register hooks and filters
   service = declareService(serviceName, app, service)
   // Register hooks and filters
   // If no service file path provided use default
-  if (servicesPath) {
+  if (servicesPath && !isService) {
     service = configureService(forecast.model, service, servicesPath)
   } else {
     service = configureService('elements', service, path.join(__dirname, 'services'))
@@ -200,7 +201,7 @@ export function createElementService (forecast, element, app, servicesPath, opti
   // Apply all element mixins
   elementMixins.forEach(mixin => { service.mixin(mixin) })
   // Optionnally a specific service mixin can be provided, apply it
-  if (servicesPath) {
+  if (servicesPath && !isService) {
     const serviceMixin = require(path.join(servicesPath, forecast.model, forecast.model + '.service'))
     proto.mixin(serviceMixin, service)
   }
