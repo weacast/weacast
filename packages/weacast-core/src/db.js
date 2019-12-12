@@ -1,7 +1,10 @@
 import mongodb from 'mongodb'
 import _ from 'lodash'
 import logger from 'winston'
+import makeDebug from 'debug'
 import errors from '@feathersjs/errors'
+
+const debug = makeDebug('weacast:weacast-core:db')
 
 export class Database {
   constructor (app) {
@@ -21,6 +24,10 @@ export class Database {
   async connect () {
     // Default implementation
     return null
+  }
+
+  async disconnect () {
+    // Default implementation
   }
 
   static create (app) {
@@ -49,6 +56,7 @@ export class MongoDatabase extends Database {
     try {
       // Connect to primary
       this._db = await mongodb.connect(this._dbUrl)
+      debug('Connected to primary DB ' + this.adapter)
       // Then secondaries if any
       this._dbs = {}
       if (this._secondaries) {
@@ -58,9 +66,31 @@ export class MongoDatabase extends Database {
           const dbUrl = this._secondaries[dbName]
           this._dbs[dbName] = await mongodb.connect(dbUrl)
         }
+        debug('Connected to secondaries DB ' + this.adapter)
+      }
+      return this._db
+    } catch (error) {
+      logger.error('Could not connect to ' + this.adapter + ' database(s), please check your configuration', error)
+      throw error
+    }
+  }
+
+  async disconnect () {
+    try {
+      await this._db.close()
+      debug('Disconnected from primary DB ' + this.adapter)
+      this._db = null
+      if (this._secondaries) {
+        const dbs = _.values(this._dbs)
+        for (let i = 0; i < dbs.length; i++) {
+          await dbs[i].close()
+        }
+        this._dbs = {}
+        debug('Disconnected from secondaries DB ' + this.adapter)
       }
     } catch (error) {
-      logger.error('Could not connect to ' + this.app.get('db').adapter + ' database, please check your configuration', error)
+      logger.error('Could not disconnect from ' + this.adapter + ' database(s)', error)
+      throw error
     }
   }
 
