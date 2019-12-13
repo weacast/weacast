@@ -49,11 +49,13 @@
     "cron": "^1.4.1",
     "debug": "^3.1.0",
     "feathers-hooks-common": "^3.0.0",
+    "fs-extra": "^4.0.2",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "sift": "^8.5.0",
     "weacast-core": "^1.1.0",
-    "weacast-probe": "^1.1.0"
+    "weacast-probe": "^1.1.0",
+    "winston": "^2.3.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
