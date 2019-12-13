@@ -30,8 +30,8 @@ export function unmarshallTime (item, property) {
   if (!time) return
   if (Array.isArray(time)) {
     item[property] = time.map(t => {
-      if (typeof time === 'string') return moment.utc(time)
-      else if (typeof time.toISOString === 'function') return moment.utc(time.toISOString())
+      if (typeof t === 'string') return moment.utc(t)
+      else if (typeof t.toISOString === 'function') return moment.utc(t.toISOString())
       else return t
     })
   } else if (!moment.isMoment(time)) {
