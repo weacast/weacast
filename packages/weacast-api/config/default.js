@@ -3,12 +3,16 @@ const containerized = require('containerized')()
 const forecasts = require('./forecasts')
 
 const API_PREFIX = '/api'
+
 let loaders = [] // To embed local loaders: ['arpege', 'arome', 'gfs']
 if (process.env.LOADERS) loaders = process.env.LOADERS.split(',')
 // If using local loaders enable update only on selected loaders
 for (let [key, forecast] of Object.entries(forecasts)) {
   if (!loaders.includes(forecast.model)) forecast.updateInterval = -1
 }
+
+let plugins = ['probe'] // To embed local plugins: ['probe', 'alert']
+if (process.env.PLUGINS) plugins = process.env.PLUGINS.split(',')
 
 const serverPort = process.env.PORT || process.env.HTTPS_PORT || 8081
 // Required to know webpack port so that in dev we can build correct URLs
@@ -142,6 +146,7 @@ module.exports = {
     'probe-results': { ttl: 6 * 3600 }
   },
   loaders,
+  plugins,
   sync: (loaders.length > 0 ? false : { url: process.env.SYNC_DB_URL || process.env.DATA_DB_URL || process.env.DB_URL }),
   defaultProbes: [
     {
