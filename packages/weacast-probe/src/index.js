@@ -1,4 +1,6 @@
 import path from 'path'
+import fs from 'fs-extra'
+import logger from 'winston'
 import mubsub from 'mubsub'
 import _ from 'lodash'
 import makeDebug from 'debug'
@@ -32,6 +34,38 @@ export default async function init () {
     events: [],
     distributedEvents: []
   }, app.getServiceOptions('probe-results')))
+
+  // Create default probes if not already done
+  let defaultProbes = app.get('defaultProbes')
+  if (defaultProbes) {
+    const defaultElementFilter = (forecast) => forecast.elements.map(element => element.name)
+    let probes = await probesService.find({ paginate: false, query: { $select: ['_id', 'name'] } })
+    for (let defaultProbe of defaultProbes) {
+      const probeName = path.parse(defaultProbe.fileName).name
+      let createdProbe = probes.find(probe => probe.name === probeName)
+      if (!createdProbe) {
+        // One probe for each forecast model and elements except if custom filter provided
+        const elementFilter = defaultProbe.filter || defaultElementFilter
+        for (let forecast of app.get('forecasts')) {
+          logger.info('Initializing default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name)
+          let options = Object.assign({
+            name: probeName,
+            forecast: forecast.name,
+            elements: elementFilter(forecast)
+          }, defaultProbe.options)
+          if (options.elements.length > 0) {
+            let geojson = fs.readJsonSync(defaultProbe.fileName)
+            Object.assign(geojson, options)
+            const probe = await probesService.create(geojson)
+            logger.info('Initialized default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name)
+            probes.push(probe)
+          } else {
+            logger.info('Skipping default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name + ' (no target elements)')
+          }
+        }
+      }
+    }
+  }
 
   // On startup restore listeners for forecast data updates required to update probe results
   if (probesService) {
