@@ -43,4 +43,3 @@ export function cognito () {
     processProfile('cognito', hook.data)
   }
 }
-

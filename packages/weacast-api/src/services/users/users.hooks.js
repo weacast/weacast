@@ -10,7 +10,7 @@ module.exports = {
     find: [],
     get: [],
     create: [ commonHooks.when(hook => _.get(hook.app.get('authentication'), 'disallowRegistration'), commonHooks.disallow('external')),
-              github(), google(), oidc(), cognito(), hashPassword(), gravatar() ],
+      github(), google(), oidc(), cognito(), hashPassword(), gravatar() ],
     update: [],
     patch: [],
     remove: []
