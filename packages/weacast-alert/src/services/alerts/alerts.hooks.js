@@ -24,19 +24,13 @@ module.exports = {
   },
 
   after: {
-    all: [ hooks.unmarshallAlert ],
-    find: [],
-    get: [],
-    create: [ hook => {
-      hook.service.registerAlert(hook.result)
-      return hook
-    } ],
+    all: [],
+    find: [ hooks.unmarshallAlert ],
+    get: [ hooks.unmarshallAlert ],
+    create: [ hooks.unmarshallAlert, async hook => hook.service.registerAlert(hook.result) ],
     update: [],
-    patch: [],
-    remove: [ hook => {
-      hook.service.unregisterAlert(hook.result)
-      return hook
-    } ]
+    patch: [ hooks.unmarshallAlert ],
+    remove: [ hooks.unmarshallAlert, async hook => hook.service.unregisterAlert(hook.result) ]
   },
 
   error: {

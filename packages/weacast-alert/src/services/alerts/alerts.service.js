@@ -10,15 +10,16 @@ let alerts = {}
 
 export default {
 
-  registerAlert (alert) {
+  async registerAlert (alert) {
     if (alerts[alert._id.toString()]) return
     debug('Registering new alert ', alert)
     let cronJob = new CronJob(alert.cron, () => this.checkAlert(alert))
-    cronJob.start()
     alerts[alert._id.toString()] = cronJob
+    await this.checkAlert(alert)
+    cronJob.start()
   },
 
-  unregisterAlert (alert) {
+  async unregisterAlert (alert) {
     let cronJob = alerts[alert._id.toString()]
     if (!cronJob) return
     debug('Unregistering new alert ', alert)
@@ -83,7 +84,7 @@ export default {
     debug('Checking alert at ' + now.format(), _.omit(alert, ['status']))
     // First check if still valid
     if (now.isAfter(alert.expireAt)) {
-      this.unregisterAlert(alert)
+      await this.unregisterAlert(alert)
       return
     }
     const results = (alert.probeId ? await this.checkStreamAlert(alert) : await this.checkOnDemandAlert(alert))
@@ -91,23 +92,26 @@ export default {
     const isActive = (results.length > 0)
     const wasActive = _.get(alert, 'status.active')
     // Then update alert status
-    let status = {
+    const status = {
       active: isActive,
-      checkedAt: now
+      checkedAt: now.clone()
     }
-    // If not previously active and it is now add first time stamp
-    if (!wasActive && isActive) {
-      status.triggeredAt = now
-    } else if (wasActive) { // Else keep track of trigger time stamp
-      status.triggeredAt = _.get(alert, 'status.triggeredAt')
+    if (isActive) {
+      // If not previously active and it is now add first time stamp
+      if (!wasActive) {
+        status.triggeredAt = now.clone()
+      } else { // Else keep track of previous trigger time stamp
+        status.triggeredAt = _.get(alert, 'status.triggeredAt').clone()
+      }
     }
-    debug('Alert ' + alert._id.toString() + ' status', status, results)
+    debug('Alert ' + alert._id.toString() + ' status', status, ' with ' + results.length + ' triggers')
     // Emit event
     let event = { alert }
     if (isActive) event.triggers = results
-    const result = await this.patch(alert._id.toString(), { status })
+    // As we keep in-memory objects avoid them being mutated by hooks processing operation payload
+    await this.patch(alert._id.toString(), { status: Object.assign({}, status) })
     // Keep track of changes in memory as well
-    Object.assign(alert, result)
+    Object.assign(alert, { status })
     this.emit('alerts', event)
   }
 }

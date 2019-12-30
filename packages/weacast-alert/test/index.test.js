@@ -75,7 +75,16 @@ describe('weacast-alert', () => {
   // Let enough time to process
   .timeout(5000)
 
-  it('performs element download process', async () => {
+  it('creates probe', async () => {
+    const data = await probeService.create(geojson)
+    probeId = data._id
+    // Wait long enough to be sure the results are here
+    // await utility.promisify(setTimeout)(5000)
+  })
+  // Let enough time to process
+  .timeout(10000)
+
+  it('performs element download process and probing', async () => {
     // download both elements in parallel
     await Promise.all([
       uService.updateForecastData(),
@@ -84,15 +93,6 @@ describe('weacast-alert', () => {
   })
   // Let enough time to download a couple of data
   .timeout(60000)
-
-  it('performs probing', async () => {
-    const data = await probeService.create(geojson)
-    probeId = data._id
-    // Wait long enough to be sure the results are here
-    // await utility.promisify(setTimeout)(5000)
-  })
-  // Let enough time to process
-  .timeout(10000)
 
   it('creates active alert on-demand at specific location', async () => {
     const now = moment.utc()
@@ -119,19 +119,19 @@ describe('weacast-alert', () => {
     expect(results.length).to.equal(1)
     // Wait long enough to be sure the cron has been called twice
     await utility.promisify(setTimeout)(10000)
-    expect(spyCheckAlert).to.have.been.called.twice()
+    expect(spyCheckAlert).to.have.been.called.at.least(2)
     spyCheckAlert.reset()
-    expect(eventCount).to.equal(2)
-    expect(activeCount).to.equal(2)
+    expect(eventCount).to.be.at.least(2)
+    expect(activeCount).to.be.at.least(2)
+    resetAlertEvent()
     results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
     expect(results[0].status).toExist()
     expect(results[0].status.active).beTrue()
     expect(results[0].status.triggeredAt).toExist()
     expect(results[0].status.checkedAt).toExist()
-    expect(results[0].status.triggeredAt.isAfter(now)).beTrue()
-    expect(results[0].status.checkedAt.isAfter(results[0].status.triggeredAt)).beTrue()
-    resetAlertEvent()
+    expect(results[0].status.triggeredAt.isSameOrAfter(now.format())).beTrue() // Registering trigger a check
+    expect(results[0].status.checkedAt.isSameOrAfter(results[0].status.triggeredAt.format())).beTrue()
   })
   // Let enough time to process
   .timeout(15000)
@@ -174,9 +174,9 @@ describe('weacast-alert', () => {
     expect(results.length).to.equal(1)
     // Wait long enough to be sure the cron has been called twice
     await utility.promisify(setTimeout)(10000)
-    expect(spyCheckAlert).to.have.been.called.twice()
+    expect(spyCheckAlert).to.have.been.called.at.least(2)
     spyCheckAlert.reset()
-    expect(eventCount).to.equal(2)
+    expect(eventCount).to.be.at.least(2)
     expect(activeCount).to.equal(0)
     results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
@@ -221,19 +221,19 @@ describe('weacast-alert', () => {
     expect(results.length).to.equal(1)
     // Wait long enough to be sure the cron has been called twice
     await utility.promisify(setTimeout)(10000)
-    expect(spyCheckAlert).to.have.been.called.twice()
+    expect(spyCheckAlert).to.have.been.called.at.least(2)
     spyCheckAlert.reset()
-    expect(eventCount).to.equal(2)
-    expect(activeCount).to.equal(2)
+    expect(eventCount).to.be.at.least(2)
+    expect(activeCount).to.be.at.least(2)
+    resetAlertEvent()
     results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
     expect(results[0].status).toExist()
     expect(results[0].status.active).beTrue()
     expect(results[0].status.triggeredAt).toExist()
     expect(results[0].status.checkedAt).toExist()
-    expect(results[0].status.triggeredAt.isAfter(now)).beTrue()
-    expect(results[0].status.checkedAt.isAfter(results[0].status.triggeredAt)).beTrue()
-    resetAlertEvent()
+    expect(results[0].status.triggeredAt.isSameOrAfter(now.format())).beTrue() // Registering trigger a check
+    expect(results[0].status.checkedAt.isSameOrAfter(results[0].status.triggeredAt.format())).beTrue()
   })
   // Let enough time to process
   .timeout(15000)
@@ -272,10 +272,11 @@ describe('weacast-alert', () => {
     expect(results.length).to.equal(1)
     // Wait long enough to be sure the cron has been called twice
     await utility.promisify(setTimeout)(10000)
-    expect(spyCheckAlert).to.have.been.called.twice()
+    expect(spyCheckAlert).to.have.been.called.at.least(2)
     spyCheckAlert.reset()
-    expect(eventCount).to.equal(2)
+    expect(eventCount).to.be.at.least(2)
     expect(activeCount).to.equal(0)
+    resetAlertEvent()
     results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
     expect(results[0].status).toExist()
@@ -285,7 +286,6 @@ describe('weacast-alert', () => {
     await alertService.remove(alertObject._id.toString())
     expect(spyUnregisterAlert).to.have.been.called.once()
     spyUnregisterAlert.reset()
-    resetAlertEvent()
   })
   // Let enough time to process
   .timeout(15000)
@@ -294,7 +294,7 @@ describe('weacast-alert', () => {
     const now = moment.utc()
     alertObject = await alertService.create({
       cron: '*/5 * * * * *',
-      expireAt: now.add({ seconds: 7 }),
+      expireAt: now.clone().add({ seconds: 7 }),
       probeId,
       featureId: geojson.featureId,
       period: {
@@ -310,20 +310,22 @@ describe('weacast-alert', () => {
     spyRegisterAlert.reset()
     let results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
-    // Wait long enough to be sure the cron should have been called three times
-    await utility.promisify(setTimeout)(20000)
+    // Wait long enough to be sure the cron should have expired
+    await utility.promisify(setTimeout)(10000)
     // Check due to expiration it has actually been called at most three times
     // Indeed the last check might be the one that detect the expîration
     expect(spyCheckAlert).to.have.been.called.at.most(3)
     spyCheckAlert.reset()
     expect(eventCount).to.be.at.most(2)
     expect(activeCount).to.be.at.most(2)
+    resetAlertEvent()
+    // Wait long enough to be sure the TTL monitor has ran
+    await utility.promisify(setTimeout)(60000)
     results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(0)
-    resetAlertEvent()
   })
   // Let enough time to process
-  .timeout(25000)
+  .timeout(100000)
 
   // Cleanup
   after(() => {

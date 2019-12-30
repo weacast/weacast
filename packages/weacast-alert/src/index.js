@@ -11,10 +11,10 @@ export default async function init () {
 
   // Setup custom events as service options
   let alertsService = app.createService('alerts',
-  	path.join(__dirname, 'models'),
-  	path.join(__dirname, 'services'), Object.assign({
-    events: ['alerts']
-  }, app.getServiceOptions('alerts')))
+    path.join(__dirname, 'models'),
+    path.join(__dirname, 'services'), Object.assign({
+      events: ['alerts']
+    }, app.getServiceOptions('alerts')))
 
   // Create default alerts if not already done
   let defaultAlerts = app.get('defaultAlerts')
@@ -49,7 +49,7 @@ export default async function init () {
 
   // On startup restore alerts CRON tasks
   if (alertsService) {
-  	let alerts = await alertsService.find({ paginate: false })
-  	alerts.forEach(alert => alertsService.registerAlert(alert))
+    let alerts = await alertsService.find({ paginate: false })
+    alerts.forEach(alert => alertsService.registerAlert(alert))
   }
 }
