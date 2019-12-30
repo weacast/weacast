@@ -1,5 +1,19 @@
 # Changelog
 
+## [v1.1.0](https://github.com/weacast/weacast-leaflet/tree/v1.1.0) (2019-12-30)
+
+[Full Changelog](https://github.com/weacast/weacast-leaflet/compare/v1.0.0...v1.1.0)
+
+**Implemented enhancements:**
+
+- Add an option to invert color scale on forecast layers [\#8](https://github.com/weacast/weacast-leaflet/issues/8)
+- Allow to dynamically change the target elements on forecast layers [\#7](https://github.com/weacast/weacast-leaflet/issues/7)
+
+**Fixed bugs:**
+
+- GridRenderer does not take into account the options when creating the PixiOverlay [\#6](https://github.com/weacast/weacast-leaflet/issues/6)
+- Scalar layer interfere with default Pixi mesh renderer [\#5](https://github.com/weacast/weacast-leaflet/issues/5)
+
 ## [v1.0.0](https://github.com/weacast/weacast-leaflet/tree/v1.0.0) (2019-04-17)
 
 [Full Changelog](https://github.com/weacast/weacast-leaflet/compare/e59b5e1f4c5d48947402dfe6072267d59f42245a...v1.0.0)
