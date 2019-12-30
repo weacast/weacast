@@ -1,10 +1,16 @@
 # Changelog
 
+## [v1.1.0](https://github.com/weacast/weacast-alert/tree/v1.1.0) (2019-12-30)
+
+[Full Changelog](https://github.com/weacast/weacast-alert/compare/v1.0.0...v1.1.0)
+
+**Implemented enhancements:**
+
+- Alerts based on dynamic probes [\#1](https://github.com/weacast/weacast-alert/issues/1)
+
 ## [v1.0.0](https://github.com/weacast/weacast-alert/tree/v1.0.0) (2019-06-14)
 
 [Full Changelog](https://github.com/weacast/weacast-alert/compare/v0.2.0...v1.0.0)
-
-- Upgrade dependencies (Feathers V3, etc.) [\#1](https://github.com/weacast/weacast/issues/1)
 
 ## [v0.2.0](https://github.com/weacast/weacast-alert/tree/v0.2.0) (2019-04-17)
 
