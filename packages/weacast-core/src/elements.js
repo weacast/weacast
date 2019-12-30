@@ -69,10 +69,11 @@ export default async function initializeElements (app, forecast, servicesPath) {
     for (let i = 0; i < elementsToClean.length; i++) {
       let service = app.getService(forecast.name + '/' + elementsToClean[i].name)
       // Launch clean task
-      await service.cleanForecastData().catch(error => {
+      try {
+        await service.cleanForecastData()
+      } catch (error) {
         logger.error(error.message)
-        service.cleanupRunning = false
-      })
+      }
     }
   }
 
