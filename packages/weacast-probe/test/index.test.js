@@ -74,7 +74,7 @@ describe('weacast-probe', () => {
     nextForecastTime = firstForecastTime.clone()
     nextForecastTime.add({ hours: 3 })
     const data = await probeService.create(geojson, { query: { forecastTime: firstForecastTime } })
-    
+
     expect(spyProbe).to.have.been.called()
     expect(spyUpdate).not.to.have.been.called()
     // This will insure spies are properly reset before jumping to next test due to async ops

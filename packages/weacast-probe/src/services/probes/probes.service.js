@@ -463,16 +463,16 @@ export default {
 
     if (forecastTime && isTimeRange) {
       // If we do not aggregate and generate a separated feature per time
-      let features =  {}
+      let features = {}
       // Rearrange data so that we get ordered arrays indexed by element instead of maps
       probe.features.forEach(feature => {
         // Split data according to time if required
         if (!aggregate) {
           _.forOwn(feature.forecastTime, (times, element) => {
             times.forEach((time, index) => {
-              const featureId = (Array.isArray(probe.featureId) ?
-                probe.featureId.map(id => _.get(feature, id)).join('-') :
-                _.get(feature, probe.featureId))
+              const featureId = (Array.isArray(probe.featureId)
+                ? probe.featureId.map(id => _.get(feature, id)).join('-')
+                : _.get(feature, probe.featureId))
               let featuresForId = features[featureId]
               let featureForTime
               if (featuresForId) featureForTime = featuresForId[time]

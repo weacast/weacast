@@ -23,17 +23,17 @@ export default async function init () {
   let probesService = app.createService('probes',
     path.join(__dirname, 'models'),
     path.join(__dirname, 'services'), Object.assign({
-    events: ['results'],
-    distributedEvents: ['results']
-  }, app.getServiceOptions('probes')))
+      events: ['results'],
+      distributedEvents: ['results']
+    }, app.getServiceOptions('probes')))
   app.createService('probe-results',
     path.join(__dirname, 'models'),
     path.join(__dirname, 'services'), Object.assign({
     // There is no real way to disable default events in Feathers v3 (see https://github.com/feathersjs/feathers/issues/922)
     // This is actually handled by hooks on the service itself
-    events: [],
-    distributedEvents: []
-  }, app.getServiceOptions('probe-results')))
+      events: [],
+      distributedEvents: []
+    }, app.getServiceOptions('probe-results')))
 
   // Create default probes if not already done
   let defaultProbes = app.get('defaultProbes')
