@@ -1,5 +1,21 @@
 # Changelog
 
+## [v1.2.0](https://github.com/weacast/weacast-probe/tree/v1.2.0) (2019-12-30)
+
+[Full Changelog](https://github.com/weacast/weacast-probe/compare/v1.1.0...v1.2.0)
+
+**Implemented enhancements:**
+
+- Allow to archive streamed probes [\#16](https://github.com/weacast/weacast-probe/issues/16)
+- Probe results created on probe initialization for existing forecast data [\#14](https://github.com/weacast/weacast-probe/issues/14)
+- Retrieve on-demand probe results as non aggregated features [\#11](https://github.com/weacast/weacast-probe/issues/11)
+
+**Fixed bugs:**
+
+- Probe results update generate events on clients over websocket [\#17](https://github.com/weacast/weacast-probe/issues/17)
+- Probe service filtering does not work correctly [\#13](https://github.com/weacast/weacast-probe/issues/13)
+- Direction property names not correctly computed when a suffix is used on element names [\#12](https://github.com/weacast/weacast-probe/issues/12)
+
 ## [v1.1.0](https://github.com/weacast/weacast-probe/tree/v1.1.0) (2019-06-14)
 
 [Full Changelog](https://github.com/weacast/weacast-probe/compare/v1.0.0...v1.1.0)
@@ -7,7 +23,6 @@
 **Implemented enhancements:**
 
 - Allow to apply hooks on bulk write [\#8](https://github.com/weacast/weacast-probe/issues/8)
-- Upgrade dependencies (Feathers V3, etc.) [\#1](https://github.com/weacast/weacast/issues/1)
 
 **Fixed bugs:**
 
