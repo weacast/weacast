@@ -86,7 +86,7 @@ export default async function initializeElements (app, forecast, servicesPath) {
     if (cleanInterval > 0) {
       setTimeout(() => {
         logger.info('Installing forecast cleanup on ' + forecast.name + ' with interval (s) ' + cleanInterval)
-        setInterval(clean, cleanInterval)
+        setInterval(clean, 1000 * cleanInterval)
       }, 0.5 * cleanInterval)
     }
   }
