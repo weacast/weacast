@@ -84,7 +84,7 @@ export class GridRenderer {
         void main() {
           vColor = aVertexColor;
           gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
-        }`,`
+        }`, `
         precision mediump float;
         varying vec4 vColor;
         uniform float alpha;
@@ -227,12 +227,12 @@ export class GridRenderer {
         }
       }
       // Build the corresponding geometry
-      let geometry=new PIXI.Geometry()
+      let geometry = new PIXI.Geometry()
       .addAttribute('aVertexPosition', vertices, 2)
       .addAttribute('aVertexColor', colors, 4)
       .addIndex(indices)
       // Build the corresponding mesh
-      let mesh=new PIXI.Mesh(geometry, this.shader)
+      let mesh = new PIXI.Mesh(geometry, this.shader)
       // Add the mesh to the container
       this.pixiContainer.addChild(mesh)
     }
