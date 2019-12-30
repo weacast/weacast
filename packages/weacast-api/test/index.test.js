@@ -7,8 +7,8 @@ import { Server } from '../src/server'
 describe('weacast-api', () => {
   let server
   let now = new Date()
-  let logFilePath = path.join(__dirname, 'logs', 'weacast-api-' + now.toISOString().slice(0, 10) + '.log')
-  
+  let logFilePath = path.join(__dirname, 'logs', 'weacast-' + now.toISOString().slice(0, 10) + '.log')
+
   before(() => {
     chailint(chai, util)
   })
@@ -17,9 +17,9 @@ describe('weacast-api', () => {
     expect(typeof Server).to.equal('function')
   })
 
-  it('initialize the server', (done) => {
+  it('initialize the server', async () => {
     server = new Server()
-    server.run().then(() => done())
+    await server.run()
   })
   // Let enough time to process
   .timeout(20000)
@@ -28,15 +28,18 @@ describe('weacast-api', () => {
     let service = server.app.getService('users')
     expect(service).toExist()
   })
-  
+
   it('infos appear in logs', (done) => {
-    let log = 'Checking for up-to-date forecast data on arpege-world/u-wind'
+    const logs = [
+      'Installing forecast update on arpege-europe',
+      'Installing forecast update on gfs-world'
+    ]
     // FIXME: need to let some time to proceed with log file
     // Didn't find a better way since fs.watch() does not seem to work...
     setTimeout(() => {
       fs.readFile(logFilePath, 'utf8', (err, content) => {
         expect(err).beNull()
-        expect(content.includes(log)).to.equal(true)
+        logs.forEach(log => expect(content.includes(log)).to.equal(true))
         done()
       })
     }, 2500)
@@ -45,8 +48,8 @@ describe('weacast-api', () => {
   .timeout(5000)
 
   // Cleanup
-  after(() => {
+  after(async () => {
+    await server.app.db.db().dropDatabase()
     fs.emptyDirSync(path.join(__dirname, 'logs'))
-    server.app.db.db().dropDatabase()
   })
 })

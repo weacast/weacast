@@ -30,7 +30,7 @@ module.exports = async function () {
           logger.error(error.message)
         }
       }
-    } else { 
+    } else {
       // Set up only elements services otherwise
       const forecasts = app.get('forecasts')
       // Iterate over configured forecast models
@@ -50,8 +50,7 @@ module.exports = async function () {
         logger.error(error.message)
       }
     }
-  }
-  catch (error) {
+  } catch (error) {
     logger.error(error.message)
   }
 

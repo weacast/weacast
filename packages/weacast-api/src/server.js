@@ -1,6 +1,5 @@
 import fs from 'fs-extra'
 import https from 'https'
-import path from 'path'
 import proxyMiddleware from 'http-proxy-middleware'
 import express from '@feathersjs/express'
 import middlewares from './middlewares'
