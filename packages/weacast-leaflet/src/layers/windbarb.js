@@ -11,6 +11,8 @@ let WindBarbIcon = L.Icon.extend({
   options: {
     fillColor: '#2B85C7',
     pointRadius: 8,
+    pointStroke: '#010101',
+    strokeColor: '#010101',
     strokeWidth: 2,
     strokeLength: 15,
     barbSpaceing: 5,
@@ -31,7 +33,8 @@ let WindBarbIcon = L.Icon.extend({
   },
 
   _createPoint: function () {
-    var svg, w, h, sw, r, fc
+    var svg, w, h, sc, sw, r, fc
+    sc = this.options.pointStroke
     sw = this.options.strokeWidth
     r = this.options.pointRadius
     fc = this.options.fillColor
@@ -41,7 +44,7 @@ let WindBarbIcon = L.Icon.extend({
     svg.setAttributeNS(null, 'width', w)
     svg.setAttributeNS(null, 'height', h)
     var c = document.createElementNS(xmlns, 'circle')
-    c.setAttributeNS(null, 'stroke', '#010101')
+    c.setAttributeNS(null, 'stroke', sc)
     c.setAttributeNS(null, 'stroke-width', sw)
     c.setAttributeNS(null, 'fill', fc)
     c.setAttributeNS(null, 'cx', w / 2)
@@ -52,13 +55,14 @@ let WindBarbIcon = L.Icon.extend({
   },
 
   _createBarbs: function (speed) {
-    var s, b, bn, bw, bh, bs, sw, sl, p, r, w, h, cx, cy, xmlns, svg, g, fd
+    var s, b, bn, bw, bh, bs, sc, sw, sl, p, r, w, h, cx, cy, xmlns, svg, g, fd
     // We expect speed in m/s and not knots
     s = speed / 0.514
     b = {5: 0, 10: 0, 50: 0}
     bs = this.options.barbSpaceing
     bh = this.options.barbHeight
     r = this.options.pointRadius
+    sc = this.options.strokeColor
     sw = this.options.strokeWidth
     sl = this.options.strokeLength
     fd = this.options.forceDir
@@ -129,7 +133,7 @@ let WindBarbIcon = L.Icon.extend({
 
       // draw first line
       path = document.createElementNS(xmlns, 'path')
-      path.setAttributeNS(null, 'stroke', '#000000')
+      path.setAttributeNS(null, 'stroke', sc)
       path.setAttributeNS(null, 'stroke-width', sw)
       path.setAttributeNS(null, 'stroke-linecap', 'butt')
       path.setAttributeNS(null, 'd', 'M ' + M + ' H ' + H)
@@ -153,7 +157,7 @@ let WindBarbIcon = L.Icon.extend({
 
         // draw first line
         path = document.createElementNS(xmlns, 'path')
-        path.setAttributeNS(null, 'stroke', '#000000')
+        path.setAttributeNS(null, 'stroke', sc)
         path.setAttributeNS(null, 'stroke-width', sw)
         path.setAttributeNS(null, 'stroke-linecap', 'butt')
         path.setAttributeNS(null, 'd', 'M ' + M + ' H ' + H)
@@ -177,7 +181,7 @@ let WindBarbIcon = L.Icon.extend({
         L = ((px) - (bl5 * Math.cos(ang10))) + ',' + (cy - bh * 0.5)
 
         path = document.createElementNS(xmlns, 'path')
-        path.setAttributeNS(null, 'stroke', '#000000')
+        path.setAttributeNS(null, 'stroke', sc)
         path.setAttributeNS(null, 'stroke-width', sw)
         path.setAttributeNS(null, 'stroke-linecap', 'butt')
         path.setAttributeNS(null, 'd', 'M ' + M + ' L ' + L)
@@ -188,7 +192,7 @@ let WindBarbIcon = L.Icon.extend({
           px -= (bs)
           H = px
           path = document.createElementNS(xmlns, 'path')
-          path.setAttributeNS(null, 'stroke', '#000000')
+          path.setAttributeNS(null, 'stroke', sc)
           path.setAttributeNS(null, 'stroke-width', sw)
           path.setAttributeNS(null, 'stroke-linecap', 'butt')
           path.setAttributeNS(null, 'd', 'M ' + M + ' H ' + H)
@@ -201,7 +205,7 @@ let WindBarbIcon = L.Icon.extend({
         px -= bs
         H = px
         path = document.createElementNS(xmlns, 'path')
-        path.setAttributeNS(null, 'stroke', '#000000')
+        path.setAttributeNS(null, 'stroke', sc)
         path.setAttributeNS(null, 'stroke-width', sw)
         path.setAttributeNS(null, 'stroke-linecap', 'butt')
         path.setAttributeNS(null, 'd', 'M ' + M + ' H ' + H)
@@ -210,7 +214,7 @@ let WindBarbIcon = L.Icon.extend({
         pt -= bs
         L = pt + ',' + (cy - bh)
         path = document.createElementNS(xmlns, 'path')
-        path.setAttributeNS(null, 'stroke', '#000000')
+        path.setAttributeNS(null, 'stroke', sc)
         path.setAttributeNS(null, 'stroke-width', sw)
         path.setAttributeNS(null, 'stroke-linecap', 'butt')
         path.setAttributeNS(null, 'd', 'M ' + M + ' L ' + L)
@@ -222,7 +226,7 @@ let WindBarbIcon = L.Icon.extend({
         px -= bs
         H = px
         path = document.createElementNS(xmlns, 'path')
-        path.setAttributeNS(null, 'stroke', '#000000')
+        path.setAttributeNS(null, 'stroke', sc)
         path.setAttributeNS(null, 'stroke-width', sw)
         path.setAttributeNS(null, 'stroke-linecap', 'butt')
         path.setAttributeNS(null, 'd', 'M ' + M + ' H ' + H)
@@ -235,7 +239,7 @@ let WindBarbIcon = L.Icon.extend({
           p2 = pt + ',' + (cy - bh)
           p3 = pt + ',' + cy
           path = document.createElementNS(xmlns, 'polygon')
-          path.setAttributeNS(null, 'stroke', '#000000')
+          path.setAttributeNS(null, 'stroke', sc)
           path.setAttributeNS(null, 'stroke-width', sw)
           path.setAttributeNS(null, 'fill', '#000000')
           path.setAttributeNS(null, 'points', p1 + ' ' + p2 + ' ' + p3)
