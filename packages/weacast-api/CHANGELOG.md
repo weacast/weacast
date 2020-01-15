@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.1.1](https://github.com/weacast/weacast-api/tree/v1.1.1) (2020-01-15)
+
+[Full Changelog](https://github.com/weacast/weacast-api/compare/v1.1.0...v1.1.1)
+
+**Fixed bugs:**
+
+- Production container does not start [\#18](https://github.com/weacast/weacast-api/issues/18)
+
 ## [v1.1.0](https://github.com/weacast/weacast-api/tree/v1.1.0) (2019-12-30)
 
 [Full Changelog](https://github.com/weacast/weacast-api/compare/v1.0.1...v1.1.0)
