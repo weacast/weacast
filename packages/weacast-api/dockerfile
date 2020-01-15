@@ -24,6 +24,8 @@ RUN $JAVA_HOME/bin/java -version
 # Install GDAL
 RUN apt-get update && apt-get -y install gdal-bin
 
+WORKDIR /opt/weacast-api
+
 EXPOSE 8081
 
 CMD [ "npm", "run", "prod" ]
