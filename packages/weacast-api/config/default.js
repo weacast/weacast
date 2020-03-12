@@ -58,7 +58,8 @@ module.exports = {
     remoteServices: (service) => false,
     // When called internally from remote service do not authenticate,
     // this assumes a gateway scenario where authentication is performed externally
-    authentication: false
+    authentication: false,
+    key: 'weacast'
   },
   paginate: {
     default: 10,
