@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const ps = require('geo-pixel-stream')
+const ps = require('@kalisio/geo-pixel-stream')
 const fs = require('fs')
 const program = require('commander')
 
@@ -122,7 +122,7 @@ if (require.main === module) {
 
   var inputFile = program.args[0]
   program.precision = parseInt(program.precision)
-    
+
   var numberFormatter = function (key, value) {
     return ((program.precision >= 0) && value.toFixed) ? Number(value.toFixed(program.precision)) : value
   }

@@ -37,7 +37,7 @@
   "homepage": "https://github.com/weacast/weacast-gtiff2json",
   "dependencies": {
     "commander": "^2.9.0",
-    "geo-pixel-stream": "^0.4.0"
+    "@kalisio/geo-pixel-stream": "https://github.com/kalisio/geo-pixel-stream"
   },
   "devDependencies": {
     "chai": "^3.5.0",
