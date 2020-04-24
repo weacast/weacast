@@ -69,6 +69,12 @@ function marshallGeometryQuery (query) {
   if (typeof query.geometry === 'object') {
     // Geospatial operators begin with $
     let geoOperator = _.keys(query.geometry).find(key => key.startsWith('$'))
+    // Specific case of exist
+    if (geoOperator === '$exists') {
+      const value = query.geometry.$exists
+      query.geometry.$exists = (typeof value === 'string' ? (value === 'true' || value === '1') : value)
+      return
+    }
     geoOperator = query.geometry[geoOperator]
     _.forOwn(geoOperator, (value, key) => {
       // Geospatial parameters begin with $
@@ -91,9 +97,12 @@ export function marshallTileQuery (hook) {
   if (!params.query) params.query = {}
   let query = params.query
   // This ensure that when no geometry is specified we only access raw data
-  if (!query.geometry) {
+  if (!query.geometry && !_.has(query, 'x') && !_.has(query, 'y')) {
     query.geometry = { $exists: false }
   }
+  // If no geometry query tile x/y can be directly provided
+  if (typeof query.x === 'string') query.x = _.toNumber(query.x)
+  if (typeof query.y === 'string') query.y = _.toNumber(query.y)
 }
 
 export function marshallSpatialQuery (hook) {
