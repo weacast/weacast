@@ -16,3 +16,5 @@ before_script:
 - npm install -g codeclimate-test-reporter
 after_script:
 - codeclimate-test-reporter < coverage/lcov.info
+install:
+- travis_wait 60 yarn install
