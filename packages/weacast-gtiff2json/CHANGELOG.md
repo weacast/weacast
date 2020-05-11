@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.1.2](https://github.com/weacast/weacast-gtiff2json/tree/v1.1.2) (2020-05-11)
+
+[Full Changelog](https://github.com/weacast/weacast-gtiff2json/compare/v1.1.1...v1.1.2)
+
 ## [v1.1.1](https://github.com/weacast/weacast-gtiff2json/tree/v1.1.1) (2020-05-06)
 
 [Full Changelog](https://github.com/weacast/weacast-gtiff2json/compare/v1.1.0...v1.1.1)
