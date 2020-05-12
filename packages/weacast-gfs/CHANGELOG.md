@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.3.0](https://github.com/weacast/weacast-gfs/tree/v1.3.0) (2020-05-12)
+
+[Full Changelog](https://github.com/weacast/weacast-gfs/compare/v1.2.0...v1.3.0)
+
 ## [v1.2.0](https://github.com/weacast/weacast-gfs/tree/v1.2.0) (2019-12-30)
 
 [Full Changelog](https://github.com/weacast/weacast-gfs/compare/v1.1.1...v1.2.0)
