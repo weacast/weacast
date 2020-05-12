@@ -39,14 +39,14 @@ export default async function init () {
   let defaultProbes = app.get('defaultProbes')
   if (defaultProbes) {
     const defaultElementFilter = (forecast) => forecast.elements.map(element => element.name)
-    let probes = await probesService.find({ paginate: false, query: { $select: ['_id', 'name'] } })
+    let probes = await probesService.find({ paginate: false, query: { $select: ['_id', 'name', 'forecast'] } })
     for (let defaultProbe of defaultProbes) {
       const probeName = path.parse(defaultProbe.fileName).name
-      let createdProbe = probes.find(probe => probe.name === probeName)
-      if (!createdProbe) {
-        // One probe for each forecast model and elements except if custom filter provided
-        const elementFilter = defaultProbe.filter || defaultElementFilter
-        for (let forecast of app.get('forecasts')) {
+      for (let forecast of app.get('forecasts')) {
+        let createdProbe = probes.find(probe => (probe.name === probeName) && (probe.forecast === forecast.name))
+        if (!createdProbe) {
+          // One probe for each forecast model and elements except if custom filter provided
+          const elementFilter = defaultProbe.filter || defaultElementFilter
           logger.info('Initializing default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name)
           let options = Object.assign({
             name: probeName,
