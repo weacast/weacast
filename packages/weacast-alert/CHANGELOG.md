@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.2.0](https://github.com/weacast/weacast-alert/tree/v1.2.0) (2020-05-12)
+
+[Full Changelog](https://github.com/weacast/weacast-alert/compare/v1.1.0...v1.2.0)
+
 ## [v1.1.0](https://github.com/weacast/weacast-alert/tree/v1.1.0) (2019-12-30)
 
 [Full Changelog](https://github.com/weacast/weacast-alert/compare/v1.0.0...v1.1.0)
