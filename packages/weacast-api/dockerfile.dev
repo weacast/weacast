@@ -1,4 +1,4 @@
-FROM  node:8-buster AS Build
+FROM  node:12-buster AS Build
 
 WORKDIR /opt/kalisio-modules
 
@@ -19,7 +19,7 @@ COPY . /opt/weacast-api
 RUN yarn install
 RUN npm run compile
 
-FROM  node:8-buster-slim
+FROM  node:12-buster-slim
 
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
 
