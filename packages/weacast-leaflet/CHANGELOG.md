@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.2.0](https://github.com/weacast/weacast-leaflet/tree/v1.2.0) (2020-05-12)
+
+[Full Changelog](https://github.com/weacast/weacast-leaflet/compare/v1.1.0...v1.2.0)
+
+**Implemented enhancements:**
+
+- Make stroke color configurable fo windbarbs [\#13](https://github.com/weacast/weacast-leaflet/issues/13)
+
 ## [v1.1.0](https://github.com/weacast/weacast-leaflet/tree/v1.1.0) (2019-12-30)
 
 [Full Changelog](https://github.com/weacast/weacast-leaflet/compare/v1.0.0...v1.1.0)
