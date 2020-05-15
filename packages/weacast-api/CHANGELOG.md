@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.2.1](https://github.com/weacast/weacast-api/tree/v1.2.1) (2020-05-15)
+
+[Full Changelog](https://github.com/weacast/weacast-api/compare/v1.2.0...v1.2.1)
+
+**Fixed bugs:**
+
+- Missing curl to perform Docker healthcheck [\#20](https://github.com/weacast/weacast-api/issues/20)
+
 ## [v1.2.0](https://github.com/weacast/weacast-api/tree/v1.2.0) (2020-05-13)
 
 [Full Changelog](https://github.com/weacast/weacast-api/compare/v1.1.1...v1.2.0)
