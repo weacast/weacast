@@ -23,6 +23,8 @@ RUN $JAVA_HOME/bin/java -version
 
 # Install GDAL
 RUN apt-get update && apt-get -y install gdal-bin
+# Install curl for healthcheck
+RUN apt-get -y install curl
 
 WORKDIR /opt/weacast-api
 
