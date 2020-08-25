@@ -144,6 +144,28 @@ export function marshallSpatialQuery (hook) {
         }
       }
     }
+    // Shortcut for bbox query
+    if (!_.isNil(query.south) && !_.isNil(query.north) && !_.isNil(query.west) && !_.isNil(query.east)) {
+      const south = _.toNumber(query.south)
+      const north = _.toNumber(query.north)
+      const west = _.toNumber(query.west)
+      const east = _.toNumber(query.east)
+      // Transform to MongoDB spatial request
+      delete query.south
+      delete query.north
+      delete query.west
+      delete query.east
+      query.geometry = {
+        $geoIntersects: {
+          $geometry: {
+            type: 'Polygon',
+            coordinates: [ // BBox as a polygon
+              [[west, south], [east, south], [east, north], [west, north], [west, south]] // Closing point
+            ]
+          }
+        }
+      }
+    }
   }
 }
 

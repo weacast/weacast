@@ -42,6 +42,23 @@ describe('weacast-core:hooks', () => {
     expect(hook.params.query.geometry.$near.$maxDistance).to.equal(1000.5)
   })
 
+  it('manage shortcuts for geometry queries', () => {
+    let hook = { type: 'before', params: { query: { centerLon: '56', centerLat: '0.3', distance: '1000.50' } } }
+    hooks.marshallSpatialQuery(hook)
+    expect(typeof hook.params.query.geometry.$near.$geometry.coordinates[0]).to.equal('number')
+    expect(typeof hook.params.query.geometry.$near.$geometry.coordinates[1]).to.equal('number')
+    expect(hook.params.query.geometry.$near.$geometry.coordinates[0]).to.equal(56)
+    expect(hook.params.query.geometry.$near.$geometry.coordinates[1]).to.equal(0.3)
+    expect(typeof hook.params.query.geometry.$near.$maxDistance).to.equal('number')
+    expect(hook.params.query.geometry.$near.$maxDistance).to.equal(1000.5)
+    hook = { type: 'before', params: { query: { south: '44', north: '45', west: '0', east: '1' } } }
+    hooks.marshallSpatialQuery(hook)
+    expect(Array.isArray(hook.params.query.geometry.$geoIntersects.$geometry.coordinates[0])).beTrue()
+    expect(hook.params.query.geometry.$geoIntersects.$geometry.coordinates[0]).to.deep.equal([[0, 44], [1, 44], [1, 45], [0, 45], [0, 44]])
+    expect(typeof hook.params.query.geometry.$geoIntersects.$geometry.type).to.equal('string')
+    expect(hook.params.query.geometry.$geoIntersects.$geometry.type).to.equal('Polygon')
+  })
+
   // Cleanup
   after(async () => {
   })
