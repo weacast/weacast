@@ -1,4 +1,4 @@
-import mongodb from 'mongodb'
+import { MongoClient } from 'mongodb'
 import _ from 'lodash'
 import logger from 'winston'
 import makeDebug from 'debug'
@@ -52,19 +52,33 @@ export class MongoDatabase extends Database {
     }
   }
 
+  connectionDb (url) {
+    // Extract database name from url. Need to remove the connections options if any
+    let dbName
+    const indexOfDBName = url.lastIndexOf('/') + 1
+    const indexOfOptions = url.indexOf('?')
+    if (indexOfOptions === -1) dbName = url.substring(indexOfDBName)
+    else dbName = url.substring(indexOfDBName, indexOfOptions)
+    
+    return dbName
+  }
+
   async connect () {
     try {
       // Connect to primary
-      this._db = await mongodb.connect(this._dbUrl)
+      this._client = await MongoClient.connect(this._dbUrl)
+      this._db = await this._client.db(this.connectionDb(this._dbUrl))
       debug('Connected to primary DB ' + this.adapter)
       // Then secondaries if any
+      this._clients = {}
       this._dbs = {}
       if (this._secondaries) {
         const dbNames = _.keys(this._secondaries)
         for (let i = 0; i < dbNames.length; i++) {
           const dbName = dbNames[i]
           const dbUrl = this._secondaries[dbName]
-          this._dbs[dbName] = await mongodb.connect(dbUrl)
+          this._clients[dbName] = await MongoClient.connect(dbUrl)
+          this._dbs[dbName] = await this._clients[dbName].db(this.connectionDb(dbUrl))
         }
         debug('Connected to secondaries DB ' + this.adapter)
       }
@@ -77,14 +91,16 @@ export class MongoDatabase extends Database {
 
   async disconnect () {
     try {
-      await this._db.close()
+      await this._client.close()
       debug('Disconnected from primary DB ' + this.adapter)
+      this._client = null
       this._db = null
       if (this._secondaries) {
-        const dbs = _.values(this._dbs)
-        for (let i = 0; i < dbs.length; i++) {
-          await dbs[i].close()
+        const clients = _.values(this._clients)
+        for (let i = 0; i < clients.length; i++) {
+          await clients[i].close()
         }
+        this._clients = {}
         this._dbs = {}
         debug('Disconnected from secondaries DB ' + this.adapter)
       }
