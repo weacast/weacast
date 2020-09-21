@@ -1,5 +1,14 @@
 # Changelog
 
+## [v1.4.0](https://github.com/weacast/weacast-probe/tree/v1.4.0) (2020-09-21)
+
+[Full Changelog](https://github.com/weacast/weacast-probe/compare/v1.3.0...v1.4.0)
+
+**Merged pull requests:**
+
+- Bump extend from 3.0.1 to 3.0.2 [\#26](https://github.com/weacast/weacast-probe/pull/26) ([dependabot[bot]](https://github.com/apps/dependabot))
+- \[Security\] Bump moment from 2.18.1 to 2.26.0 [\#23](https://github.com/weacast/weacast-probe/pull/23) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+
 ## [v1.3.0](https://github.com/weacast/weacast-probe/tree/v1.3.0) (2020-05-12)
 
 [Full Changelog](https://github.com/weacast/weacast-probe/compare/v1.2.0...v1.3.0)
