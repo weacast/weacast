@@ -1,5 +1,17 @@
 # Changelog
 
+## [v1.4.0](https://github.com/weacast/weacast-core/tree/v1.4.0) (2020-09-21)
+
+[Full Changelog](https://github.com/weacast/weacast-core/compare/v1.3.0...v1.4.0)
+
+**Implemented enhancements:**
+
+- Upgrade Mongo DB driver to v3 [\#15](https://github.com/weacast/weacast-core/issues/15)
+
+**Merged pull requests:**
+
+- \[Security\] Bump moment from 2.18.1 to 2.26.0 [\#20](https://github.com/weacast/weacast-core/pull/20) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+
 ## [v1.3.0](https://github.com/weacast/weacast-core/tree/v1.3.0) (2020-05-12)
 
 [Full Changelog](https://github.com/weacast/weacast-core/compare/v1.2.1...v1.3.0)
