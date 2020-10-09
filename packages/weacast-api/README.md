@@ -5,7 +5,6 @@
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-api/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-api/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-api.svg?style=flat-square)](https://david-dm.org/weacast/weacast-api)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
-[![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-api/badge.svg)](https://snyk.io/test/github/weacast/weacast-api)
 [![Download Status](https://img.shields.io/npm/dm/weacast-api.svg?style=flat-square)](https://www.npmjs.com/package/weacast-api)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api?ref=badge_shield)
 
