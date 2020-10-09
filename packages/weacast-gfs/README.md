@@ -5,7 +5,6 @@
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-gfs/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-gfs/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-gfs.svg?style=flat-square)](https://david-dm.org/weacast/weacast-gfs)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
-[![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-gfs/badge.svg)](https://snyk.io/test/github/weacast/weacast-gfs)
 [![Download Status](https://img.shields.io/npm/dm/weacast-gfs.svg?style=flat-square)](https://www.npmjs.com/package/weacast-gfs)
 
 > GFS weather forecast model plugin for Weacast
