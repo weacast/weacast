@@ -5,7 +5,6 @@
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-alert/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-alert/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-alert.svg?style=flat-square)](https://david-dm.org/weacast/weacast-alert)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
-[![Known Vulnerabilities](https://snyk.io/test/github/weacast/weacast-alert/badge.svg)](https://snyk.io/test/github/weacast/weacast-alert)
 [![Download Status](https://img.shields.io/npm/dm/weacast-alert.svg?style=flat-square)](https://www.npmjs.com/package/weacast-alert)
 
 > Forecast alert plugin for Weacast
