@@ -1,6 +1,6 @@
 # weacast-api
 
-[![Build Status](https://travis-ci.org/weacast/weacast-api.png?branch=master)](https://travis-ci.org/weacast/weacast-api)
+[![Build Status](https://travis-ci.com/weacast/weacast-api.png?branch=master)](https://travis-ci.com/weacast/weacast-api)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-api/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-api)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-api/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-api/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-api.svg?style=flat-square)](https://david-dm.org/weacast/weacast-api)
