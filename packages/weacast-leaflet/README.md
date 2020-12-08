@@ -1,6 +1,6 @@
 # weacast-leaflet
 
-[![Build Status](https://travis-ci.org/weacast/weacast-leaflet.png?branch=master)](https://travis-ci.org/weacast/weacast-leaflet)
+[![Build Status](https://travis-ci.com/weacast/weacast-leaflet.png?branch=master)](https://travis-ci.com/weacast/weacast-leaflet)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-leaflet/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-leaflet)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-leaflet/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-leaflet/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-leaflet.svg?style=flat-square)](https://david-dm.org/weacast/weacast-leaflet)
