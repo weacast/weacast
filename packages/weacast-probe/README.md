@@ -1,6 +1,6 @@
 # weacast-probe
 
-[![Build Status](https://travis-ci.org/weacast/weacast-probe.png?branch=master)](https://travis-ci.org/weacast/weacast-probe)
+[![Build Status](https://travis-ci.com/weacast/weacast-probe.png?branch=master)](https://travis-ci.com/weacast/weacast-probe)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-probe/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-probe)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-probe/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-probe/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-probe.svg?style=flat-square)](https://david-dm.org/weacast/weacast-probe)
