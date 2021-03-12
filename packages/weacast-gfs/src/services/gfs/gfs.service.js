@@ -69,7 +69,7 @@ export default {
   // Build the request options to download given forecast time from input WCS data source
   getForecastTimeRequest (runTime, forecastTime) {
     // Directories are organized by run time
-    let subDirectory = '/gfs.' + runTime.format('YYYYMMDD/HH')
+    let subDirectory = '/gfs.' + runTime.format('YYYYMMDD/HH') + '/atmos'
     // Then we need to target the right file for forecast time
     // Get offset from run time
     let hours = forecastTime.diff(runTime, 'hours')
