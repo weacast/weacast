@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.5.0](https://github.com/weacast/weacast-gfs/tree/v1.5.0) (2021-04-07)
+
+[Full Changelog](https://github.com/weacast/weacast-gfs/compare/v1.4.0...v1.5.0)
+
+**Implemented enhancements:**
+
+- Support GFS v16 [\#11](https://github.com/weacast/weacast-gfs/issues/11)
+
 ## [v1.4.0](https://github.com/weacast/weacast-gfs/tree/v1.4.0) (2020-09-21)
 
 [Full Changelog](https://github.com/weacast/weacast-gfs/compare/v1.3.0...v1.4.0)
