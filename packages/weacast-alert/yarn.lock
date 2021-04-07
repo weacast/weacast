@@ -4207,7 +4207,6 @@ passport-oauth2@1.x.x, passport-oauth2@^1.4.0:
 
 "passport-openidconnect@https://github.com/kalisio/passport-openidconnect":
   version "0.0.2"
-  uid "82d9f0653334a0538b2c3dc2a8119eefc2eca237"
   resolved "https://github.com/kalisio/passport-openidconnect#82d9f0653334a0538b2c3dc2a8119eefc2eca237"
   dependencies:
     oauth "0.9.x"
@@ -5495,10 +5494,10 @@ weacast-core@^1.4.0:
     winston "^2.3.1"
     winston-daily-rotate-file "^1.7.2"
 
-weacast-gfs@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/weacast-gfs/-/weacast-gfs-1.4.0.tgz#9361aa51391742b97cb479684292dfc841466bb8"
-  integrity sha512-pXO1fGDChLdxUxM1dwPeUt5/7rfCbfi0fYWDMfaGufNkLIMYGvwKj+ojzC2wbsOj5aUbCIk75pvl8u2JdrDlNw==
+weacast-gfs@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/weacast-gfs/-/weacast-gfs-1.5.0.tgz#536f06437cf35ebd1bf5e47d7424345a0df00a52"
+  integrity sha512-qjjZOZ6BRoTHGoN5v16gd+MPVRqpE1Xiax2j33k7/BgkQlg8Q3VJPqrvOCObfFHx3mB1hiA3eRi0dNb71IqnRw==
   dependencies:
     "@feathersjs/errors" "^3.3.6"
     debug "^3.1.0"
