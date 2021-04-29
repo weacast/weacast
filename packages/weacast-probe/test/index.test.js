@@ -261,6 +261,33 @@ describe('weacast-probe', () => {
     })
     // No feature except the target one should be covered
     expect(features.length).to.equal(1)
+    geometry.$near.$maxDistance = 10000 // 10 Kms around
+    // Check as well using shortcut
+    features = await probeResultService.find({
+      paginate: false,
+      query: {
+        probeId,
+        longitude: geometry.$near.$geometry.coordinates[0],
+        latitude: geometry.$near.$geometry.coordinates[1],
+        distance: geometry.$near.$maxDistance,
+        forecastTime: firstForecastTime
+      }
+    })
+    // All features should be covered
+    expect(features.length).to.equal(3)
+    geometry.$near.$maxDistance = 1 // 1 meter around
+    features = await probeResultService.find({
+      paginate: false,
+      query: {
+        probeId,
+        longitude: geometry.$near.$geometry.coordinates[0],
+        latitude: geometry.$near.$geometry.coordinates[1],
+        distance: geometry.$near.$maxDistance,
+        forecastTime: firstForecastTime
+      }
+    })
+    // No feature except the target one should be covered
+    expect(features.length).to.equal(1)
   })
 
   it('performs element value filtering on probe results', async () => {
