@@ -40,17 +40,28 @@ describe('weacast-core:hooks', () => {
     expect(hook.params.query.geometry.$near.$geometry.coordinates[1]).to.equal(0.3)
     expect(typeof hook.params.query.geometry.$near.$maxDistance).to.equal('number')
     expect(hook.params.query.geometry.$near.$maxDistance).to.equal(1000.5)
+
+    hook.params.query.geometry = { $geoWithin: {
+      $centerSphere: [['56', '0.3'], (1000.50 / 6378137.0).toString()] // Earth radius as in radians
+    } }
+    hooks.marshallSpatialQuery(hook)
+    expect(typeof hook.params.query.geometry.$geoWithin.$centerSphere[0][0]).to.equal('number')
+    expect(typeof hook.params.query.geometry.$geoWithin.$centerSphere[0][1]).to.equal('number')
+    expect(hook.params.query.geometry.$geoWithin.$centerSphere[0][0]).to.equal(56)
+    expect(hook.params.query.geometry.$geoWithin.$centerSphere[0][1]).to.equal(0.3)
+    expect(typeof hook.params.query.geometry.$geoWithin.$centerSphere[1]).to.equal('number')
+    expect(hook.params.query.geometry.$geoWithin.$centerSphere[1]).to.equal(1000.50 / 6378137.0)
   })
 
   it('manage shortcuts for geometry queries', () => {
     let hook = { type: 'before', params: { query: { centerLon: '56', centerLat: '0.3', distance: '1000.50' } } }
     hooks.marshallSpatialQuery(hook)
-    expect(typeof hook.params.query.geometry.$near.$geometry.coordinates[0]).to.equal('number')
-    expect(typeof hook.params.query.geometry.$near.$geometry.coordinates[1]).to.equal('number')
-    expect(hook.params.query.geometry.$near.$geometry.coordinates[0]).to.equal(56)
-    expect(hook.params.query.geometry.$near.$geometry.coordinates[1]).to.equal(0.3)
-    expect(typeof hook.params.query.geometry.$near.$maxDistance).to.equal('number')
-    expect(hook.params.query.geometry.$near.$maxDistance).to.equal(1000.5)
+    expect(typeof hook.params.query.geometry.$geoWithin.$centerSphere[0][0]).to.equal('number')
+    expect(typeof hook.params.query.geometry.$geoWithin.$centerSphere[0][1]).to.equal('number')
+    expect(hook.params.query.geometry.$geoWithin.$centerSphere[0][0]).to.equal(56)
+    expect(hook.params.query.geometry.$geoWithin.$centerSphere[0][1]).to.equal(0.3)
+    expect(typeof hook.params.query.geometry.$geoWithin.$centerSphere[1]).to.equal('number')
+    expect(hook.params.query.geometry.$geoWithin.$centerSphere[1]).to.equal(1000.5 / 6378137.0) // Earth radius as in radians
     hook = { type: 'before', params: { query: { south: '44', north: '45', west: '0', east: '1' } } }
     hooks.marshallSpatialQuery(hook)
     expect(Array.isArray(hook.params.query.geometry.$geoIntersects.$geometry.coordinates[0])).beTrue()

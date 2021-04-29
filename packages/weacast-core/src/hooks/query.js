@@ -136,21 +136,31 @@ export function marshallSpatialQuery (hook) {
       delete query.dLon
     }
     // Shortcut for proximity query
-    if (!_.isNil(query.centerLon) && !_.isNil(query.centerLat) && !_.isNil(query.distance)) {
-      let lon = _.toNumber(query.centerLon)
-      let lat = _.toNumber(query.centerLat)
-      let d = _.toNumber(query.distance)
+    if ((!_.isNil(query.centerLon) || !_.isNil(query.longitude)) &&
+        (!_.isNil(query.centerLat) || !_.isNil(query.latitude)) && !_.isNil(query.distance)) {
+      const longitude = (_.isNil(query.centerLon) ? _.toNumber(query.longitude) : _.toNumber(query.centerLon))
+      const latitude = (_.isNil(query.centerLat) ? _.toNumber(query.latitude) : _.toNumber(query.centerLat))
+      const distance = _.toNumber(query.distance)
       // Transform to MongoDB spatial request
       delete query.centerLon
+      delete query.longitude
       delete query.centerLat
+      delete query.latitude
       delete query.distance
+      /* We switched from $near to $geoWithin due to https://github.com/weacast/weacast-core/issues/36
       query.geometry = {
         $near: {
           $geometry: {
-            type: 'Point',
-            coordinates: [lon, lat]
-          },
-          $maxDistance: d
+              type: 'Point',
+              coordinates: [longitude, latitude]
+            },
+            $maxDistance: distance
+        }
+      }
+      */
+      query.geometry = {
+        $geoWithin: {
+          $centerSphere: [[longitude, latitude], distance / 6378137.0] // Earth radius as in radians
         }
       }
     }
