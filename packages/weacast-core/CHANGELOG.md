@@ -1,5 +1,23 @@
 # Changelog
 
+## [v1.4.1](https://github.com/weacast/weacast-core/tree/v1.4.1) (2021-04-29)
+
+[Full Changelog](https://github.com/weacast/weacast-core/compare/v1.4.0...v1.4.1)
+
+**Fixed bugs:**
+
+- $geoNear, $near, and $nearSphere are not allowed in this context [\#36](https://github.com/weacast/weacast-core/issues/36)
+- Upper limit exceeded for elements with a oldest run interval [\#32](https://github.com/weacast/weacast-core/issues/32)
+- Complex forecast data requests do not work in HTTP mode [\#27](https://github.com/weacast/weacast-core/issues/27)
+
+**Merged pull requests:**
+
+- Bump y18n from 4.0.0 to 4.0.1 [\#35](https://github.com/weacast/weacast-core/pull/35) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ini from 1.3.4 to 1.3.7 [\#33](https://github.com/weacast/weacast-core/pull/33) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump lodash from 4.17.4 to 4.17.20 [\#31](https://github.com/weacast/weacast-core/pull/31) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump lodash.merge from 4.6.0 to 4.6.2 [\#30](https://github.com/weacast/weacast-core/pull/30) ([dependabot[bot]](https://github.com/apps/dependabot))
+- \[Security\] Bump fstream from 1.0.11 to 1.0.12 [\#24](https://github.com/weacast/weacast-core/pull/24) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+
 ## [v1.4.0](https://github.com/weacast/weacast-core/tree/v1.4.0) (2020-09-21)
 
 [Full Changelog](https://github.com/weacast/weacast-core/compare/v1.3.0...v1.4.0)
