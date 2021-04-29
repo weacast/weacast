@@ -65,6 +65,16 @@ export function marshallQuery (hook) {
   }
 }
 
+function coordinatesToNumbers(value) {
+  if (typeof value === 'string') {
+    return _.toNumber(value)
+  } else if (Array.isArray(value)) {
+    return value.map(item => coordinatesToNumbers(item))
+  } else {
+    return value
+  }
+}
+
 function marshallGeometryQuery (query) {
   if (typeof query.geometry === 'object') {
     // Geospatial operators begin with $
@@ -80,11 +90,11 @@ function marshallGeometryQuery (query) {
       // Geospatial parameters begin with $
       if (key.startsWith('$')) {
         // Some target coordinates
-        if (!_.isNil(value.coordinates) && (value.coordinates.length > 0) && (typeof value.coordinates[0] === 'string')) {
-          value.coordinates = value.coordinates.map(coordinate => _.toNumber(coordinate))
-        } else if (typeof value === 'string') {
-          // Other simple values
-          geoOperator[key] = _.toNumber(value)
+        if (!_.isNil(value.coordinates)) {
+          value.coordinates = coordinatesToNumbers(value.coordinates)
+        } else {
+          // Other simple values or array of values
+          geoOperator[key] = coordinatesToNumbers(value)
         }
       }
     })
