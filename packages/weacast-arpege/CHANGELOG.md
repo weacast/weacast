@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.4.1](https://github.com/weacast/weacast-arpege/tree/v1.4.1) (2021-04-29)
+
+[Full Changelog](https://github.com/weacast/weacast-arpege/compare/v1.4.0...v1.4.1)
+
 ## [v1.4.0](https://github.com/weacast/weacast-arpege/tree/v1.4.0) (2020-09-21)
 
 [Full Changelog](https://github.com/weacast/weacast-arpege/compare/v1.3.0...v1.4.0)
