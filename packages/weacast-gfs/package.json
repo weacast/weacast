@@ -1,7 +1,7 @@
 {
   "name": "weacast-gfs",
   "description": "GFS weather forecast model plugin for Weacast",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "homepage": "https://github.com/weacast/weacast-gfs",
   "main": "lib/",
   "keywords": [
