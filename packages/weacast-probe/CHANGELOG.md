@@ -1,5 +1,20 @@
 # Changelog
 
+## [v1.4.1](https://github.com/weacast/weacast-probe/tree/v1.4.1) (2021-04-29)
+
+[Full Changelog](https://github.com/weacast/weacast-probe/compare/v1.4.0...v1.4.1)
+
+**Merged pull requests:**
+
+- Bump y18n from 4.0.0 to 4.0.1 [\#42](https://github.com/weacast/weacast-probe/pull/42) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ini from 1.3.5 to 1.3.7 [\#39](https://github.com/weacast/weacast-probe/pull/39) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump tar from 2.2.1 to 2.2.2 [\#38](https://github.com/weacast/weacast-probe/pull/38) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump lodash from 4.17.4 to 4.17.19 [\#34](https://github.com/weacast/weacast-probe/pull/34) ([dependabot[bot]](https://github.com/apps/dependabot))
+- \[Security\] Bump stringstream from 0.0.5 to 0.0.6 [\#32](https://github.com/weacast/weacast-probe/pull/32) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+- \[Security\] Bump bson from 1.0.4 to 1.0.9 [\#31](https://github.com/weacast/weacast-probe/pull/31) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+- \[Security\] Bump tough-cookie from 2.3.2 to 2.3.4 [\#30](https://github.com/weacast/weacast-probe/pull/30) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+- Bump lodash.merge from 4.6.1 to 4.6.2 [\#24](https://github.com/weacast/weacast-probe/pull/24) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v1.4.0](https://github.com/weacast/weacast-probe/tree/v1.4.0) (2020-09-21)
 
 [Full Changelog](https://github.com/weacast/weacast-probe/compare/v1.3.0...v1.4.0)
