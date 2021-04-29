@@ -90,6 +90,10 @@ describe('weacast-alert', () => {
       uService.updateForecastData(),
       vService.updateForecastData()
     ])
+    /*
+    let results = await probeResultService.find({ paginate: false, query: {} })
+    expect(results.length).to.equal(4)
+    */
   })
   // Let enough time to download a couple of data
   .timeout(60000)
@@ -209,7 +213,7 @@ describe('weacast-alert', () => {
           $geoWithin: {
             // 1 meter around so that no feature except the target one should be covered, convert approximately in radians,
             // see https://docs.mongodb.com/manual/tutorial/calculate-distances-using-spherical-geometry-with-2d-geospatial-indexes/
-            $centerSphere: [ geojson.features[0].geometry.coordinates, 1.0 / 3963.2 ]
+            $centerSphere: [ geojson.features[0].geometry.coordinates, 1.0 / 6378137.0 ]
           }
         },
         windSpeed: { $gte: 0 } // Set a large range so that we are sure it will trigger
