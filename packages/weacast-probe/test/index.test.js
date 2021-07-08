@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs-extra'
+import _ from 'lodash'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
 import spies from 'chai-spies'
@@ -139,6 +140,45 @@ describe('weacast-probe', () => {
     expect(typeof feature.properties['v-wind'][0]).to.equal('number')
     expect(typeof feature.properties['u-wind'][1]).to.equal('number')
     expect(typeof feature.properties['v-wind'][1]).to.equal('number')
+  })
+  // Let enough time to process
+  .timeout(10000)
+
+  it('performs probing single element on-demand at specific location for forecast time range', async () => {
+    const geometry = {
+      type: 'Point',
+      coordinates: [ 1.5, 43 ]
+    }
+    const query = {
+      forecastTime: {
+        $gte: firstForecastTime,
+        $lte: nextForecastTime
+      },
+      geometry: {
+        $geoIntersects: {
+          $geometry: geometry
+        }
+      }
+    }
+
+    const data = await probeService.create(Object.assign({ elements: ['u-wind'] }, _.omit(probeOptions, ['elements'])), { query })
+    expect(data.features.length).to.equal(1)
+    const feature = data.features[0]
+    expect(spyProbe).to.have.been.called()
+    expect(spyUpdate).not.to.have.been.called()
+    // This will insure spies are properly reset before jumping to next test due to async ops
+    spyProbe.reset()
+    spyUpdate.reset()
+    expect(feature.forecastTime).toExist()
+    expect(feature.forecastTime['u-wind']).toExist()
+    expect(feature.forecastTime['v-wind']).beUndefined()
+    expect(feature.forecastTime['u-wind'].length).to.equal(2)
+    expect(feature.forecastTime['u-wind'][0].isBefore(feature.forecastTime['u-wind'][1])).beTrue()
+    expect(feature.properties['u-wind']).toExist()
+    expect(feature.properties['v-wind']).beUndefined()
+    expect(feature.properties['u-wind'].length).to.equal(2)
+    expect(typeof feature.properties['u-wind'][0]).to.equal('number')
+    expect(typeof feature.properties['u-wind'][1]).to.equal('number')
   })
   // Let enough time to process
   .timeout(10000)
