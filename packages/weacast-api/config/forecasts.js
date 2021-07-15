@@ -225,7 +225,7 @@ let arpege01 = {
   description: 'Europe',
   attribution: 'Forecast data from <a href="http://www.meteofrance.com">Météo-France</a>',
   model: 'arpege',
-  token: '__qEMDoIC2ogPRlSoRQLGUBOomaxJyxdEd__',
+  token: process.env.METEO_FRANCE_TOKEN || '__qEMDoIC2ogPRlSoRQLGUBOomaxJyxdEd__',
   wcsBaseUrl: 'https://geoservices.meteofrance.fr/services/MF-NWP-GLOBAL-ARPEGE-01-EUROPE-WCS?SERVICE=WCS&version=2.0.1',
   bounds: [-32, 20, 42, 72],
   origin: [-32, 72],
