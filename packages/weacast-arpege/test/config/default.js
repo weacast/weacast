@@ -37,12 +37,12 @@ module.exports = {
   forecasts: [
     {
       name: 'arpege-world',
-      label: 'ARPEGE - 0.5°',
+      label: 'ARPEGE - 0.25°',
       description: 'World-wide',
       attribution: 'Forecast data from <a href="http://www.meteofrance.com">Météo-France</a>',
       model: 'arpege',
-      token: '__qEMDoIC2ogPRlSoRQLGUBOomaxJyxdEd__',
-      wcsBaseUrl: 'https://geoservices.meteofrance.fr/services/MF-NWP-GLOBAL-ARPEGE-025-GLOBE-WCS?SERVICE=WCS&version=2.0.1',
+      token: process.env.METEO_FRANCE_TOKEN,
+      wcsBaseUrl: 'https://public-api.meteofrance.fr/public/arpege/1.0/wcs/MF-NWP-GLOBAL-ARPEGE-025-GLOBE-WCS/GetCoverage?service=WCS&version=2.0.1',
       bounds: [0, -90, 360, 90],
       origin: [0, 90],
       size: [1440, 721],
