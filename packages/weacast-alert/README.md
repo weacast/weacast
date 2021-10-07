@@ -1,6 +1,6 @@
 # weacast-alert
 
-[![Build Status](https://travis-ci.com/weacast/weacast-alert.png?branch=master)](https://travis-ci.com/weacast/weacast-alert)
+[![Build Status](https://app.travis-ci.com/weacast/weacast-alert.svg?branch=master)](https://app.travis-ci.com/weacast/weacast-alert)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-alert/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-alert)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-alert/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-alert/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-alert.svg?style=flat-square)](https://david-dm.org/weacast/weacast-alert)
