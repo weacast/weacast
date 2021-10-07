@@ -1,6 +1,6 @@
 # weacast-core
 
-[![Build Status](https://travis-ci.com/weacast/weacast-core.png?branch=master)](https://travis-ci.com/weacast/weacast-core)
+[![Build Status](https://app.travis-ci.com/weacast/weacast-core.svg?branch=master)](https://app.travis-ci.com/weacast/weacast-core)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-core/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-core)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast-core/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-core/coverage)
 [![Dependency Status](https://img.shields.io/david/weacast/weacast-core.svg?style=flat-square)](https://david-dm.org/weacast/weacast-core)
