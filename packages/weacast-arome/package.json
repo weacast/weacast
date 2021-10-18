@@ -46,7 +46,7 @@
     "lib": "lib"
   },
   "dependencies": {
-    "weacast-arpege": "^1.4.1",
+    "weacast-arpege": "^1.5.0",
     "weacast-core": "^1.4.1"
   },
   "devDependencies": {

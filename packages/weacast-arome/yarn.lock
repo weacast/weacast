@@ -4324,9 +4324,9 @@ passport-oauth2@1.x.x, passport-oauth2@^1.4.0:
     uid2 "0.0.x"
     utils-merge "1.x.x"
 
-"passport-openidconnect@git+https://github.com/kalisio/passport-openidconnect.git":
+"passport-openidconnect@https://github.com/kalisio/passport-openidconnect":
   version "0.0.2"
-  resolved "git+https://github.com/kalisio/passport-openidconnect.git#82d9f0653334a0538b2c3dc2a8119eefc2eca237"
+  resolved "https://github.com/kalisio/passport-openidconnect#82d9f0653334a0538b2c3dc2a8119eefc2eca237"
   dependencies:
     oauth "0.9.x"
     passport-strategy "1.x.x"
@@ -5603,10 +5603,10 @@ verror@1.3.6:
   dependencies:
     extsprintf "1.0.2"
 
-weacast-arpege@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/weacast-arpege/-/weacast-arpege-1.4.1.tgz#313e031e6a988f5736a3c00a008e3908ec35f422"
-  integrity sha512-526hfpOoS+RXyXHFeIw8C8UXzDWNWqYdhNvmqcUgCLWpE68ZOMN3Siuq7vAGngQwHVJr2MJb2mpTFvdZLCWeCQ==
+weacast-arpege@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/weacast-arpege/-/weacast-arpege-1.5.0.tgz#9b3018fe545bb4f47757b28e7936e767a912afd2"
+  integrity sha512-4FvlHLDXXIzCOHEQ8qaq/uJUgAQOEvzFsCM3M1wPbOLQVVA4LJyeYajha3iyDCA9KSNGmjMbYdoqDcSLzhBPnQ==
   dependencies:
     debug "^3.1.0"
     fs-extra "^4.0.2"
