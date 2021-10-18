@@ -45,11 +45,14 @@ describe('weacast-api', () => {
     }, 2500)
   })
   // Let enough time to process
-  .timeout(5000)
+  .timeout(10000)
 
   // Cleanup
-  after(async () => {
+  after(async function () {
+    // Let enough time to process
+    this.timeout(5000)
     await server.app.db.db().dropDatabase()
     fs.emptyDirSync(path.join(__dirname, 'logs'))
+    await server.app.db.disconnect()
   })
 })
