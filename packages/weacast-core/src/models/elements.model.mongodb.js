@@ -4,7 +4,7 @@ module.exports = function (forecast, element, app, options) {
   // however it is still potentially valid at least until we reach the next forecast
   // Nota : adding a unique constraint on the field causes TTL not to work
   options.Model.createIndex({ forecastTime: 1 },
-    { expireAfterSeconds: element.interval || element.ttl || forecast.interval || forecast.ttl })
+    { expireAfterSeconds: element.ttl || element.interval || forecast.ttl || forecast.interval })
   // To perform geo queries on tiles
   options.Model.createIndex({ geometry: '2dsphere' })
   // To perform $exists requests
