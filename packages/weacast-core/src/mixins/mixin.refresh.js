@@ -101,8 +101,8 @@ export default {
   },
 
   async updateForecastTimeInDatabase (forecast, previousForecast) {
-    // Test if we have to remove existing data first
-    if (previousForecast) {
+    // Test if we have to remove existing data first, except if keeping all run times
+    if (previousForecast && !this.forecast.keepPastRuns) {
       await this.remove(null, {
         query: {
           forecastTime: forecast.forecastTime,
@@ -138,8 +138,8 @@ export default {
                       _.pick(forecast, ['runTime', 'forecastTime']),
                       { timeseries: false }) // Tag this is not an aggregated tile
       )
-      // Test if we have to remove existing data first
-      if (previousForecast) {
+      // Test if we have to remove existing data first, except if keeping all run times
+      if (previousForecast && !this.forecast.keepPastRuns) {
         await this.remove(null, {
           query: {
             forecastTime: forecast.forecastTime,
@@ -201,11 +201,15 @@ export default {
 
   async refreshForecastTime (datetime, runTime, forecastTime) {
     // Retrieve last available forecast if any
+    let query = {
+      $select: ['_id', 'runTime', 'forecastTime'], // We only need object ID
+      forecastTime
+    }
+    if (this.forecast.keepPastRuns) {
+      query.runTime = runTime
+    }
     let result = await this.find({
-      query: {
-        $select: ['_id', 'runTime', 'forecastTime'], // We only need object ID
-        forecastTime
-      },
+      query,
       paginate: false
     })
 

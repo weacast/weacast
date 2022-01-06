@@ -2,9 +2,11 @@ module.exports = function (forecast, element, app, options) {
   options.Model = app.db.collection(`${forecast.name}-${element.name}`, element.dbName || forecast.dbName || options.dbName)
   // When a forecast is in the past we should not care anymore,
   // however it is still potentially valid at least until we reach the next forecast
+  let expiration = element.ttl || element.interval || forecast.ttl || forecast.interval
+  // Extend the expiration period if we need to keep past data
+  if (forecast.keepPastRuns) expiration += forecast.oldestRunInterval
   // Nota : adding a unique constraint on the field causes TTL not to work
-  options.Model.createIndex({ forecastTime: 1 },
-    { expireAfterSeconds: element.ttl || element.interval || forecast.ttl || forecast.interval })
+  options.Model.createIndex({ forecastTime: 1 }, { expireAfterSeconds: expiration })
   // To perform geo queries on tiles
   options.Model.createIndex({ geometry: '2dsphere' })
   // To perform $exists requests
