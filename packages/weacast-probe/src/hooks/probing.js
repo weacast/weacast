@@ -45,7 +45,7 @@ export async function aggregateResultsQuery (hook) {
           // Find matching probre results only
           { $match: Object.assign({ ['properties.' + element]: { $exists: true } }, match) },
           // Ensure they are ordered by increasing forecast time and most recent forecast first
-          { $sort: { forecastTime: 1, runTime: -1 } },
+          { $sort: Object.assign({ forecastTime: 1, runTime: -1 }, query.$sort) },
           // Keep track of all element values
           { $group: Object.assign({ [element]: { $push: '$properties.' + element } }, groupBy) }
         ]).toArray()
