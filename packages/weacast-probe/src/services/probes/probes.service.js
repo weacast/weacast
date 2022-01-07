@@ -210,8 +210,11 @@ export default {
             // Check if we process on-demand probing for a time range
             if (isTimeRange) {
               this.pushTime(feature, 'forecastTime', speedProperty, forecastTime, norm)
+              this.pushTime(feature, 'runTime', speedProperty, runTime)
               this.pushTime(feature, 'forecastTime', directionProperty, forecastTime, direction)
+              this.pushTime(feature, 'runTime', directionProperty, runTime)
             } else {
+              // Forecast/run time already set on feature for previous element values
               feature.properties[speedProperty] = norm
               feature.properties[directionProperty] = direction
             }
