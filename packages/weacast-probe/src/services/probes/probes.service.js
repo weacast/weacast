@@ -311,7 +311,7 @@ export default {
   async getResultsForProbe (probe, elementService, forecast) {
     // Get the service to read results in
     let resultService = this.app.getService('probe-results')
-    let query: {
+    let query = {
       forecastTime: forecast.forecastTime,
       probeId: probe._id
     }
