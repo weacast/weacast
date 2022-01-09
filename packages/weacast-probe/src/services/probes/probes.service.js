@@ -60,7 +60,11 @@ export default {
       const feature = features[i]
       // Check if something to store for the element
       if (_.has(feature, propertyName)) {
-        let data = { [propertyName]: _.get(feature, propertyName) }
+        let data = {
+          [propertyName]: _.get(feature, propertyName)
+          // Because we will not go through service hooks in this case we have to format dates to basic object types manually
+          runTime: new Date(runTime.format()),
+        }
         // Update derived direction values as well in this case
         if (isComponentOfDirection) {
           if (_.has(feature, speedPropertyName)) data[speedPropertyName] = _.get(feature, speedPropertyName)
@@ -71,7 +75,7 @@ export default {
         // Already stored in DB ?
         if (feature._id) {
           debugResults('Updating probe result for probe ' + feature.probeId + ' at ' + forecastTime.format() +
-                       ' on run ' + runTime.format(), feature)
+                       ' on run ' + runTime,.format(), feature)
           // Call service hooks (DB update is skipped when bulk param is used)
           await resultService.update(feature._id, data, { bulk: true })
           // Create bulk operation for update
@@ -231,7 +235,9 @@ export default {
                 // Then store it
                 if (isTimeRange) {
                   this.pushTime(feature, 'forecastTime', bearingDirectionProperty, forecastTime, direction)
+                  this.pushTime(feature, 'runTime', bearingDirectionProperty, runTime)
                 } else {
+                  // Forecast/run time already set on feature for previous element values
                   feature.properties[bearingDirectionProperty] = direction
                 }
               }
@@ -260,6 +266,9 @@ export default {
         forecastData = response.data
       } else {
         query.forecastTime = forecastTime
+        if (elementService.forecast.keepPastRuns || elementService.element.keepPastRuns) {
+          query.runTime = forecast.runTime
+        }
         // Take care that we need tile ID for tiles
         if (!_.isNil(x) && !_.isNil(y)) {
           Object.assign(query, {
@@ -299,15 +308,19 @@ export default {
     this.updateFeatures(features, probe, elementService, { runTime, forecastTime, grid })
   },
 
-  async getResultsForProbe (probe, forecastTime) {
+  async getResultsForProbe (probe, elementService, forecast) {
     // Get the service to read results in
     let resultService = this.app.getService('probe-results')
+    let query: {
+      forecastTime: forecast.forecastTime,
+      probeId: probe._id
+    }
+    if (elementService.forecast.keepPastRuns || elementService.element.keepPastRuns) {
+      query.runTime = forecast.runTime
+    }
     let results = await resultService.find({
       paginate: false,
-      query: {
-        forecastTime,
-        probeId: probe._id
-      }
+      query
     })
     return results
   },
@@ -346,7 +359,7 @@ export default {
           debug('Looking for existing results with probe ' + probe._id + ' for element ' + forecastName + '/' + elementName +
                 ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
           try {
-            let features = await this.getResultsForProbe(probe, forecast.forecastTime)
+            let features = await this.getResultsForProbe(probe, service, forecast)
             // Possible on first probing
             if (features.length === 0) {
               let result = await this.get(probe._id, { query: { $select: ['forecast', 'elements', 'features'] } })
