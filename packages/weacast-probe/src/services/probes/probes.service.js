@@ -75,7 +75,7 @@ export default {
         // Already stored in DB ?
         if (feature._id) {
           debugResults('Updating probe result for probe ' + feature.probeId + ' at ' + forecastTime.format() +
-                       ' on run ' + runTime,.format(), feature)
+                       ' on run ' + runTime.format(), feature)
           // Call service hooks (DB update is skipped when bulk param is used)
           await resultService.update(feature._id, data, { bulk: true })
           // Create bulk operation for update
