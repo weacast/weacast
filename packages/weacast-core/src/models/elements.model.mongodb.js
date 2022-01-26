@@ -4,7 +4,7 @@ module.exports = function (forecast, element, app, options) {
   // however it is still potentially valid at least until we reach the next forecast
   let expiration = element.ttl || element.interval || forecast.ttl || forecast.interval
   // Extend the expiration period if we need to keep past data
-  if (forecast.keepPastRuns || element.keepPastRuns) expiration += forecast.oldestRunInterval || element.oldestRunInterval
+  if (element.keepPastRuns || forecast.keepPastRuns) expiration += element.oldestRunInterval || forecast.oldestRunInterval
   // Nota : adding a unique constraint on the field causes TTL not to work
   options.Model.createIndex({ forecastTime: 1 }, { expireAfterSeconds: expiration })
   // To perform geo queries on tiles
