@@ -85,6 +85,10 @@ describe('weacast-alert', () => {
   .timeout(10000)
 
   it('performs element download process and probing', async () => {
+    // Clear any previous data
+    uService.Model.remove()
+    vService.Model.remove()
+    fs.emptyDirSync(app.get('forecastPath'))
     // download both elements in parallel
     await Promise.all([
       uService.updateForecastData(),
@@ -117,7 +121,7 @@ describe('weacast-alert', () => {
         windSpeed: { $gte: 0 } // Set a large range so that we are sure it will trigger
       }
     })
-    expect(spyRegisterAlert).to.have.been.called.once
+    expect(spyRegisterAlert).to.have.been.called.exactly(1)
     spyRegisterAlert.reset()
     let results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
@@ -142,7 +146,7 @@ describe('weacast-alert', () => {
 
   it('removes active alert on-demand', async () => {
     await alertService.remove(alertObject._id.toString())
-    expect(spyUnregisterAlert).to.have.been.called.once
+    expect(spyUnregisterAlert).to.have.been.called.exactly(1)
     spyUnregisterAlert.reset()
     const results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(0)
@@ -172,7 +176,7 @@ describe('weacast-alert', () => {
         windSpeed: { $lt: -10 } // Set an invalid range so that we are sure it will not trigger
       }
     })
-    expect(spyRegisterAlert).to.have.been.called.once
+    expect(spyRegisterAlert).to.have.been.called.exactly(1)
     spyRegisterAlert.reset()
     let results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
@@ -189,7 +193,7 @@ describe('weacast-alert', () => {
     expect(results[0].status.triggeredAt).beUndefined()
     expect(results[0].status.checkedAt).toExist()
     await alertService.remove(alertObject._id.toString())
-    expect(spyUnregisterAlert).to.have.been.called.once
+    expect(spyUnregisterAlert).to.have.been.called.exactly(1)
     spyUnregisterAlert.reset()
     resetAlertEvent()
   })
@@ -219,7 +223,7 @@ describe('weacast-alert', () => {
         windSpeed: { $gte: 0 } // Set a large range so that we are sure it will trigger
       }
     })
-    expect(spyRegisterAlert).to.have.been.called.once
+    expect(spyRegisterAlert).to.have.been.called.exactly(1)
     spyRegisterAlert.reset()
     let results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
@@ -244,7 +248,7 @@ describe('weacast-alert', () => {
 
   it('removes active alert on probes', async () => {
     await alertService.remove(alertObject._id.toString())
-    expect(spyUnregisterAlert).to.have.been.called.once
+    expect(spyUnregisterAlert).to.have.been.called.exactly(1)
     spyUnregisterAlert.reset()
     const results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(0)
@@ -270,7 +274,7 @@ describe('weacast-alert', () => {
         windSpeed: { $lt: -10 } // Set an invalid range so that we are sure it will not trigger
       }
     })
-    expect(spyRegisterAlert).to.have.been.called.once
+    expect(spyRegisterAlert).to.have.been.called.exactly(1)
     spyRegisterAlert.reset()
     let results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
@@ -288,7 +292,7 @@ describe('weacast-alert', () => {
     expect(results[0].status.triggeredAt).beUndefined()
     expect(results[0].status.checkedAt).toExist()
     await alertService.remove(alertObject._id.toString())
-    expect(spyUnregisterAlert).to.have.been.called.once
+    expect(spyUnregisterAlert).to.have.been.called.exactly(1)
     spyUnregisterAlert.reset()
   })
   // Let enough time to process
@@ -310,7 +314,7 @@ describe('weacast-alert', () => {
         windSpeed: { $gte: 0 } // Set a large range so that we are sure it will trigger
       }
     })
-    expect(spyRegisterAlert).to.have.been.called.once
+    expect(spyRegisterAlert).to.have.been.called.exactly(1)
     spyRegisterAlert.reset()
     let results = await alertService.find({ paginate: false, query: {} })
     expect(results.length).to.equal(1)
