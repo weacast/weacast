@@ -59,7 +59,7 @@ export class MongoDatabase extends Database {
     const indexOfOptions = url.indexOf('?')
     if (indexOfOptions === -1) dbName = url.substring(indexOfDBName)
     else dbName = url.substring(indexOfDBName, indexOfOptions)
-    
+
     return dbName
   }
 
