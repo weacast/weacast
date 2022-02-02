@@ -48,7 +48,7 @@
   "dependencies": {
     "debug": "^3.1.0",
     "fs-extra": "^4.0.2",
-    "weacast-core": "^1.4.1",
+    "weacast-core": "^1.5.0",
     "weacast-gtiff2json": "^1.1.2",
     "winston": "^2.3.1"
   },

@@ -5513,10 +5513,10 @@ verror@1.3.6:
   dependencies:
     extsprintf "1.0.2"
 
-weacast-core@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/weacast-core/-/weacast-core-1.4.1.tgz#499da1d867d230fc524a70f0af8d0c2ff293a20a"
-  integrity sha512-wq2H4w0rQqM7v8Og0EkoGTxsnkNwHt43ZBT0s+U3e1nv2fMudvIq4ZDBbDL4g1fPXommIvO9noDrZ1pbPyIZmQ==
+weacast-core@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/weacast-core/-/weacast-core-1.5.0.tgz#a2717e02542b3c142617eb1bf81f3af99a7e51f4"
+  integrity sha512-UjMc1qkhyyhLfkYdavkwv2bTR/K61w5SfuLSonl9H0stOs6h89JMFtCMEHGDG2srNc3lY26z2TkgXxtFUERLoA==
   dependencies:
     "@feathersjs/authentication" "^2.1.16"
     "@feathersjs/authentication-jwt" "^2.0.10"
