@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.6.0](https://github.com/weacast/weacast-arome/tree/v1.6.0) (2022-02-02)
+
+[Full Changelog](https://github.com/weacast/weacast-arome/compare/v1.5.0...v1.6.0)
+
 ## [v1.5.0](https://github.com/weacast/weacast-arome/tree/v1.5.0) (2021-10-18)
 
 [Full Changelog](https://github.com/weacast/weacast-arome/compare/v1.4.1...v1.5.0)
