@@ -3,7 +3,7 @@ import feathers from '@feathersjs/client'
 import io from 'socket.io-client'
 
 export function weacast (config) {
-  let api = feathers()
+  const api = feathers()
   // Setup log level
   if (config.logs && config.logs.level) {
     logger.setLevel(config.logs.level, false)
@@ -14,7 +14,7 @@ export function weacast (config) {
   if (config.transport === 'http') {
     api.configure(feathers.rest(origin).fetch(window.fetch.bind(window)))
   } else {
-    let socket = io(origin, {
+    const socket = io(origin, {
       transports: ['websocket'],
       path: config.apiPath + 'ws'
     })

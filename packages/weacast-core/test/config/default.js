@@ -1,7 +1,7 @@
-var path = require('path')
-var containerized = require('containerized')()
+const path = require('path')
+const containerized = require('containerized')()
 
-var API_PREFIX = '/api'
+const API_PREFIX = '/api'
 
 module.exports = {
   port: process.env.PORT || 8081,
@@ -15,12 +15,25 @@ module.exports = {
   },
   authentication: {
     secret: 'b5KqXTye4fVxhGFpwMVZRO3R56wS5LNoJHifwgGOFkB5GfMWvIdrWyQxEJXswhAC',
-    strategies: [
-      'jwt',
-      'local'
-    ],
-    path: API_PREFIX + '/authentication',
-    service: API_PREFIX + '/users'
+    entity: 'user',
+    service: API_PREFIX + '/users',
+    authStrategies: ['jwt', 'local'],
+    local: {
+      usernameField: 'email',
+      passwordField: 'password'
+    },
+    jwtOptions: {
+      header: {
+        typ: 'access'
+      },
+      audience: 'https://yourdomain.com',
+      issuer: 'feathers',
+      algorithm: 'HS256',
+      expiresIn: '1d'
+    },
+    oauth: {
+      redirect: '/'
+    }
   },
   logs: {
     Console: {
@@ -28,9 +41,9 @@ module.exports = {
       level: 'verbose'
     },
     DailyRotateFile: {
-      filename: path.join(__dirname, '..', 'test-log-'),
-      datePattern: 'yyyy-MM-dd.log',
-      maxDays: 5
+      filename: path.join(__dirname, '..', 'test-log-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD',
+      maxFiles: 5
     }
   },
   db: {

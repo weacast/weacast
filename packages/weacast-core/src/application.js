@@ -3,94 +3,21 @@ import makeDebug from 'debug'
 import _ from 'lodash'
 import logger from 'winston'
 import 'winston-daily-rotate-file'
-import proto from 'uberproto'
 import elementMixins from './mixins'
 import compress from 'compression'
 import cors from 'cors'
 import helmet from 'helmet'
-import bodyParser from 'body-parser'
 import feathers from '@feathersjs/feathers'
 import errors from '@feathersjs/errors'
 import configuration from '@feathersjs/configuration'
 import express from '@feathersjs/express'
-import rest from '@feathersjs/express/rest'
 import socketio from '@feathersjs/socketio'
-import authentication from '@feathersjs/authentication'
-import jwt from '@feathersjs/authentication-jwt'
-import local from '@feathersjs/authentication-local'
-import oauth2 from '@feathersjs/authentication-oauth2'
-import GithubStrategy from 'passport-github'
-import GoogleStrategy from 'passport-google-oauth20'
-import OpenIDStrategy from 'passport-openidconnect'
-import CognitoStrategy from 'passport-oauth2-cognito'
-import OAuth2Verifier from './verifier'
-import mongo from 'mongodb'
+import { GridFSBucket } from 'mongodb'
 import { Database } from './db'
+import auth from './authentication'
 
+const { rest } = express
 const debug = makeDebug('weacast:weacast-core:application')
-
-function auth () {
-  const app = this
-  const config = app.get('authentication')
-  if (!config) return
-
-  // Set up authentication with the secret
-  app.configure(authentication(config))
-  app.configure(jwt())
-  app.configure(local())
-  if (config.github) {
-    app.configure(oauth2({
-      name: 'github',
-      Strategy: GithubStrategy,
-      Verifier: OAuth2Verifier
-    }))
-  }
-  if (config.google) {
-    app.configure(oauth2({
-      name: 'google',
-      Strategy: GoogleStrategy,
-      Verifier: OAuth2Verifier
-    }))
-  }
-  if (config.oidc) {
-    // We do not manage state using express-session as it does not seem to work well with Feathers
-    let sessionInfos = Object.assign({}, config.oidc)
-    Object.assign(sessionInfos, { params: { state: config.oidc.sessionKey } })
-    app.configure(oauth2({
-      name: 'oidc',
-      Strategy: OpenIDStrategy,
-      Verifier: OAuth2Verifier,
-      store: {
-        store (req, meta, cb) {
-          return cb(null, sessionInfos.sessionKey)
-        },
-        verify (req, state, cb) {
-          return cb(null, true, sessionInfos)
-        }
-      }
-    }))
-  }
-  if (config.cognito) {
-    app.configure(oauth2({
-      name: 'cognito',
-      Strategy: CognitoStrategy,
-      Verifier: OAuth2Verifier
-    }))
-  }
-  // The `authentication` service is used to create a JWT.
-  // The before `create` hook registers strategies that can be used
-  // to create a new valid JWT (e.g. local or oauth2)
-  app.getService('authentication').hooks({
-    before: {
-      create: [
-        authentication.hooks.authenticate(config.strategies)
-      ],
-      remove: [
-        authentication.hooks.authenticate('jwt')
-      ]
-    }
-  })
-}
 
 function declareService (name, app, service) {
   const path = app.get('apiPath') + '/' + name
@@ -141,7 +68,8 @@ export function createService (name, app, modelsPath, servicesPath, options) {
   const paginate = app.get('paginate')
   const serviceOptions = Object.assign({
     name: name,
-    paginate
+    paginate,
+    whitelist: ['$exists']
   }, options || {})
   if (serviceOptions.disabled) return undefined
   configureModel(app, serviceOptions)
@@ -152,10 +80,10 @@ export function createService (name, app, modelsPath, servicesPath, options) {
   service = declareService(name, app, service)
   // Register hooks and filters
   service = configureService(name, service, servicesPath)
-  // Optionnally a specific service mixin can be provided, apply it
+  // Optionally a specific service mixin can be provided, apply it
   try {
     const serviceMixin = require(path.join(servicesPath, name, name + '.service'))
-    service.mixin(serviceMixin)
+    Object.assign(service, serviceMixin)
   } catch (error) {
     debug('No ' + name + ' service mixin configured on path ' + servicesPath)
     if (error.code !== 'MODULE_NOT_FOUND') {
@@ -199,11 +127,11 @@ export function createElementService (forecast, element, app, servicesPath, opti
   }
 
   // Apply all element mixins
-  elementMixins.forEach(mixin => { service.mixin(mixin) })
+  elementMixins.forEach(mixin => { Object.assign(service, mixin) })
   // Optionnally a specific service mixin can be provided, apply it
   if (servicesPath && !isService) {
     const serviceMixin = require(path.join(servicesPath, forecast.model, forecast.model + '.service'))
-    proto.mixin(serviceMixin, service)
+    Object.assign(service, serviceMixin)
   }
   // Then configuration
   service.app = app
@@ -215,7 +143,7 @@ export function createElementService (forecast, element, app, servicesPath, opti
     if (app.get('db').adapter !== 'mongodb') {
       throw new errors.GeneralError('GridFS store is only available for MongoDB adapter')
     }
-    service.gfs = new mongo.GridFSBucket(app.db.db(serviceOptions.dbName), {
+    service.gfs = new GridFSBucket(app.db.db(serviceOptions.dbName), {
       // GridFS is use to bypass the limit of 16MB documents in MongoDB
       // We are not specifically interested in splitting the file in small chunks
       chunkSizeBytes: 8 * 1024 * 1024,
@@ -248,29 +176,33 @@ function getElementServices (app, name) {
 }
 
 function setupLogger (logsConfig) {
-  // Remove winston defaults
-  try {
-    logger.remove(logger.transports.Console)
-  } catch (error) {
-    // Logger might be down, use console
-    console.error('Could not remove default logger transport', error)
-  }
+  logsConfig = _.omit(logsConfig, ['level'])
   // We have one entry per log type
   let logsTypes = logsConfig ? Object.getOwnPropertyNames(logsConfig) : []
   // Create corresponding winston transports with options
+  let transports = []
   logsTypes.forEach(logType => {
-    let options = logsConfig[logType]
-    // Setup default log level if not defined
-    if (!options.level) {
-      options.level = (process.env.NODE_ENV === 'development' ? 'debug' : 'info')
-    }
-    try {
-      logger.add(logger.transports[logType], options)
-    } catch (error) {
-      // Logger might be down, use console
-      console.error('Could not setup default log levels', error)
-    }
+    const options = logsConfig[logType]
+    transports.push(new logger.transports[logType](options))
   })
+  // Reconfigure default winston logger
+  try {
+    const colorizer = logger.format.colorize()
+    logger.configure({
+      level: _.get(logsConfig, 'level', (process.env.NODE_ENV === 'development' ? 'debug' : 'info')),
+      format: logger.format.combine(
+        logger.format.simple(),
+        logger.format.printf(msg => 
+          colorizer.colorize(msg.level, `${msg.level}: ${msg.message}`)
+        )
+      ),
+      transports
+    })
+    logger.info('Logger configured')
+  } catch (error) {
+    // Logger might be down, use console
+    console.error('Could not setup default logger', error)
+  }
 }
 
 export default function weacast () {
@@ -313,8 +245,8 @@ export default function weacast () {
   app.use(cors())
   app.use(helmet())
   app.use(compress())
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
 
   // Set up plugins and providers
   app.configure(rest())

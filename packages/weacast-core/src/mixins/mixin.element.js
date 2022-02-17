@@ -27,15 +27,15 @@ export default {
 
     return new Promise((resolve, reject) => {
       this.gfs.openDownloadStreamByName(filePath)
-      .pipe(fs.createWriteStream(outputPath))
-      .on('error', error => {
-        logger.error('Unable to read ' + filePath + ' from GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
-        reject(error)
-      })
-      .on('finish', _ => {
-        logger.verbose('Read ' + filePath + ' from GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
-        resolve()
-      })
+        .pipe(fs.createWriteStream(outputPath))
+        .on('error', error => {
+          logger.error('Unable to read ' + filePath + ' from GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
+          reject(error)
+        })
+        .on('finish', _ => {
+          logger.verbose('Read ' + filePath + ' from GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
+          resolve()
+        })
     })
   },
 
@@ -46,15 +46,15 @@ export default {
 
     return new Promise((resolve, reject) => {
       fs.createReadStream(inputPath)
-      .pipe(this.gfs.openUploadStream(filePath, { metadata }))
-      .on('error', error => {
-        logger.error('Unable to write file ' + filePath + ' to GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast', error)
-        reject(error)
-      })
-      .on('finish', _ => {
-        logger.verbose('Written file ' + filePath + ' to GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
-        resolve()
-      })
+        .pipe(this.gfs.openUploadStream(filePath, { metadata }))
+        .on('error', error => {
+          logger.error('Unable to write file ' + filePath + ' to GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast', error)
+          reject(error)
+        })
+        .on('finish', _ => {
+          logger.verbose('Written file ' + filePath + ' to GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
+          resolve()
+        })
     })
   },
 

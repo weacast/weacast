@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 import _ from 'lodash'
 import moment from 'moment'
 import request from 'request'
-import errors from '@feathersjs/errors'
+import * as errors from '@feathersjs/errors'
 import logger from 'winston'
 import makeDebug from 'debug'
 import { Grid } from '../common/grid'
@@ -18,12 +18,12 @@ export default {
 
   // Generate file name to store temporary output (i.e. converted) data, assume by default a similar name than getForecastTimeFilePath() with a json extension
   getForecastTimeConvertedFilePath (runTime, forecastTime) {
-    let filePath = this.getForecastTimeFilePath(runTime, forecastTime)
+    const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
     return path.join(path.dirname(filePath), path.basename(filePath, path.extname(filePath)) + '.json')
   },
 
   downloadForecastTime (runTime, forecastTime) {
-    let promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
       const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
       if (fs.existsSync(filePath)) {
         logger.verbose('Already downloaded ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
@@ -35,36 +35,36 @@ export default {
       let errorMessage = 'Could not download ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format()
       // Get request options
       request.get(this.getForecastTimeRequest(runTime, forecastTime))
-      .on('error', err => {
-        logger.error(errorMessage, err)
-        reject(err)
-      })
-      .on('timeout', err => {
-        logger.error(errorMessage + ', provider timed out')
-        reject(err)
-      })
-      .on('response', response => {
-        if (response.statusCode !== 200) {
-          errorMessage += ', provider responded with HTTP code ' + response.statusCode
-          reject(errors.convert({
-            name: response.statusCode,
-            message: errorMessage
-          }))
-        } else {
-          let file = fs.createWriteStream(filePath)
-          response.pipe(file)
-          .on('finish', _ => {
-            file.close()
-            logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-            resolve(filePath)
-          })
-          .on('error', err => {
-            logger.error(errorMessage + ', unable to write temporary file', err)
-            debug('Output TIFF file was : ' + filePath)
-            reject(err)
-          })
-        }
-      })
+        .on('error', err => {
+          logger.error(errorMessage, err)
+          reject(err)
+        })
+        .on('timeout', err => {
+          logger.error(errorMessage + ', provider timed out')
+          reject(err)
+        })
+        .on('response', response => {
+          if (response.statusCode !== 200) {
+            errorMessage += ', provider responded with HTTP code ' + response.statusCode
+            reject(errors.convert({
+              name: response.statusCode,
+              message: errorMessage
+            }))
+          } else {
+            const file = fs.createWriteStream(filePath)
+            response.pipe(file)
+              .on('finish', _ => {
+                file.close()
+                logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+                resolve(filePath)
+              })
+              .on('error', err => {
+                logger.error(errorMessage + ', unable to write temporary file', err)
+                debug('Output TIFF file was : ' + filePath)
+                reject(err)
+              })
+          }
+        })
     })
 
     return promise
@@ -72,7 +72,7 @@ export default {
 
   async processForecastTime (runTime, forecastTime) {
     await this.downloadForecastTime(runTime, forecastTime)
-    let grid = await this.convertForecastTime(runTime, forecastTime)
+    const grid = await this.convertForecastTime(runTime, forecastTime)
     if (this.element.dataStore === 'gridfs') {
       await this.saveToGridFS(this.getForecastTimeConvertedFilePath(runTime, forecastTime),
         { forecastTime: forecastTime.toDate() })
@@ -86,7 +86,7 @@ export default {
       }
     }
     // Compute min/max values
-    let forecast = Object.assign({
+    const forecast = Object.assign({
       runTime: runTime,
       forecastTime: forecastTime
     }, Grid.getMinMax(grid))
@@ -120,10 +120,10 @@ export default {
     // Do not store in-memory data if delegated to external storage
     const data = forecast.data
     if (this.isExternalDataStorage()) delete forecast.data
-    let result = await this.create(forecast)
+    const result = await this.create(forecast)
     // Save tiles if tiling is enabled
     if (this.forecast.tileResolution) {
-      let grid = new Grid({
+      const grid = new Grid({
         bounds: this.forecast.bounds,
         origin: this.forecast.origin,
         size: this.forecast.size,
@@ -133,10 +133,10 @@ export default {
       let tiles = grid.tileset(this.forecast.tileResolution)
       tiles = tiles.map(tile =>
         Object.assign(Grid.toGeometry(tile.bounds),
-                      tile,
-                      Grid.getMinMax(tile.data),
-                      _.pick(forecast, ['runTime', 'forecastTime']),
-                      { timeseries: false }) // Tag this is not an aggregated tile
+          tile,
+          Grid.getMinMax(tile.data),
+          _.pick(forecast, ['runTime', 'forecastTime']),
+          { timeseries: false }) // Tag this is not an aggregated tile
       )
       // Test if we have to remove existing data first, except if keeping all run times
       if (previousForecast && !this.forecast.keepPastRuns && !this.element.keepPastRuns) {
@@ -170,7 +170,7 @@ export default {
         // Delete previous aggregated tile if any
         await this.remove(null, { query: { x: i, y: j, timeseries: true } })
         // Aggregate data over time for current tile
-        let tiles = await collection.aggregate([{
+        const tiles = await collection.aggregate([{
           // Select only single and available data for current tile
           $match: { x: i, y: j, timeseries: false, data: { $exists: true } }
         }, {
@@ -201,19 +201,19 @@ export default {
 
   async refreshForecastTime (datetime, runTime, forecastTime) {
     // Retrieve last available forecast if any
-    let query = {
+    const query = {
       $select: ['_id', 'runTime', 'forecastTime'], // We only need object ID
       forecastTime
     }
     if (this.forecast.keepPastRuns || this.element.keepPastRuns) {
       query.runTime = runTime
     }
-    let result = await this.find({
+    const result = await this.find({
       query,
       paginate: false
     })
 
-    let previousForecast = (result.length > 0 ? result[0] : null)
+    const previousForecast = (result.length > 0 ? result[0] : null)
     // Check if we are already up-to-date
     if (previousForecast && runTime.isSameOrBefore(previousForecast.runTime)) {
       logger.verbose('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')
@@ -239,7 +239,7 @@ export default {
 
   async harvestForecastTime (datetime, runTime, forecastTime) {
     try {
-      let result = await this.refreshForecastTime(datetime, runTime, forecastTime)
+      const result = await this.refreshForecastTime(datetime, runTime, forecastTime)
       // Do not keep track of all in-memory data
       delete result.data
       return result
@@ -253,7 +253,7 @@ export default {
         logger.verbose('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         logger.verbose(error.message)
       }
-      let previousRunTime = runTime.clone().subtract({ seconds: this.forecast.runInterval })
+      const previousRunTime = runTime.clone().subtract({ seconds: this.forecast.runInterval })
       // When data for current time is not available we might try previous data
       // check here that we go back until the configured limit
       // because otherwise this means there is a real problem with the provider and/or we will have outdated data
@@ -274,13 +274,13 @@ export default {
     const lowerLimit = (_.has(this.element, 'lowerLimit') ? this.element.lowerLimit : this.forecast.lowerLimit)
     const upperLimit = (_.has(this.element, 'upperLimit') ? this.element.upperLimit : this.forecast.upperLimit)
     // Compute nearest run T0
-    let runTime = this.getNearestRunTime(datetime)
+    const runTime = this.getNearestRunTime(datetime)
     // We don't care about the past, however a forecast is still potentially valid at least until we reach the next one
-    let lowerTime = datetime.clone().subtract({ seconds: interval })
-    let times = []
+    const lowerTime = datetime.clone().subtract({ seconds: interval })
+    const times = []
     // Check for each forecast step if update is required
     for (let timeOffset = lowerLimit; timeOffset <= upperLimit; timeOffset += interval) {
-      let forecastTime = runTime.clone().add({ seconds: timeOffset })
+      const forecastTime = runTime.clone().add({ seconds: timeOffset })
       let discard = false
       if (!this.forecast.keepPastForecasts) {
         discard = forecastTime.isBefore(lowerTime)
@@ -310,7 +310,7 @@ export default {
     const now = moment.utc()
     logger.info('Checking for up-to-date forecast data on ' + this.forecast.name + '/' + this.element.name)
     // Make sure we've got somewhere to put data and clean it up if we only use file as a temporary data store
-    let dataDir = this.getDataDirectory()
+    const dataDir = this.getDataDirectory()
     if (this.element.dataStore === 'fs') {
       fs.ensureDirSync(dataDir)
     } else {
@@ -318,7 +318,7 @@ export default {
     }
     // Try data refresh for current time
     try {
-      let times = await this.refreshForecastData(now)
+      const times = await this.refreshForecastData(now)
       logger.info('Completed forecast data update on ' + this.forecast.name + '/' + this.element.name)
       this.updateRunning = false
       return times

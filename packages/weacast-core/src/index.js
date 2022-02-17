@@ -15,9 +15,7 @@ export * from './mixins'
 
 const debug = makeDebug('weacast:weacast-core')
 
-export default function init () {
-  const app = this
-
+export default function init (app) {
   debug('Initializing weacast')
   app.configure(services)
 }

@@ -19,13 +19,13 @@ function marshallComparisonFieldsInQuery (queryObject) {
     if (typeof value === 'object') {
       marshallComparisonFieldsInQuery(value)
     } else if ((key === '$lt') || (key === '$lte') || (key === '$gt') || (key === '$gte')) {
-      let number = _.toNumber(value)
+      const number = _.toNumber(value)
       // Update from query string to number if required
       if (!Number.isNaN(number)) {
         queryObject[key] = number
       } else {
         // try for dates as well
-        let date = moment.utc(value)
+        const date = moment.utc(value)
         if (date.isValid()) {
           queryObject[key] = new Date(date.valueOf())
         }
@@ -35,7 +35,7 @@ function marshallComparisonFieldsInQuery (queryObject) {
 }
 
 export function marshallComparisonQuery (hook) {
-  let query = hook.params.query
+  const query = hook.params.query
   if (query) {
     // Complex queries might have nested objects so we call a recursive function to handle this
     marshallComparisonFieldsInQuery(query)
@@ -43,8 +43,8 @@ export function marshallComparisonQuery (hook) {
 }
 
 export function marshallQuery (hook) {
-  let query = hook.params.query
-  let service = hook.service
+  const query = hook.params.query
+  const service = hook.service
 
   if (query) {
     // Need to convert from client/server side types : string or moment dates
@@ -102,10 +102,10 @@ function marshallGeometryQuery (query) {
 }
 
 export function marshallTileQuery (hook) {
-  let params = hook.params
+  const params = hook.params
   // Ensure we have a query object to update
   if (!params.query) params.query = {}
-  let query = params.query
+  const query = params.query
   // This ensure that when no geometry is specified we only access raw data
   if (!query.geometry && !_.has(query, 'x') && !_.has(query, 'y')) {
     query.geometry = { $exists: false }
@@ -116,7 +116,7 @@ export function marshallTileQuery (hook) {
 }
 
 export function marshallSpatialQuery (hook) {
-  let query = hook.params.query
+  const query = hook.params.query
   if (query) {
     marshallGeometryQuery(query)
     // Resampling is used by hooks only, do not send it to DB
@@ -190,22 +190,22 @@ export function marshallSpatialQuery (hook) {
 }
 
 export function processForecastTime (hook) {
-  let query = hook.params.query
-  let service = hook.service
+  const query = hook.params.query
+  const service = hook.service
 
   if (query && !_.isNil(query.time)) {
     // Find nearest forecast time corresponding to request time
-    let time = (typeof query.time === 'string' ? moment.utc(query.time) : query.time)
-    let forecastTime = service.getNearestForecastTime(time)
+    const time = (typeof query.time === 'string' ? moment.utc(query.time) : query.time)
+    const forecastTime = service.getNearestForecastTime(time)
     delete query.time
     query.forecastTime = new Date(forecastTime.valueOf())
   }
   if (query && !_.isNil(query.from) && !_.isNil(query.to)) {
     // Find nearest forecast time corresponding to request time range
-    let from = (typeof query.from === 'string' ? moment.utc(query.from) : query.from)
-    let to = (typeof query.to === 'string' ? moment.utc(query.to) : query.to)
-    let fromForecastTime = service.getNearestForecastTime(from)
-    let toForecastTime = service.getNearestForecastTime(to)
+    const from = (typeof query.from === 'string' ? moment.utc(query.from) : query.from)
+    const to = (typeof query.to === 'string' ? moment.utc(query.to) : query.to)
+    const fromForecastTime = service.getNearestForecastTime(from)
+    const toForecastTime = service.getNearestForecastTime(to)
     delete query.from
     delete query.to
     query.forecastTime = {
@@ -222,25 +222,25 @@ function readFile (service, item) {
 
   return new Promise((resolve, reject) => {
     fs.readJson(inputPath, 'utf8')
-    .then(grid => {
-      item.data = grid
-      resolve(item)
-    })
-    .catch(error => {
-      let errorMessage = 'Cannot read converted ' + service.forecast.name + '/' + service.element.name + ' forecast'
-      if (item.forecastTime) errorMessage += ' at ' + item.forecastTime.format()
-      if (item.runTime) errorMessage += ' for run ' + item.runTime.format()
-      logger.error(errorMessage)
-      debug('Input JSON file was : ' + item.convertedFilePath)
-      reject(error)
-    })
+      .then(grid => {
+        item.data = grid
+        resolve(item)
+      })
+      .catch(error => {
+        let errorMessage = 'Cannot read converted ' + service.forecast.name + '/' + service.element.name + ' forecast'
+        if (item.forecastTime) errorMessage += ' at ' + item.forecastTime.format()
+        if (item.runTime) errorMessage += ' for run ' + item.runTime.format()
+        logger.error(errorMessage)
+        debug('Input JSON file was : ' + item.convertedFilePath)
+        reject(error)
+      })
   })
 }
 
 export async function processData (hook) {
-  let params = hook.params
-  let query = params.query
-  let service = hook.service
+  const params = hook.params
+  const query = params.query
+  const service = hook.service
   let items = getItems(hook)
   const isArray = Array.isArray(items)
   items = (isArray ? items : [items])
@@ -249,7 +249,7 @@ export async function processData (hook) {
   if (service.isExternalDataStorage()) {
     // Process data files when required
     if (query && !_.isNil(query.$select) && query.$select.includes('data')) {
-      let dataPromises = []
+      const dataPromises = []
       items.forEach(item => {
         // Except if we target tiles which have internal data
         if (item.convertedFilePath) {
@@ -257,7 +257,7 @@ export async function processData (hook) {
           if (service.element.dataStore === 'gridfs') {
             dataPromises.push(
               service.readFromGridFS(item.convertedFilePath)
-              .then(_ => readFile(service, item))
+                .then(_ => readFile(service, item))
             )
           } else {
             dataPromises.push(readFile(service, item))
@@ -285,7 +285,7 @@ export async function processData (hook) {
     // Check for resampling on returned data
     if (!_.isNil(params.oLon) && !_.isNil(params.oLat) && !_.isNil(params.sLon) && !_.isNil(params.sLat) && !_.isNil(params.dLon) && !_.isNil(params.dLat)) {
       items.forEach(item => {
-        let grid = new Grid({
+        const grid = new Grid({
           bounds: service.forecast.bounds,
           origin: service.forecast.origin,
           size: service.forecast.size,
