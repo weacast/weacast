@@ -1,5 +1,17 @@
 # Changelog
 
+## [v1.5.1](https://github.com/weacast/weacast-probe/tree/v1.5.1) (2022-03-15)
+
+[Full Changelog](https://github.com/weacast/weacast-probe/compare/v1.5.0...v1.5.1)
+
+**Fixed bugs:**
+
+- Run time not correctly serialized in probe results [\#53](https://github.com/weacast/weacast-probe/issues/53)
+
+**Merged pull requests:**
+
+- Bump pathval from 1.1.0 to 1.1.1 [\#52](https://github.com/weacast/weacast-probe/pull/52) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v1.5.0](https://github.com/weacast/weacast-probe/tree/v1.5.0) (2022-02-02)
 
 [Full Changelog](https://github.com/weacast/weacast-probe/compare/v1.4.1...v1.5.0)
