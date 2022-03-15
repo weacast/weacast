@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.4.1](https://github.com/weacast/weacast-alert/tree/v1.4.1) (2022-03-15)
+
+[Full Changelog](https://github.com/weacast/weacast-alert/compare/v1.4.0...v1.4.1)
+
+**Merged pull requests:**
+
+- Bump pathval from 1.1.0 to 1.1.1 [\#42](https://github.com/weacast/weacast-alert/pull/42) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v1.4.0](https://github.com/weacast/weacast-alert/tree/v1.4.0) (2022-02-02)
 
 [Full Changelog](https://github.com/weacast/weacast-alert/compare/v1.3.1...v1.4.0)
