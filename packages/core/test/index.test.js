@@ -48,7 +48,7 @@ describe('weacast-core', () => {
     // FIXME: need to let some time to proceed with log file
     // Didn't find a better way since fs.watch() does not seem to work...
     setTimeout(() => {
-      let logFilePath = path.join(__dirname, 'test-log-' + now.toISOString().slice(0, 10) + '.log')
+      let logFilePath = path.join(__dirname, 'test-log-' + now.toLocaleString('sv').slice(0, 10) + '.log')
       fs.readFile(logFilePath, 'utf8', (err, content) => {
         expect(err).beNull()
         expect(content.includes(log)).to.equal(true)

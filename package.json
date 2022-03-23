@@ -2,9 +2,11 @@
   "name": "weacast",
   "private": true,
   "scripts": {
-    "install": "lerna bootstrap"
+    "install": "lerna bootstrap",
+    "test": "nyc lerna run test"
   },
   "devDependencies": {
+    "nyc": "^15.1.0",
     "lerna": "^4.0.0"
   }
 }
