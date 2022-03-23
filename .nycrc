@@ -1,0 +1,5 @@
+{
+	"all": true,
+	"include": ["packages/**/src/**/*.js", "packages/gtiff2json/index.js"],
+	"reporter": ["text", "html", "lcov"]
+}
