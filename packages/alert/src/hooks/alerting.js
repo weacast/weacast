@@ -1,7 +1,7 @@
 // import logger from 'winston'
 // import makeDebug from 'debug'
 import { getItems, replaceItems } from 'feathers-hooks-common'
-import { hooks } from 'weacast-core'
+import { hooks } from '@weacast/core'
 // const debug = makeDebug('weacast:weacast-core')
 
 // Need to convert from server side types (moment dates) to basic JS types when "writing" to DB adapters

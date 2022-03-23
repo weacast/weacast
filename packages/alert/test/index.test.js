@@ -5,9 +5,9 @@ import moment from 'moment'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
 import spies from 'chai-spies'
-import core, { weacast } from 'weacast-core'
 import gfs from 'weacast-gfs'
-import probe from 'weacast-probe'
+import core, { weacast } from '@weacast/core'
+import probe from '@weacast/probe'
 import alert from '../src'
 
 describe('weacast-alert', () => {

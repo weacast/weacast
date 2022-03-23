@@ -1,4 +1,4 @@
-# weacast-alert
+# @weacast/alert
 
 [![Build Status](https://app.travis-ci.com/weacast/weacast-alert.svg?branch=master)](https://app.travis-ci.com/weacast/weacast-alert)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-alert/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-alert)
@@ -56,6 +56,6 @@ As this module also depends on [weacast-core](https://github.com/weacast/weacast
 
 ## License
 
-Copyright (c) 2017
+Copyright (c) 2022
 
 Licensed under the [MIT license](LICENSE).
