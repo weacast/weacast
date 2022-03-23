@@ -1,0 +1,10 @@
+{
+  "name": "weacast",
+  "private": true,
+  "scripts": {
+    "install": "lerna bootstrap"
+  },
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  }
+}

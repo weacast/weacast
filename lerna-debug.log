@@ -1,0 +1,20 @@
+0 silly argv {
+0 silly argv   _: [ 'import' ],
+0 silly argv   lernaVersion: '4.0.0',
+0 silly argv   '$0': 'node_modules/.bin/lerna',
+0 silly argv   dir: '../weacast-core/'
+0 silly argv }
+1 notice cli v4.0.0
+2 verbose rootPath /home/daffl/Feathers/Kalisio/weacast
+3 error Error: Command failed with exit code 128: git rev-parse HEAD
+3 error fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
+3 error Use '--' to separate paths from revisions, like this:
+3 error 'git <command> [<revision>...] -- [<file>...]'
+3 error HEAD
+3 error     at makeError (/home/daffl/Feathers/Kalisio/weacast/node_modules/execa/lib/error.js:60:11)
+3 error     at Function.module.exports.sync (/home/daffl/Feathers/Kalisio/weacast/node_modules/execa/index.js:194:17)
+3 error     at Object.execSync (/home/daffl/Feathers/Kalisio/weacast/node_modules/@lerna/child-process/index.js:39:16)
+3 error     at ImportCommand.execSync (/home/daffl/Feathers/Kalisio/weacast/node_modules/@lerna/import/index.js:141:25)
+3 error     at ImportCommand.getCurrentSHA (/home/daffl/Feathers/Kalisio/weacast/node_modules/@lerna/import/index.js:133:17)
+3 error     at ImportCommand.initialize (/home/daffl/Feathers/Kalisio/weacast/node_modules/@lerna/import/index.js:102:31)
+3 error     at /home/daffl/Feathers/Kalisio/weacast/node_modules/@lerna/command/index.js:274:24
