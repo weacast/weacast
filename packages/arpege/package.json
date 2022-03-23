@@ -1,5 +1,5 @@
 {
-  "name": "weacast-arpege",
+  "name": "@weacast/arpege",
   "description": "ARPEGE weather forecast model plugin for Weacast",
   "version": "1.6.0",
   "homepage": "https://github.com/weacast/weacast-arpege",
@@ -23,17 +23,11 @@
   },
   "scripts": {
     "prepublish": "npm run compile",
-    "publish": "git push origin --tags && npm run changelog && git push origin",
-    "release:patch": "npm version patch && npm publish",
-    "release:minor": "npm version minor && npm publish",
-    "release:major": "npm version major && npm publish",
-    "changelog": "github_changelog_generator -u weacast -p weacast-arpege && git add CHANGELOG.md && git commit -am \"Updating changelog\"",
     "compile": "shx rm -rf lib/ && babel -d lib/ src/ -s",
     "watch": "npm run compile && babel --watch -d lib/ src/",
     "lint": "standard src/**/*.js test/**/*.js --fix",
     "mocha": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --exit --require babel-core/register",
-    "coverage": "nyc npm run mocha",
-    "test": "npm run compile && npm run lint && npm run coverage",
+    "test": "npm run compile && npm run lint && npm run mocha",
     "start": "npm run compile && node lib"
   },
   "standard": {
@@ -46,26 +40,26 @@
     "lib": "lib"
   },
   "dependencies": {
-    "debug": "^3.1.0",
-    "fs-extra": "^4.0.2",
-    "weacast-core": "^1.5.0",
-    "weacast-gtiff2json": "^1.1.2",
-    "winston": "^2.3.1"
+    "@weacast/core": "^1.5.0",
+    "@weacast/gtiff2json": "^1.1.2",
+    "debug": "^4.3.4",
+    "fs-extra": "^10.0.1",
+    "winston": "^3.6.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.24.1",
-    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-plugin-add-module-exports": "^1.0.4",
     "babel-plugin-transform-export-extensions": "^6.22.0",
-    "babel-plugin-transform-runtime": "^6.0.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
-    "chai": "^4.2.0",
+    "chai": "^4.3.6",
     "chai-lint": "^0.1.1",
     "containerized": "^1.0.2",
-    "cross-env": "^4.0.0",
-    "nyc": "^15.0.1",
-    "mocha": "^6.2.0",
-    "shx": "^0.2.2",
-    "standard": "^10.0.2"
+    "cross-env": "^7.0.3",
+    "nyc": "^15.1.0",
+    "mocha": "^9.2.2",
+    "shx": "^0.3.4",
+    "standard": "^16.0.4"
   }
 }

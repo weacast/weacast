@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs-extra'
-import gtiff2json from 'weacast-gtiff2json'
+import gtiff2json from '@weacast/gtiff2json'
 import logger from 'winston'
 import makeDebug from 'debug'
 const debug = makeDebug('weacast:weacast-arpege')
@@ -12,41 +12,41 @@ export default {
     // Limit precision because default accuracy is usually not required
     const replacer = (key, value) => value.toFixed ? Number(value.toFixed(this.element.precision || 2)) : value
 
-    let promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
       const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
       const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
       if (fs.existsSync(convertedFilePath)) {
         logger.verbose('Already converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         fs.readJson(convertedFilePath, 'utf8')
-        .then(grid => {
-          resolve(grid)
-        })
-        .catch(error => {
-          logger.error('Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          debug('Input JSON file was : ' + convertedFilePath)
-          reject(error)
-        })
+          .then(grid => {
+            resolve(grid)
+          })
+          .catch(error => {
+            logger.error('Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+            debug('Input JSON file was : ' + convertedFilePath)
+            reject(error)
+          })
         return
       }
 
       gtiff2json(filePath)
-      .then(grid => {
-        logger.verbose('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-        // Change extension from tiff to json
-        fs.outputJson(convertedFilePath, grid, { encoding: 'utf8', replacer })
-        .then(_ => {
-          logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' converted forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          resolve(grid)
+        .then(grid => {
+          logger.verbose('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+          // Change extension from tiff to json
+          fs.outputJson(convertedFilePath, grid, { encoding: 'utf8', replacer })
+            .then(_ => {
+              logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' converted forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+              resolve(grid)
+            })
+            .catch(error => {
+              logger.error('Cannot write converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+              debug('Output JSON file was : ' + convertedFilePath)
+              reject(error)
+            })
         })
         .catch(error => {
-          logger.error('Cannot write converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          debug('Output JSON file was : ' + convertedFilePath)
           reject(error)
         })
-      })
-      .catch(error => {
-        reject(error)
-      })
     })
 
     return promise
@@ -71,7 +71,7 @@ export default {
       else suffix = '_P' + (accumulationPeriod / 24) + 'D'
     }
     // Setup request with URL, token, subset parameters for WCS
-    let queryParameters = {
+    const queryParameters = {
       apikey: this.forecast.token,
       REQUEST: 'GetCoverage',
       coverageid: this.element.coverageid + '___' + runTime.format() + suffix,

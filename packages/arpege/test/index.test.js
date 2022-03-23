@@ -2,7 +2,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import core, { weacast } from 'weacast-core'
+import core, { weacast } from '@weacast/core'
 import arpege from '../src'
 
 describe('weacast-arpege', () => {
