@@ -1,4 +1,4 @@
-# weacast-core
+# @weacast/core
 
 [![Build Status](https://app.travis-ci.com/weacast/weacast-core.svg?branch=master)](https://app.travis-ci.com/weacast/weacast-core)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-core/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-core)
@@ -23,6 +23,6 @@ The [Weacast docs](https://weacast.github.io/weacast-docs/) are loaded with awes
 
 ## License
 
-Copyright (c) 2017
+Copyright (c) 2022
 
 Licensed under the [MIT license](LICENSE).

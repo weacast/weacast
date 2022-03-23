@@ -1,4 +1,4 @@
-# weacast-gtiff2json
+# @weacast/gtiff2json
 
 [![Build Status](https://app.travis-ci.com/weacast/weacast-gtiff2json.svg?branch=master)](https://app.travis-ci.com/weacast/weacast-gtiff2json)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-gtiff2json/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-gtiff2json)
@@ -78,7 +78,7 @@ Thank you for your help and support.
 
 ## License
 
-Copyright (c) 2017
+Copyright (c) 2022
 
 Licensed under the [MIT license](LICENSE).
 

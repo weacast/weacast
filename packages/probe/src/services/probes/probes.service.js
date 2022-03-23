@@ -61,7 +61,7 @@ export default {
       // Check if something to store for the element
       if (_.has(feature, propertyName)) {
         let data = {
-          [propertyName]: _.get(feature, propertyName)
+          [propertyName]: _.get(feature, propertyName),
           // Because we will not go through service hooks in this case we have to format dates to basic object types manually
           runTime: new Date(runTime.format()),
         }
