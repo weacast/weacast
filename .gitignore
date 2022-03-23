@@ -31,4 +31,7 @@ node_modules
 
 # The compiled/babelified modules
 lib/
+
+# Temporary junk
 *audit.json
+.nyc_output/
