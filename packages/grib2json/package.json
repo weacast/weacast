@@ -1,20 +1,14 @@
 {
-  "name": "weacast-grib2json",
+  "name": "@weacast/grib2json",
   "version": "1.0.3",
   "description": "Converts GRIB V2 files to JSON array",
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
     "postinstall": "node set_permission",
-    "publish": "git push origin --tags && npm run changelog && git push origin",
-    "release:patch": "npm version patch && npm publish",
-    "release:minor": "npm version minor && npm publish",
-    "release:major": "npm version major && npm publish",
-    "changelog": "github_changelog_generator -u weacast -p weacast-grib2json && git add CHANGELOG.md && git commit -am \"Updating changelog\"",
     "lint": "standard *.js test/*.js --fix",
     "mocha": "mocha --exit",
-    "coverage": "nyc npm run mocha",
-    "test": "npm run lint && npm run coverage"
+    "test": "npm run lint && npm run mocha"
   },
   "standard": {
     "sourceType": "module",
@@ -37,14 +31,13 @@
   },
   "homepage": "https://github.com/weacast/weacast-grib2json",
   "dependencies": {
-    "commander": "^2.9.0",
-    "fs-extra": "^4.0.2"
+    "commander": "^9.1.0",
+    "fs-extra": "^10.0.1"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
+    "chai": "^4.3.6",
     "chai-lint": "^0.1.1",
-    "nyc": "^15.0.1",
-    "mocha": "^6.2.0",
-    "standard": "^10.0.2"
+    "mocha": "^9.2.2",
+    "standard": "^16.0.4"
   }
 }

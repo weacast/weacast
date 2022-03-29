@@ -1,7 +1,7 @@
-var path = require('path')
-var containerized = require('containerized')()
+const path = require('path')
+const containerized = require('containerized')()
 
-var API_PREFIX = '/api'
+const API_PREFIX = '/api'
 
 module.exports = {
   port: process.env.PORT || 8081,
@@ -46,20 +46,20 @@ module.exports = {
       origin: [0, 90],
       size: [720, 361],
       resolution: [0.5, 0.5],
-      runInterval: 6 * 3600,          // Produced every 6h
-      oldestRunInterval: 24 * 3600,   // Don't go back in time older than 1 day
-      interval: 3 * 3600,             // Steps of 3h
-      lowerLimit: 0,                  // From T0
-      upperLimit: 6 * 3600,           // Up to T0+6
-      updateInterval: -1,             // We will check for update manually for testing
-      keepPastForecasts: true,        // We will keep past forecast times so that the number of forecasts is predictable for tests
+      runInterval: 6 * 3600, // Produced every 6h
+      oldestRunInterval: 24 * 3600, // Don't go back in time older than 1 day
+      interval: 3 * 3600, // Steps of 3h
+      lowerLimit: 0, // From T0
+      upperLimit: 6 * 3600, // Up to T0+6
+      updateInterval: -1, // We will check for update manually for testing
+      keepPastForecasts: true, // We will keep past forecast times so that the number of forecasts is predictable for tests
       elements: [
         {
           name: 'temperature',
           // Avoid expansion to the TMP environment variable
           variable: '\\TMP',
           levels: ['surface'],
-          dataStore: 'fs'             // So that we can check for output files
+          dataStore: 'fs' // So that we can check for output files
         }
       ]
     }

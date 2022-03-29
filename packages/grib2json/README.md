@@ -1,4 +1,4 @@
-# weacast-grib2json
+# @weacast/grib2json
 
 [![Build Status](https://app.travis-ci.com/weacast/weacast-grib2json.svg?branch=master)](https://app.travis-ci.com/weacast/weacast-grib2json)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-grib2json/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-grib2json)

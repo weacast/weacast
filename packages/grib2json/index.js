@@ -9,17 +9,17 @@ const grib2jsonCommand = process.env.GRIB2JSON ||
 
 const INTERNAL_OPTIONS = ['bufferSize', 'version', 'precision', 'verbose']
 
-var grib2json = function (filePath, options) {
-  var numberFormatter = function (key, value) {
+const grib2json = function (filePath, options) {
+  const numberFormatter = function (key, value) {
     return value.toFixed ? Number(value.toFixed(options.precision)) : value
   }
 
-  let promise = new Promise(function (resolve, reject) {
+  const promise = new Promise(function (resolve, reject) {
     let optionsNames = Object.keys(options)
     optionsNames = optionsNames.filter(arg => options[arg] &&
       // These ones are used internally
       !INTERNAL_OPTIONS.includes(arg))
-    let args = []
+    const args = []
     optionsNames.forEach(name => {
       if (typeof options[name] === 'boolean') {
         args.push('--' + name)
@@ -58,7 +58,7 @@ var grib2json = function (filePath, options) {
           }
         })
       } else {
-        let json = JSON.parse(stdout)
+        const json = JSON.parse(stdout)
         if (options.verbose) {
           json.forEach(variable => console.log('Generated ' + variable.data.length + ' points in memory for variable ', variable.header))
         }
@@ -91,11 +91,11 @@ if (require.main === module) {
 
   program.precision = parseInt(program.precision)
 
-  var inputFile = program.args[program.args.length - 1]
+  const inputFile = program.args[program.args.length - 1]
   grib2json(inputFile, program.opts())
-  .catch(function (err) {
-    console.log(err)
-  })
+    .catch(function (err) {
+      console.log(err)
+    })
 } else {
   module.exports = grib2json
 }
