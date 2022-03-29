@@ -1,4 +1,4 @@
-# weacast-gfs
+# @weacast/gfs
 
 [![Build Status](https://app.travis-ci.com/weacast/weacast-gfs.svg?branch=master)](https://app.travis-ci.com/weacast/weacast-gfs)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast-gfs/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-gfs)
@@ -56,6 +56,6 @@ As this module also depends on [weacast-core](https://github.com/weacast/weacast
 
 ## License
 
-Copyright (c) 2017
+Copyright (c) 2022
 
 Licensed under the [MIT license](LICENSE).

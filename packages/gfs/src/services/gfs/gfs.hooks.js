@@ -1,4 +1,4 @@
-import { elements } from 'weacast-core'
+import { elements } from '@weacast/core'
 
 // Similar to core elements
 export default elements.hooks
