@@ -7,7 +7,7 @@ import services from './services'
 import hooks from './hooks'
 import channels from './channels'
 import logger from 'winston'
-import { weacast } from 'weacast-core'
+import { weacast } from '@weacast/core'
 import distribution from '@kalisio/feathers-distributed'
 
 export class Server {

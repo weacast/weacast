@@ -3,7 +3,7 @@ function processProfile (provider, user) {
   // A key is created for each provider in the user object
   if (user[provider] && user[provider].profile) {
     let profile = user[provider].profile
-      // Some providers exposes a crude JSON obejct
+    // Some providers exposes a crude JSON obejct
     if (profile._json) profile = profile._json
     if (profile.emails && profile.emails.length > 0) {
       user.email = profile.emails[0].value
