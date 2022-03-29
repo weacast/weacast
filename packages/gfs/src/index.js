@@ -1,7 +1,7 @@
 import path from 'path'
 import hooks from './services/gfs/gfs.hooks'
 import service from './services/gfs/gfs.service'
-import { initializePlugin } from 'weacast-core'
+import { initializePlugin } from '@weacast/core'
 
 const init = async function () {
   const app = this
