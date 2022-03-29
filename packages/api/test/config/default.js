@@ -4,7 +4,7 @@ const path = require('path')
 process.env.LOADERS = 'arpege,gfs'
 
 // Use default app config
-let config = require(path.join(__dirname, '../../config/default'))
+const config = require(path.join(__dirname, '../../config/default'))
 
 // Simply changes outputs so we don't pollute DB, logs, etc.
 config.logs.DailyRotateFile.dirname = path.join(__dirname, '..', 'logs')

@@ -1,6 +1,6 @@
 import path from 'path'
 import logger from 'winston'
-import core, { initializeElements } from 'weacast-core'
+import core, { initializeElements } from '@weacast/core'
 
 const modelPath = path.join(__dirname, 'models')
 const servicePath = path.join(__dirname, 'services')
@@ -24,13 +24,15 @@ module.exports = async function () {
       for (let i = 0; i < loaders.length; i++) {
         // Setup loader plugins by dynamically require them
         try {
-          const plugin = require(`weacast-${loaders[i]}`)
+          const plugin = require(`@weacast/${loaders[i]}`)
           await app.configure(plugin)
-        } catch (error) {
+        }
+        catch (error) {
           logger.error(error.message)
         }
       }
-    } else {
+    }
+    else {
       // Set up only elements services otherwise
       const forecasts = app.get('forecasts')
       // Iterate over configured forecast models
@@ -44,13 +46,15 @@ module.exports = async function () {
     for (let i = 0; i < plugins.length; i++) {
       // Setup loader plugins by dynamically require them
       try {
-        const plugin = require(`weacast-${plugins[i]}`)
+        const plugin = require(`@weacast/${plugins[i]}`)
         await app.configure(plugin)
-      } catch (error) {
+      }
+      catch (error) {
         logger.error(error.message)
       }
     }
-  } catch (error) {
+  }
+  catch (error) {
     logger.error(error.message)
   }
 

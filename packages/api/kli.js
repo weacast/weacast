@@ -1,68 +1,68 @@
 module.exports = {
-  'weacast-core': {
+  '@weacast/core': {
     organization: 'weacast',
     dependencies: [],
     branch: 'master'
   },
-  'weacast-grib2json': {
+  '@weacast/grib2json': {
     organization: 'weacast',
     dependencies: [],
     branch: 'master'
   },
-  'weacast-gtiff2json': {
+  '@weacast/gtiff2json': {
     organization: 'weacast',
     dependencies: [],
     branch: 'master'
   },
-  'weacast-probe': {
+  '@weacast/probe': {
     organization: 'weacast',
     dependencies: [
-      'weacast-core'
+      '@weacast/core'
     ],
     branch: 'master'
   },
-  'weacast-alert': {
+  '@weacast/alert': {
     organization: 'weacast',
     dependencies: [
-      'weacast-core',
-      'weacast-probe',
+      '@weacast/core',
+      '@weacast/probe'
     ],
     branch: 'master'
   },
-  'weacast-gfs': {
+  '@weacast/gfs': {
     organization: 'weacast',
     dependencies: [
-      'weacast-core',
-      'weacast-grib2json',
+      '@weacast/core',
+      '@weacast/grib2json'
     ],
     branch: 'master'
   },
-  'weacast-arpege': {
+  '@weacast/arpege': {
     organization: 'weacast',
     dependencies: [
-      'weacast-core',
-      'weacast-gtiff2json',
+      '@weacast/core',
+      '@weacast/gtiff2json'
     ],
     branch: 'master'
   },
-  'weacast-arome': {
+  '@weacast/arome': {
     organization: 'weacast',
     dependencies: [
-      'weacast-core',
-      'weacast-arpege',
+      '@weacast/core',
+      '@weacast/arpege'
     ],
     branch: 'master'
   },
-  'weacast-api': {
+  '@weacast/api': {
     organization: 'weacast',
     dependencies: [
-      'weacast-core',
-      'weacast-probe',
-      'weacast-alert',
-      'weacast-gfs',
-      'weacast-arpege',
-      'weacast-arome',
+      '@weacast/core',
+      '@weacast/probe',
+      '@weacast/alert',
+      '@weacast/gfs',
+      '@weacast/arpege',
+      '@weacast/arome'
     ],
     branch: 'master'
-  },
+  }
 }
