@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs-extra'
-import errors from 'feathers-errors'
-import grib2json from 'weacast-grib2json'
+import errors from '@feathersjs/errors'
+import grib2json from '@weacast/grib2json'
 import logger from 'winston'
 import makeDebug from 'debug'
 const debug = makeDebug('weacast:weacast-gfs')
@@ -10,20 +10,20 @@ export default {
 
   // Perform conversion from input TIFF to JSON
   convertForecastTime (runTime, forecastTime) {
-    let promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
       const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
       const convertedFilePath = this.getForecastTimeConvertedFilePath(runTime, forecastTime)
       if (fs.existsSync(convertedFilePath)) {
         logger.verbose('Already converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         fs.readJson(convertedFilePath, 'utf8')
-        .then(grid => {
-          resolve(grid)
-        })
-        .catch(error => {
-          logger.error('Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          debug('Input JSON file was : ' + convertedFilePath)
-          reject(error)
-        })
+          .then(grid => {
+            resolve(grid)
+          })
+          .catch(error => {
+            logger.error('Cannot read converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+            debug('Input JSON file was : ' + convertedFilePath)
+            reject(error)
+          })
         return
       }
 
@@ -31,31 +31,31 @@ export default {
         data: true,
         bufferSize: 1024 * 1024 * 1024
       })
-      .then(json => {
-        if (json.length === 0 || !json[0].data || !json[0].data.length > 0) {
-          const errorMessage = 'Converted ' + this.forecast.name + '/' + this.element.name + ' forecast data at ' + forecastTime.format() + ' for run ' + runTime.format() + ' is invalid or empty'
-          logger.error(errorMessage)
-          debug('Output JSON file was : ' + convertedFilePath)
-          reject(new errors.Unprocessable(errorMessage))
-          return
-        } else {
-          logger.verbose('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-        }
-        // Change extension from tiff to json
-        fs.outputJson(convertedFilePath, json[0].data, 'utf8')
-        .then(_ => {
-          logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' converted forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          resolve(json[0].data)
+        .then(json => {
+          if (json.length === 0 || !json[0].data || !json[0].data.length > 0) {
+            const errorMessage = 'Converted ' + this.forecast.name + '/' + this.element.name + ' forecast data at ' + forecastTime.format() + ' for run ' + runTime.format() + ' is invalid or empty'
+            logger.error(errorMessage)
+            debug('Output JSON file was : ' + convertedFilePath)
+            reject(new errors.Unprocessable(errorMessage))
+            return
+          } else {
+            logger.verbose('Converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+          }
+          // Change extension from tiff to json
+          fs.outputJson(convertedFilePath, json[0].data, 'utf8')
+            .then(_ => {
+              logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' converted forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+              resolve(json[0].data)
+            })
+            .catch(error => {
+              logger.error('Cannot write converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+              debug('Output JSON file was : ' + convertedFilePath)
+              reject(error)
+            })
         })
         .catch(error => {
-          logger.error('Cannot write converted ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-          debug('Output JSON file was : ' + convertedFilePath)
           reject(error)
         })
-      })
-      .catch(error => {
-        reject(error)
-      })
     })
 
     return promise
@@ -69,7 +69,7 @@ export default {
   // Build the request options to download given forecast time from input WCS data source
   getForecastTimeRequest (runTime, forecastTime) {
     // Directories are organized by run time
-    let subDirectory = '/gfs.' + runTime.format('YYYYMMDD/HH') + '/atmos'
+    const subDirectory = '/gfs.' + runTime.format('YYYYMMDD/HH') + '/atmos'
     // Then we need to target the right file for forecast time
     // Get offset from run time
     let hours = forecastTime.diff(runTime, 'hours')
@@ -85,9 +85,9 @@ export default {
     } else {
       resolution = '.' + resolution
     }
-    let file = 'gfs.t' + runTime.format('HH') + 'z.pgrb2' + resolution + '.f' + hours
+    const file = 'gfs.t' + runTime.format('HH') + 'z.pgrb2' + resolution + '.f' + hours
     // Setup request with URL, variable, level parameters for HTTP filter
-    let queryParameters = {
+    const queryParameters = {
       dir: subDirectory,
       file
     }
