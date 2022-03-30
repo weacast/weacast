@@ -4,8 +4,8 @@ import _ from 'lodash'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
 import spies from 'chai-spies'
-import core, { weacast } from 'weacast-core'
-import gfs from 'weacast-gfs'
+import core, { weacast } from '@weacast/core'
+import gfs from '@weacast/gfs'
 import probe from '../src'
 
 describe('weacast-probe', () => {

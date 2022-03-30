@@ -15,12 +15,25 @@ module.exports = {
   },
   authentication: {
     secret: 'b5KqXTye4fVxhGFpwMVZRO3R56wS5LNoJHifwgGOFkB5GfMWvIdrWyQxEJXswhAC',
-    strategies: [
-      'jwt',
-      'local'
-    ],
-    path: API_PREFIX + '/authentication',
-    service: API_PREFIX + '/users'
+    entity: 'user',
+    service: API_PREFIX + '/users',
+    authStrategies: ['jwt', 'local'],
+    local: {
+      usernameField: 'email',
+      passwordField: 'password'
+    },
+    jwtOptions: {
+      header: {
+        typ: 'access'
+      },
+      audience: 'https://yourdomain.com',
+      issuer: 'feathers',
+      algorithm: 'HS256',
+      expiresIn: '1d'
+    },
+    oauth: {
+      redirect: '/'
+    }
   },
   logs: {
     Console: {

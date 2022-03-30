@@ -26,7 +26,7 @@ The [Weacast docs](https://weacast.github.io/weacast-docs/) are loaded with awes
 Here's an example of a Weacast server that uses `weacast-alert`. 
 
 ```js
-import alertPlugin from 'weacast-alert'
+import alertPlugin from '@weacast/alert'
 
 module.exports = function() {
   const app = this

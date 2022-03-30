@@ -1,6 +1,6 @@
 import { disallow, when } from 'feathers-hooks-common'
 import _ from 'lodash'
-import { hooks } from 'weacast-core'
+import { hooks } from '@weacast/core'
 import { marshallResultsQuery, aggregateResultsQuery } from '../../hooks'
 
 // Used internally by bulk write to ensure hooks are still run as usual service call

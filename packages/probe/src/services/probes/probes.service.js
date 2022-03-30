@@ -4,7 +4,7 @@ import _ from 'lodash'
 import dot from 'dot-object'
 import moment from 'moment'
 import errors from '@feathersjs/errors'
-import { Grid } from 'weacast-core'
+import { Grid } from '@weacast/core'
 
 const debug = makeDebug('weacast:weacast-probe:service')
 const debugResults = makeDebug('weacast:weacast-probe:results')
