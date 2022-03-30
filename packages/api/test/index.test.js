@@ -6,8 +6,8 @@ import { Server } from '../src/server'
 
 describe('weacast-api', () => {
   let server
-  let now = new Date()
-  let logFilePath = path.join(__dirname, 'logs', 'weacast-' + now.toISOString().slice(0, 10) + '.log')
+  const now = new Date()
+  const logFilePath = path.join(__dirname, 'logs', 'weacast-' + now.toISOString().slice(0, 10) + '.log')
 
   before(() => {
     chailint(chai, util)
@@ -22,10 +22,10 @@ describe('weacast-api', () => {
     await server.run()
   })
   // Let enough time to process
-  .timeout(20000)
+    .timeout(20000)
 
   it('registers the users service', () => {
-    let service = server.app.getService('users')
+    const service = server.app.getService('users')
     expect(service).toExist()
   })
 
@@ -42,10 +42,10 @@ describe('weacast-api', () => {
         logs.forEach(log => expect(content.includes(log)).to.equal(true))
         done()
       })
-    }, 2500)
+    }, 8000)
   })
   // Let enough time to process
-  .timeout(10000)
+    .timeout(10000)
 
   // Cleanup
   after(async function () {

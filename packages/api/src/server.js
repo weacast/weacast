@@ -13,7 +13,7 @@ import distribution from '@kalisio/feathers-distributed'
 export class Server {
   constructor () {
     this.app = weacast()
-    let app = this.app
+    const app = this.app
 
     // Distribute services
     const distConfig = app.get('distribution')
@@ -38,7 +38,7 @@ export class Server {
   }
 
   async run () {
-    let app = this.app
+    const app = this.app
     // First try to connect to DB
     await app.db.connect()
     // Set up our services
@@ -60,13 +60,14 @@ export class Server {
     const httpsConfig = app.get('https')
     if (httpsConfig) {
       const port = httpsConfig.port
-      let server = https.createServer({
+      const server = https.createServer({
         key: fs.readFileSync(httpsConfig.key),
         cert: fs.readFileSync(httpsConfig.cert)
       }, app)
       logger.info('Configuring HTTPS server at port ' + port.toString())
       await server.listen(port)
-    } else {
+    }
+    else {
       const port = app.get('port')
       logger.info('Configuring HTTP server at port ' + port.toString())
       await app.listen(port)

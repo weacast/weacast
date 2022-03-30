@@ -7,7 +7,7 @@ const API_PREFIX = '/api'
 let loaders = [] // To embed local loaders: ['arpege', 'arome', 'gfs']
 if (process.env.LOADERS) loaders = process.env.LOADERS.split(',')
 // If using local loaders enable update only on selected loaders
-for (let [key, forecast] of Object.entries(forecasts)) {
+for (const [key, forecast] of Object.entries(forecasts)) {
   if (!loaders.includes(forecast.model)) forecast.updateInterval = -1
 }
 
@@ -21,10 +21,12 @@ let domain
 // If we build a specific staging instance
 if (process.env.VIRTUAL_HOST) {
   domain = 'http://' + process.env.VIRTUAL_HOST
-} else {
+}
+else {
   if (process.env.NODE_ENV === 'development') {
     domain = 'http://localhost:' + clientPort
-  } else {
+  }
+  else {
     domain = 'http://localhost:' + serverPort
   }
 }
@@ -73,7 +75,7 @@ module.exports = {
     ],
     path: API_PREFIX + '/authentication',
     service: API_PREFIX + '/users',
-    jwt: {
+    jwtOptions: {
       header: { typ: 'access' }, // See https://tools.ietf.org/html/rfc7519#section-5.1
       audience: process.env.SUBDOMAIN || 'kalisio', // The resource server where the token is processed
       issuer: 'kalisio', // The issuing server, application or resource
@@ -113,7 +115,7 @@ module.exports = {
       enabled: true,
       name: 'weacast-jwt',
       httpOnly: false,
-      secure: (process.env.NODE_ENV === 'development' ? false : true)
+      secure: (process.env.NODE_ENV !== 'development')
     }
   },
   logs: {
@@ -142,7 +144,7 @@ module.exports = {
   },
   services: {
     // Different apps might use different forecasts but target the same element database
-    //forecasts: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) },
+    // forecasts: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) },
     elements: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) },
     'probe-results': { ttl: 6 * 3600 }
   },
@@ -170,7 +172,7 @@ module.exports = {
           start: { hours: 0 },
           end: { hours: 24 }
         },
-        elements: [ 'windSpeed' ],
+        elements: ['windSpeed'],
         conditions: {
           windSpeed: { $gte: 0 } // Set a large range so that we are sure it will trigger
         }
@@ -178,7 +180,7 @@ module.exports = {
     }
   ],
   forecastPath: path.join(__dirname, '..', 'forecast-data'),
-  forecasts: [ forecasts.gfs05, forecasts.arpege01 ]
+  forecasts: [forecasts.gfs05, forecasts.arpege01]
 }
 
 /*

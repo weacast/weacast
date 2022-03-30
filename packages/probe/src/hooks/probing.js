@@ -8,7 +8,7 @@ import _ from 'lodash'
 const discardFeaturesField = discard('features')
 
 export function marshallResultsQuery (hook) {
-  let query = hook.params.query
+  const query = hook.params.query
   if (query) {
     // Need to convert from client/server side types : string
     if ((hook.service.app.db.adapter === 'mongodb') && (typeof query.probeId === 'string')) {
@@ -18,30 +18,30 @@ export function marshallResultsQuery (hook) {
 }
 
 export async function aggregateResultsQuery (hook) {
-  let query = hook.params.query
+  const query = hook.params.query
   if (query) {
     // Perform aggregation
     if (query.$aggregate) {
       const collection = hook.service.Model
-      const ids = typeof query.$groupBy === 'string'  // Group by matching ID(s), ie single ID or array of field to create a compound ID
+      const ids = typeof query.$groupBy === 'string' // Group by matching ID(s), ie single ID or array of field to create a compound ID
         ? { [query.$groupBy.replace('properties.', '')]: '$' + query.$groupBy }
         // Aggregated in an accumulator to avoid conflict with feature properties
         : query.$groupBy.reduce((object, id) => Object.assign(object, { [id.replace('properties.', '')]: '$' + id }), {})
-      let groupBy = {
+      const groupBy = {
         _id: ids,
         forecastTime: { $push: '$forecastTime' }, // Keep track of all forecast times
-        runTime: { $push: '$runTime' },           // Keep track of all run times
-        geometry: { $last: '$geometry' },         // geometry is similar for all results, keep last
-        type: { $last: '$type' },                 // type is similar for all results, keep last
-        properties: { $last: '$properties' }      // properties are similar for all results, keep last
+        runTime: { $push: '$runTime' }, // Keep track of all run times
+        geometry: { $last: '$geometry' }, // geometry is similar for all results, keep last
+        type: { $last: '$type' }, // type is similar for all results, keep last
+        properties: { $last: '$properties' } // properties are similar for all results, keep last
       }
       // The query contains the match stage except options relevent to the aggregation pipeline
-      let match = _.omit(query, ['$groupBy', '$aggregate'])
+      const match = _.omit(query, ['$groupBy', '$aggregate'])
       // Ensure we do not mix results with/without relevant element values
       // by separately querying each element then merging
       let aggregatedResults
       await Promise.all(query.$aggregate.map(async element => {
-        let elementResults = await collection.aggregate([
+        const elementResults = await collection.aggregate([
           // Find matching probre results only
           { $match: Object.assign({ ['properties.' + element]: { $exists: true } }, match) },
           // Ensure they are ordered by increasing forecast time and most recent forecast first
@@ -63,7 +63,7 @@ export async function aggregateResultsQuery (hook) {
         if (!aggregatedResults) aggregatedResults = elementResults
         else {
           elementResults.forEach(result => {
-            let previousResult = aggregatedResults.find(aggregatedResult => {
+            const previousResult = aggregatedResults.find(aggregatedResult => {
               const keys = _.keys(ids)
               return (_.isEqual(_.pick(aggregatedResult, keys), _.pick(result, keys)))
             })
@@ -87,7 +87,7 @@ export async function aggregateResultsQuery (hook) {
 }
 
 export function checkProbingType (hook) {
-  let query = hook.params.query
+  const query = hook.params.query
   // When performing on-demand probing nothing will be created in the DB
   // Simply return the probe object to be used by hooks
   if (!_.isNil(query) && !_.isNil(query.forecastTime)) {
@@ -98,13 +98,13 @@ export function checkProbingType (hook) {
 }
 
 export async function performProbing (hook) {
-  let query = hook.params.query
+  const query = hook.params.query
 
   let items = getItems(hook)
   const isArray = Array.isArray(items)
   items = (isArray ? items : [items])
 
-  let probePromises = []
+  const probePromises = []
   items.forEach(item => {
     probePromises.push(hook.service.probe(item, query))
   })
@@ -115,12 +115,12 @@ export async function performProbing (hook) {
 }
 
 export async function removeResults (hook) {
-  let resultService = hook.service.app.getService('probe-results')
+  const resultService = hook.service.app.getService('probe-results')
   let items = getItems(hook)
   const isArray = Array.isArray(items)
   items = (isArray ? items : [items])
 
-  let removePromises = []
+  const removePromises = []
   items.forEach(item => {
     // We have to remove listeners for results update first
     hook.service.unregisterForecastUpdates(item)
@@ -137,8 +137,8 @@ export async function removeResults (hook) {
 }
 
 export function removeFeatures (hook) {
-  let params = hook.params
-  let query = params.query
+  const params = hook.params
+  const query = params.query
 
   // Only discard if not explicitely asked by $select or when performing
   // on-demand probing (in this case the probing time is given)
