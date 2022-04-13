@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const pressureLevels = [ 1000, 700, 450, 300, 200 ] // unit is mb
+const pressureLevels = [1000, 700, 450, 300, 200] // unit is mb
 
 const gfsGroundElements = [{
   name: 'u-wind',
@@ -39,17 +39,17 @@ const gfsGroundElements = [{
   transform: (options) => options.value - 273.15
 }]
 
-const gfsIsobaricElements = pressureLevels.map(level =>({
+const gfsIsobaricElements = pressureLevels.map(level => ({
   name: `u-wind-${level}`,
   variable: 'var_UGRD',
   levels: [`lev_${level}_mb`],
   bucket: 0
-})).concat(pressureLevels.map(level =>({
+})).concat(pressureLevels.map(level => ({
   name: `v-wind-${level}`,
   variable: 'var_VGRD',
   levels: [`lev_${level}_mb`],
   bucket: 1
-}))).concat(pressureLevels.map(level =>({
+}))).concat(pressureLevels.map(level => ({
   name: `temperature-${level}`,
   variable: 'var_TMP',
   levels: [`lev_${level}_mb`],
@@ -100,24 +100,24 @@ const arpegeGroundElements = [{
   bucket: 0
   // Convert temperature from K to C°
   // Although it would be required according to documentation it does not seem to be
-  //transform: (options) => options.value - 273.15
+  // transform: (options) => options.value - 273.15
 }]
 
-const arpegeIsobaricElements = pressureLevels.map(level =>({
+const arpegeIsobaricElements = pressureLevels.map(level => ({
   name: `u-wind-${level}`,
   coverageid: 'U_COMPONENT_OF_WIND__ISOBARIC_SURFACE',
   subsets: {
     pressure: level
   },
   bucket: 0
-})).concat(pressureLevels.map(level =>({
+})).concat(pressureLevels.map(level => ({
   name: `v-wind-${level}`,
   coverageid: 'V_COMPONENT_OF_WIND__ISOBARIC_SURFACE',
   subsets: {
     pressure: level
   },
   bucket: 1
-}))).concat(pressureLevels.map(level =>({
+}))).concat(pressureLevels.map(level => ({
   name: `temperature-${level}`,
   coverageid: 'TEMPERATURE__ISOBARIC_SURFACE',
   subsets: {
@@ -126,10 +126,10 @@ const arpegeIsobaricElements = pressureLevels.map(level =>({
   bucket: 0
   // Convert temperature from K to C°
   // Although it would be required according to documentation it does not seem to be
-  //transform: (options) => options.value - 273.15
+  // transform: (options) => options.value - 273.15
 })))
 
-let gfs1 = {
+const gfs1 = {
   name: 'gfs-world-low',
   label: 'GFS - 1°',
   description: 'World-wide',
@@ -140,17 +140,17 @@ let gfs1 = {
   origin: [0, 90],
   size: [360, 181],
   resolution: [1, 1],
-  runInterval: 6 * 3600,          // Produced every 6h
-  oldestRunInterval: 24 * 3600,   // Don't go back in time older than 1 day
-  interval: 3 * 3600,             // Steps of 3h
-  lowerLimit: 0,                  // From T0
-  upperLimit: 240 * 3600,         // Up to T0+240
-  updateInterval: 15 * 60,        // Check for update every 15 minutes
+  runInterval: 6 * 3600, // Produced every 6h
+  oldestRunInterval: 24 * 3600, // Don't go back in time older than 1 day
+  interval: 3 * 3600, // Steps of 3h
+  lowerLimit: 0, // From T0
+  upperLimit: 240 * 3600, // Up to T0+240
+  updateInterval: 15 * 60, // Check for update every 15 minutes
   elements: gfsGroundElements
 }
-let gfs1IsobaricElements = gfsIsobaricElements
+const gfs1IsobaricElements = gfsIsobaricElements
 
-let gfs05 = {
+const gfs05 = {
   name: 'gfs-world',
   label: 'GFS - 0.5°',
   description: 'World-wide',
@@ -164,17 +164,17 @@ let gfs05 = {
   resolution: [0.5, 0.5],
   tileResolution: [20, 20],
   timeseries: false,
-  runInterval: 6 * 3600,          // Produced every 6h
-  oldestRunInterval: 24 * 3600,   // Don't go back in time older than 1 day
-  interval: 3 * 3600,             // Steps of 3h
-  lowerLimit: 0,                  // From T0
-  upperLimit: 240 * 3600,         // Up to T0+240
-  updateInterval: 15 * 60,        // Check for update every 15 minutes
+  runInterval: 6 * 3600, // Produced every 6h
+  oldestRunInterval: 24 * 3600, // Don't go back in time older than 1 day
+  interval: 3 * 3600, // Steps of 3h
+  lowerLimit: 0, // From T0
+  upperLimit: 240 * 3600, // Up to T0+240
+  updateInterval: 15 * 60, // Check for update every 15 minutes
   elements: gfsGroundElements
 }
-let gfs05IsobaricElements = gfsIsobaricElements
+const gfs05IsobaricElements = gfsIsobaricElements
 
-let gfs025 = {
+const gfs025 = {
   name: 'gfs-world-high',
   label: 'GFS - 0.25°',
   description: 'World-wide',
@@ -186,17 +186,17 @@ let gfs025 = {
   size: [1440, 721],
   resolution: [0.25, 0.25],
   tileResolution: [10, 10],
-  runInterval: 6 * 3600,          // Produced every 6h
-  oldestRunInterval: 24 * 3600,   // Don't go back in time older than 1 day
-  interval: 1 * 3600,             // Steps of 1h
-  lowerLimit: 0,                  // From T0
-  upperLimit: 16 * 3600,          // Up to T0+16
-  updateInterval: 15 * 60,        // Check for update every 15 minutes
+  runInterval: 6 * 3600, // Produced every 6h
+  oldestRunInterval: 24 * 3600, // Don't go back in time older than 1 day
+  interval: 1 * 3600, // Steps of 1h
+  lowerLimit: 0, // From T0
+  upperLimit: 16 * 3600, // Up to T0+16
+  updateInterval: 15 * 60, // Check for update every 15 minutes
   elements: gfsGroundElements
 }
-let gfs025IsobaricElements = gfsIsobaricElements
+const gfs025IsobaricElements = gfsIsobaricElements
 
-let arpege025 = {
+const arpege025 = {
   name: 'arpege-world',
   label: 'ARPEGE - 0.25°',
   description: 'World-wide',
@@ -209,17 +209,17 @@ let arpege025 = {
   resolution: [0.25, 0.25],
   tileResolution: [10, 10],
   timeseries: false,
-  runInterval: 6 * 3600,          // Produced every 6h
-  oldestRunInterval: 24 * 3600,   // Don't go back in time older than 1 day
-  interval: 3 * 3600,             // Steps of 3h
-  lowerLimit: 0,                  // From T0
-  upperLimit: 102 * 3600,         // Up to T0+102
-  updateInterval: 15 * 60,        // Check for update every 15 minutes
+  runInterval: 6 * 3600, // Produced every 6h
+  oldestRunInterval: 24 * 3600, // Don't go back in time older than 1 day
+  interval: 3 * 3600, // Steps of 3h
+  lowerLimit: 0, // From T0
+  upperLimit: 102 * 3600, // Up to T0+102
+  updateInterval: 15 * 60, // Check for update every 15 minutes
   elements: arpegeGroundElements.map(element => _.merge({ subsets: { long: [0, 360], lat: [-90, 90] } }, element))
 }
-let arpege025IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ subsets: { long: [0, 360], lat: [-90, 90] } }, element))
+const arpege025IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ subsets: { long: [0, 360], lat: [-90, 90] } }, element))
 
-let arpege01 = {
+const arpege01 = {
   name: 'arpege-europe',
   label: 'ARPEGE - 0.1°',
   description: 'Europe',
@@ -232,17 +232,17 @@ let arpege01 = {
   size: [741, 521],
   resolution: [0.1, 0.1],
   tileResolution: [4, 4],
-  runInterval: 6 * 3600,            // Produced every 6h
-  oldestRunInterval: 24 * 3600,     // Don't go back in time older than 1 day
-  interval: 1 * 3600,               // Steps of 1h
-  lowerLimit: 0,                    // From T0
-  upperLimit: 102 * 3600,           // Up to T0+102
-  updateInterval: 15 * 60,          // Check for update every 15 minutes
+  runInterval: 6 * 3600, // Produced every 6h
+  oldestRunInterval: 24 * 3600, // Don't go back in time older than 1 day
+  interval: 1 * 3600, // Steps of 1h
+  lowerLimit: 0, // From T0
+  upperLimit: 102 * 3600, // Up to T0+102
+  updateInterval: 15 * 60, // Check for update every 15 minutes
   elements: arpegeGroundElements.map(element => _.merge({ subsets: { long: [-32, 42], lat: [20, 72] } }, element))
 }
-let arpege01IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ subsets: { long: [-32, 42], lat: [20, 72] } }, element))
+const arpege01IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ subsets: { long: [-32, 42], lat: [20, 72] } }, element))
 
-let arome025 = {
+const arome025 = {
   name: 'arome-france',
   label: 'AROME - 0.025°',
   description: 'France',
@@ -254,19 +254,19 @@ let arome025 = {
   size: [801, 601],
   resolution: [0.025, 0.025],
   tileResolution: [1, 1],
-  runInterval: 3 * 3600,            // Produced every 3h
-  oldestRunInterval: 24 * 3600,     // Don't go back in time older than 1 day
-  interval: 1 * 3600,               // Steps of 1h
-  lowerLimit: 0,                    // From T0
-  upperLimit: 42 * 3600,            // Up to T0+42
-  updateInterval: 15 * 60,          // Check for update every 15 minutes
+  runInterval: 3 * 3600, // Produced every 3h
+  oldestRunInterval: 24 * 3600, // Don't go back in time older than 1 day
+  interval: 1 * 3600, // Steps of 1h
+  lowerLimit: 0, // From T0
+  upperLimit: 42 * 3600, // Up to T0+42
+  updateInterval: 15 * 60, // Check for update every 15 minutes
   elements: arpegeGroundElements.map(element => _.merge({ subsets: { long: [-8, 12], lat: [38, 53] } }, element))
 }
-let arome025IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ subsets: { long: [-8, 12], lat: [38, 53] } }, element))
+const arome025IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ subsets: { long: [-8, 12], lat: [38, 53] } }, element))
 
 // This model generates too much data to be stored in MongoDB documents (limited to 16 MB)
 // It requires the use of the 'gridfs' data store
-let arome01 = {
+const arome01 = {
   name: 'arome-france-high',
   label: 'AROME - 0.01°',
   description: 'France',
@@ -278,15 +278,15 @@ let arome01 = {
   size: [2001, 1501],
   resolution: [0.01, 0.01],
   tileResolution: [1, 1],
-  runInterval: 3 * 3600,            // Produced every 3h
-  oldestRunInterval: 24 * 3600,     // Don't go back in time older than 1 day
-  interval: 1 * 3600,               // Steps of 1h
-  lowerLimit: 0,                    // From T0
-  upperLimit: 42 * 3600,            // Up to T0+42
-  updateInterval: 15 * 60,          // Check for update every 15 minutes
+  runInterval: 3 * 3600, // Produced every 3h
+  oldestRunInterval: 24 * 3600, // Don't go back in time older than 1 day
+  interval: 1 * 3600, // Steps of 1h
+  lowerLimit: 0, // From T0
+  upperLimit: 42 * 3600, // Up to T0+42
+  updateInterval: 15 * 60, // Check for update every 15 minutes
   elements: arpegeGroundElements.map(element => _.merge({ dataStore: 'gridfs', subsets: { long: [-8, 12], lat: [38, 53] } }, element))
 }
-let arome01IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ dataStore: 'gridfs', subsets: { long: [-8, 12], lat: [38, 53] } }, element))
+const arome01IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ dataStore: 'gridfs', subsets: { long: [-8, 12], lat: [38, 53] } }, element))
 
 module.exports = {
   gfs1,

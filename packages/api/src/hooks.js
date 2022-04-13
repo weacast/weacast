@@ -1,11 +1,11 @@
 // Application hooks that run for every service
 import { hooks } from '@weacast/core'
 import commonHooks from 'feathers-hooks-common'
-const { authenticate } = require('@feathersjs/authentication').hooks
+import { authenticate } from '@feathersjs/authentication'
 
-module.exports = {
+export default {
   before: {
-    all: [ hooks.log,
+    all: [hooks.log,
       // We skip authentication in some cases
       commonHooks.when(hook => {
         const authConfig = hook.app.get('authentication')
@@ -14,13 +14,13 @@ module.exports = {
         if (hook.params.fromRemote && distributedConfig) {
           if (!distributedConfig.authentication) return false
         }
-              // First built-in Feathers services like authentication
+        // First built-in Feathers services like authentication
         if (!hook.service.name) return false
-              // Then user creation
+        // Then user creation
         if ((hook.service.name === 'users') && (hook.method === 'create')) return false
-              // If not exception perform authentication
+        // If not exception perform authentication
         return true
-      }, authenticate('jwt')) ],
+      }, authenticate('jwt'))],
     find: [],
     get: [],
     create: [],
@@ -30,7 +30,7 @@ module.exports = {
   },
 
   after: {
-    all: [ hooks.log ],
+    all: [hooks.log],
     find: [],
     get: [],
     create: [],
@@ -40,7 +40,7 @@ module.exports = {
   },
 
   error: {
-    all: [ hooks.log ],
+    all: [hooks.log],
     find: [],
     get: [],
     create: [],

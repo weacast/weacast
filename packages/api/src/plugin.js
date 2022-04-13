@@ -1,6 +1,6 @@
-const logger = require('winston')
+import logger from 'winston'
 
-module.exports = function () {
+export default function () {
   // Add your custom code here.
   // const app = this
 

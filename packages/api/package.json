@@ -3,8 +3,9 @@
   "description": "Weacast Microservice",
   "version": "1.6.2",
   "homepage": "https://github.com/weacast/weacast-api",
-  "main": "lib/",
+  "main": "src/main.js",
   "bin": "lib/main.js",
+  "type": "module",
   "keywords": [
     "weacast",
     "api",
@@ -24,8 +25,6 @@
     "url": "https://github.com/weacast/weacast-api/issues"
   },
   "scripts": {
-    "prepublish": "npm run compile",
-    "compile": "shx rm -rf lib/ && babel -d lib/ src/ -s",
     "dev": "nodemon --watch src --exec npm run debug",
     "dev:replica": "nodemon --watch src --exec npm run debug:replica",
     "predebug": "npm run compile",
@@ -33,12 +32,11 @@
     "debug:replica": "cross-env NODE_ENV=development node --inspect=localhost:9230 lib/main.js",
     "prod": "cross-env NODE_ENV=production node lib/main.js",
     "lint": "standard src/**/*.js test/**/*.js --fix",
-    "mocha": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --exit --require babel-core/register",
-    "test": "npm run compile && npm run lint && npm run mocha",
-    "start": "npm run compile && node lib/main.js"
+    "mocha": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --exit",
+    "test": "npm run lint && npm run mocha",
+    "start": "node lib/main.js"
   },
   "standard": {
-    "parser": "babel-eslint",
     "plugins": [
       "html"
     ],
@@ -67,13 +65,6 @@
     "winston": "^3.6.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-eslint": "^7.2.3",
-    "babel-plugin-add-module-exports": "^1.0.4",
-    "babel-plugin-transform-export-extensions": "^6.22.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
     "chai": "^4.3.6",
     "chai-lint": "^0.1.1",
     "colors": "^1.4.0",

@@ -1,11 +1,13 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 import logger from 'winston'
 import core, { initializeElements } from '@weacast/core'
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const modelPath = path.join(__dirname, 'models')
 const servicePath = path.join(__dirname, 'services')
 
-module.exports = async function () {
+export default async function () {
   const app = this
   const authConfig = app.get('authentication')
   // Setup app services
@@ -59,13 +61,13 @@ module.exports = async function () {
   }
 
   // Create default users if not already done
-  let usersService = app.getService('users')
+  const usersService = app.getService('users')
   if (usersService && authConfig) {
-    let defaultUsers = authConfig.defaultUsers
+    const defaultUsers = authConfig.defaultUsers
     if (defaultUsers) {
       const users = await usersService.find({ paginate: false })
       defaultUsers.forEach(defaultUser => {
-        let createdUser = users.find(user => user.email === defaultUser.email)
+        const createdUser = users.find(user => user.email === defaultUser.email)
         if (!createdUser) {
           logger.info('Initializing default user (email = ' + defaultUser.email + ', password = ' + defaultUser.password + ')')
           usersService.create({ email: defaultUser.email, password: defaultUser.password })

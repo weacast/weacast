@@ -3,10 +3,10 @@
 import fs from 'fs-extra'
 import logger from 'winston'
 import _ from 'lodash'
-import { Server } from './server'
+import { Server } from './server.js'
 
 async function main () {
-  let server = new Server()
+  const server = new Server()
 
   const config = server.app.get('logs')
   const logPath = _.get(config, 'DailyRotateFile.dirname')
@@ -26,6 +26,7 @@ async function main () {
 if (process.env.LAUNCH_DELAY) {
   logger.info(`Waiting ${process.env.LAUNCH_DELAY / 1000}s for server to start...`)
   setTimeout(main, process.env.LAUNCH_DELAY)
-} else {
+}
+else {
   main()
 }

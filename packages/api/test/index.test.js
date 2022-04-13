@@ -2,7 +2,10 @@ import fs from 'fs-extra'
 import path from 'path'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
-import { Server } from '../src/server'
+import { fileURLToPath } from 'url'
+import { Server } from '../src/server.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('weacast-api', () => {
   let server

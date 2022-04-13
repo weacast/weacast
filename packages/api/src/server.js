@@ -2,13 +2,14 @@ import fs from 'fs-extra'
 import https from 'https'
 import proxyMiddleware from 'http-proxy-middleware'
 import express from '@feathersjs/express'
-import middlewares from './middlewares'
-import services from './services'
-import hooks from './hooks'
-import channels from './channels'
 import logger from 'winston'
 import { weacast } from '@weacast/core'
 import distribution from '@kalisio/feathers-distributed'
+
+import middlewares from './middlewares.js'
+import services from './services.js'
+import hooks from './hooks.js'
+import channels from './channels.js'
 
 export class Server {
   constructor () {

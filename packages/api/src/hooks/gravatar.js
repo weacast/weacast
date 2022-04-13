@@ -9,7 +9,7 @@ const gravatarUrl = 'https://s.gravatar.com/avatar'
 // The size query. Our chat needs 60px images
 const query = 's=200'
 
-module.exports = function () {
+export default function () {
   return function (hook) {
     // The user email
     const { email } = hook.data

@@ -1,6 +1,6 @@
 const path = require('path')
 const containerized = require('containerized')()
-const forecasts = require('./forecasts')
+const forecasts = require('./forecasts.cjs')
 
 const API_PREFIX = '/api'
 
