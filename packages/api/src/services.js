@@ -18,7 +18,7 @@ export default async function () {
       return res.status(200).json({ isRunning: true })
     })
     if (authConfig) await app.createService('users', modelPath, servicePath)
-    app.configure(core)
+    await app.configure(core)
     // Setup if we use local loaders
     const loaders = app.get('loaders')
     if (loaders && loaders.length > 0) {
@@ -26,7 +26,8 @@ export default async function () {
       for (let i = 0; i < loaders.length; i++) {
         // Setup loader plugins by dynamically require them
         try {
-          const plugin = await import(`@weacast/${loaders[i]}`)
+          const pluginModule = await import(`@weacast/${loaders[i]}`)
+          const plugin = pluginModule.default
           await app.configure(plugin)
         } catch (error) {
           logger.error(error.message)

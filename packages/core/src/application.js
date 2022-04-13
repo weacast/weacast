@@ -39,7 +39,7 @@ async function configureService (name, service, servicesPath) {
     debug(name + ' service hooks configured on path ' + servicesPath)
   } catch (error) {
     debug('No ' + name + ' service hooks configured on path ' + servicesPath)
-    if (error.code !== 'MODULE_NOT_FOUND') {
+    if (error.code !== 'ERR_MODULE_NOT_FOUND') {
       // Log error in this case as this might be linked to a syntax error in required file
       debug(error)
     }
@@ -56,7 +56,7 @@ async function configureService (name, service, servicesPath) {
     debug(name + ' service channels configured on path ' + servicesPath)
   } catch (error) {
     debug('No ' + name + ' service channels configured on path ' + servicesPath)
-    if (error.code !== 'MODULE_NOT_FOUND') {
+    if (error.code !== 'ERR_MODULE_NOT_FOUND') {
       // Log error in this case as this might be linked to a syntax error in required file
       debug(error)
     }
@@ -94,7 +94,7 @@ export async function createService (name, app, modelsPath, servicesPath, option
     Object.assign(service, serviceMixin)
   } catch (error) {
     debug('No ' + name + ' service mixin configured on path ' + servicesPath)
-    if (error.code !== 'MODULE_NOT_FOUND') {
+    if (error.code !== 'ERR_MODULE_NOT_FOUND') {
       // Log error in this case as this might be linked to a syntax error in required file
       debug(error)
     }
@@ -221,7 +221,7 @@ export default function weacast () {
   // Load app configuration first
   app.configure(configuration())
   // Then setup logger
-  setupLogger(app.get('logs'))
+  //setupLogger(app.get('logs'))
 
   // This retrieve corresponding service options from app config if any
   app.getServiceOptions = function (name) {

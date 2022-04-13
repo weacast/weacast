@@ -12,7 +12,7 @@ export default {
     find: [],
     get: [],
     create: [feathersHooks.when(hook => _.get(hook.app.get('authentication'), 'disallowRegistration'), feathersHooks.disallow('external')),
-      github(), google(), oidc(), cognito(), hashPassword(), gravatar()],
+      github(), google(), oidc(), cognito(), hashPassword('password'), gravatar()],
     update: [],
     patch: [],
     remove: []
