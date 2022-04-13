@@ -221,7 +221,7 @@ export default function weacast () {
   // Load app configuration first
   app.configure(configuration())
   // Then setup logger
-  //setupLogger(app.get('logs'))
+  setupLogger(app.get('logs'))
 
   // This retrieve corresponding service options from app config if any
   app.getServiceOptions = function (name) {
