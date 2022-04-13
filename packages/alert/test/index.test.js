@@ -1,4 +1,5 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 import utility from 'util'
 import fs from 'fs-extra'
 import moment from 'moment'
@@ -8,7 +9,9 @@ import spies from 'chai-spies'
 import gfs from '@weacast/gfs'
 import core, { weacast } from '@weacast/core'
 import probe from '@weacast/probe'
-import alert from '../src'
+import alert from '../src/index.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('weacast-alert', () => {
   let app, uService, vService, probeService, probeResultService, alertService,
@@ -48,14 +51,14 @@ describe('weacast-alert', () => {
     return app.db.connect()
   })
 
-  it('is CommonJS compatible', () => {
+  it('is ES module compatible', () => {
     expect(typeof probe).to.equal('function')
   })
 
   it('registers the alerts service', async () => {
-    app.configure(core)
+    await app.configure(core)
     await app.configure(gfs)
-    app.configure(probe)
+    await app.configure(probe)
     uService = app.getService('gfs-world/u-wind')
     expect(uService).toExist()
     vService = app.getService('gfs-world/v-wind')
@@ -64,7 +67,7 @@ describe('weacast-alert', () => {
     expect(probeService).toExist()
     probeResultService = app.getService('probe-results')
     expect(probeResultService).toExist()
-    app.configure(alert)
+    await app.configure(alert)
     alertService = app.getService('alerts')
     expect(alertService).toExist()
     alertService.on('alerts', checkAlertEvent)
@@ -73,7 +76,7 @@ describe('weacast-alert', () => {
     spyCheckAlert = chai.spy.on(alertService, 'checkAlert')
   })
   // Let enough time to process
-  .timeout(5000)
+    .timeout(10000)
 
   it('creates probe', async () => {
     const data = await probeService.create(geojson)
@@ -82,7 +85,7 @@ describe('weacast-alert', () => {
     // await utility.promisify(setTimeout)(5000)
   })
   // Let enough time to process
-  .timeout(10000)
+    .timeout(10000)
 
   it('performs element download process and probing', async () => {
     // Clear any previous data
@@ -100,7 +103,7 @@ describe('weacast-alert', () => {
     */
   })
   // Let enough time to download a couple of data
-  .timeout(60000)
+    .timeout(60000)
 
   it('creates active alert on-demand at specific location', async () => {
     const now = moment.utc()
@@ -112,7 +115,7 @@ describe('weacast-alert', () => {
         end: { hours: 6 }
       },
       forecast: 'gfs-world',
-      elements: [ 'u-wind', 'v-wind', 'windSpeed' ],
+      elements: ['u-wind', 'v-wind', 'windSpeed'],
       conditions: {
         geometry: {
           type: 'Point',
@@ -142,7 +145,7 @@ describe('weacast-alert', () => {
     expect(results[0].status.checkedAt.isSameOrAfter(results[0].status.triggeredAt.format())).beTrue()
   })
   // Let enough time to process
-  .timeout(15000)
+    .timeout(15000)
 
   it('removes active alert on-demand', async () => {
     await alertService.remove(alertObject._id.toString())
@@ -156,7 +159,7 @@ describe('weacast-alert', () => {
     spyCheckAlert.reset()
   })
   // Let enough time to process
-  .timeout(10000)
+    .timeout(10000)
 
   it('creates inactive alert on-demand at specific location', async () => {
     alertObject = await alertService.create({
@@ -167,7 +170,7 @@ describe('weacast-alert', () => {
         end: { hours: 6 }
       },
       forecast: 'gfs-world',
-      elements: [ 'u-wind', 'v-wind', 'windSpeed' ],
+      elements: ['u-wind', 'v-wind', 'windSpeed'],
       conditions: {
         geometry: {
           type: 'Point',
@@ -198,7 +201,7 @@ describe('weacast-alert', () => {
     resetAlertEvent()
   })
   // Let enough time to process
-  .timeout(15000)
+    .timeout(15000)
 
   it('creates active alert on probes', async () => {
     const now = moment.utc()
@@ -211,13 +214,13 @@ describe('weacast-alert', () => {
         start: { hours: -6 },
         end: { hours: 6 }
       },
-      elements: [ 'windSpeed' ],
+      elements: ['windSpeed'],
       conditions: {
         geometry: {
           $geoWithin: {
             // 1 meter around so that no feature except the target one should be covered, convert approximately in radians,
             // see https://docs.mongodb.com/manual/tutorial/calculate-distances-using-spherical-geometry-with-2d-geospatial-indexes/
-            $centerSphere: [ geojson.features[0].geometry.coordinates, 1.0 / 6378137.0 ]
+            $centerSphere: [geojson.features[0].geometry.coordinates, 1.0 / 6378137.0]
           }
         },
         windSpeed: { $gte: 0 } // Set a large range so that we are sure it will trigger
@@ -244,7 +247,7 @@ describe('weacast-alert', () => {
     expect(results[0].status.checkedAt.isSameOrAfter(results[0].status.triggeredAt.format())).beTrue()
   })
   // Let enough time to process
-  .timeout(15000)
+    .timeout(15000)
 
   it('removes active alert on probes', async () => {
     await alertService.remove(alertObject._id.toString())
@@ -258,7 +261,7 @@ describe('weacast-alert', () => {
     spyCheckAlert.reset()
   })
   // Let enough time to process
-  .timeout(10000)
+    .timeout(10000)
 
   it('creates inactive alert on probes', async () => {
     alertObject = await alertService.create({
@@ -269,7 +272,7 @@ describe('weacast-alert', () => {
         start: { hours: -6 },
         end: { hours: 6 }
       },
-      elements: [ 'windSpeed' ],
+      elements: ['windSpeed'],
       conditions: {
         windSpeed: { $lt: -10 } // Set an invalid range so that we are sure it will not trigger
       }
@@ -296,7 +299,7 @@ describe('weacast-alert', () => {
     spyUnregisterAlert.reset()
   })
   // Let enough time to process
-  .timeout(15000)
+    .timeout(15000)
 
   it('creates expiring alert on probes', async () => {
     const now = moment.utc()
@@ -309,7 +312,7 @@ describe('weacast-alert', () => {
         start: { hours: -6 },
         end: { hours: 6 }
       },
-      elements: [ 'windSpeed' ],
+      elements: ['windSpeed'],
       conditions: {
         windSpeed: { $gte: 0 } // Set a large range so that we are sure it will trigger
       }
@@ -333,7 +336,7 @@ describe('weacast-alert', () => {
     expect(results.length).to.equal(0)
   })
   // Let enough time to process
-  .timeout(100000)
+    .timeout(100000)
 
   // Cleanup
   after(() => {

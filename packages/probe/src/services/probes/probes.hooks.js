@@ -1,15 +1,15 @@
-import { disallow } from 'feathers-hooks-common'
+import feathersHooks from 'feathers-hooks-common'
 import { hooks } from '@weacast/core'
-import { checkProbingType, performProbing, removeResults, removeFeatures } from '../../hooks'
+import { checkProbingType, performProbing, removeResults, removeFeatures } from '../../hooks/index.js'
 
-module.exports = {
+export default {
   before: {
-    all: [ hooks.marshallQuery ],
+    all: [hooks.marshallQuery],
     find: [],
     get: [],
-    create: [ checkProbingType ],
-    update: disallow(),
-    patch: disallow(),
+    create: [checkProbingType],
+    update: feathersHooks.disallow(),
+    patch: feathersHooks.disallow(),
     remove: []
   },
 
@@ -17,14 +17,14 @@ module.exports = {
     // By default do not response with layer geometry if not explicitely asked for
     // Do not set the removeFeatures hook in all because probing needs to be done first on creation
     all: [],
-    find: [ removeFeatures ],
-    get: [ removeFeatures ],
+    find: [removeFeatures],
+    get: [removeFeatures],
     // Perform probing on insert
-    create: [ performProbing, removeFeatures ],
-    update: [ removeFeatures ],
-    patch: [ removeFeatures ],
+    create: [performProbing, removeFeatures],
+    update: [removeFeatures],
+    patch: [removeFeatures],
     // Perform results removing on delete
-    remove: [ removeResults ]
+    remove: [removeResults]
   },
 
   error: {

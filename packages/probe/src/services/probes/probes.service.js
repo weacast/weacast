@@ -42,8 +42,8 @@ export default {
   async updateFeaturesInDatabase (features, probe, elementService, forecast) {
     const { runTime, forecastTime } = forecast
     // Get the service to store results in
-    let resultService = this.app.getService('probe-results')
-    let operations = []
+    const resultService = this.app.getService('probe-results')
+    const operations = []
     const elementName = elementService.element.name
     const propertyName = 'properties.' + elementName
     const isComponentOfDirection = isDirectionElement(elementName)
@@ -60,7 +60,7 @@ export default {
       const feature = features[i]
       // Check if something to store for the element
       if (_.has(feature, propertyName)) {
-        let data = {
+        const data = {
           [propertyName]: _.get(feature, propertyName)
         }
         // Update derived direction values as well in this case
@@ -80,7 +80,7 @@ export default {
           // This can actually cause weird bugs like https://github.com/weacast/weacast-probe/issues/53
           // because it updates data in place to eg convert times to moment objects,
           // probably better to call hooks manually whenever required
-          //await resultService.update(feature._id, data, { bulk: true })
+          // await resultService.update(feature._id, data, { bulk: true })
           // Create bulk operation for update
           operations.push({
             updateOne: {
@@ -108,7 +108,7 @@ export default {
           baseFeature.probeId = probe._id
           baseFeature['geometry.coordinates'] = _.get(feature, 'geometry.coordinates')
           // Create bulk operation for insert or update
-          let filter = { // In this case we query by forecastTime/runTime/probeId
+          const filter = { // In this case we query by forecastTime/runTime/probeId
             runTime: new Date(runTime.format()),
             forecastTime: new Date(forecastTime.format()),
             probeId: probe._id
@@ -125,7 +125,7 @@ export default {
           // This can actually cause weird bugs like https://github.com/weacast/weacast-probe/issues/53
           // because it updates data in place to eg convert times to moment objects,
           // probably better to call hooks manually whenever required
-          //await resultService.create(data, { bulk: true })
+          // await resultService.create(data, { bulk: true })
           operations.push({
             updateOne: {
               filter,
@@ -141,7 +141,7 @@ export default {
     }
     // Run DB updates
     try {
-      let response = await resultService.Model.bulkWrite(operations)
+      const response = await resultService.Model.bulkWrite(operations)
 
       logger.verbose(`Produced ${response.upsertedCount + response.modifiedCount} results (${response.upsertedCount} creates - ${response.modifiedCount} updates)
                       for probe ${probe._id} on element ${elementService.forecast.name + '/' + elementService.element.name}
@@ -183,14 +183,14 @@ export default {
     const directionProperty = directionElement + 'Direction' + suffix
     // Check if a bearing property is given to compute direction relatively to
     const bearingProperty = directionElement + 'BearingProperty'
-    const bearingPropertyName = probe.hasOwnProperty(bearingProperty) ? probe[bearingProperty] : undefined
+    const bearingPropertyName = _.has(probe, bearingProperty) ? _.get(probe, bearingProperty) : undefined
     const bearingDirectionProperty = directionElement + 'BearingDirection' + suffix
 
     features.forEach(feature => {
       // Check if we process on-demand probing for a time range
       const isTimeRange = (feature.forecastTime && !moment.isMoment(feature.forecastTime))
       if (probe._id) feature.probeId = probe._id
-      let value = grid.interpolate(feature.geometry.coordinates[0], feature.geometry.coordinates[1])
+      const value = grid.interpolate(feature.geometry.coordinates[0], feature.geometry.coordinates[1])
       if (!_.isNil(value) && isFinite(value)) { // Prevent values outside grid bbox
         // Store interpolated element value
         if (isTimeRange) {
@@ -214,7 +214,7 @@ export default {
           // Only possible if both elements are already computed
           if (!_.isNil(u) && !_.isNil(v) && isFinite(u) && isFinite(v)) {
             // Compute direction expressed in meteorological convention, i.e. angle from which the flow comes
-            let norm = Math.sqrt(u * u + v * v)
+            const norm = Math.sqrt(u * u + v * v)
             let direction = 180.0 + Math.atan2(u, v) * 180.0 / Math.PI
             // Then store it
             // Check if we process on-demand probing for a time range
@@ -230,7 +230,7 @@ export default {
             }
             // Compute bearing relatively to a bearing property if given
             if (bearingPropertyName) {
-              let bearing = _.toNumber(feature.properties[bearingPropertyName])
+              const bearing = _.toNumber(feature.properties[bearingPropertyName])
               if (isFinite(bearing)) {
                 // Take care that bearing uses the geographical convention, i.e. angle toward which the element goes,
                 // we need to convert from meteorological convention, i.e. angle from which the flow comes
@@ -261,14 +261,14 @@ export default {
     // Retrieve forecast data if required
     let forecastData = data
     if (!forecastData) {
-      let query = {
+      const query = {
         $select: ['data']
       }
       debug('No forecast data provided for probe ' + (probe._id ? probe._id : 'on-demand') + ' on element ' + elementService.forecast.name + '/' + elementService.element.name +
             ' at ' + forecastTime.format() + ' on run ' + runTime.format() + ', querying existing one', query)
       // If we have an ID we will use it, otherwise request by forecast time
       if (_id) {
-        let response = await elementService.get(_id.toString(), { query })
+        const response = await elementService.get(_id.toString(), { query })
         forecastData = response.data
       } else {
         query.forecastTime = forecastTime
@@ -283,7 +283,7 @@ export default {
             timeseries: false // Probe single time not timeseries
           })
         }
-        let response = await elementService.find({ query })
+        const response = await elementService.find({ query })
         forecastData = (response.data.length > 0 ? response.data[0].data : null)
       }
     }
@@ -316,15 +316,15 @@ export default {
 
   async getResultsForProbe (probe, elementService, forecast) {
     // Get the service to read results in
-    let resultService = this.app.getService('probe-results')
-    let query = {
+    const resultService = this.app.getService('probe-results')
+    const query = {
       forecastTime: forecast.forecastTime,
       probeId: probe._id
     }
     if (elementService.forecast.keepPastRuns || elementService.element.keepPastRuns) {
       query.runTime = forecast.runTime
     }
-    let results = await resultService.find({
+    const results = await resultService.find({
       paginate: false,
       query
     })
@@ -349,16 +349,16 @@ export default {
   registerForecastUpdates (probe) {
     const refreshCallbackName = this.getRefreshCallbackName(probe)
     // Retrieve target elements
-    let services = this.getElementServicesForProbe(probe)
+    const services = this.getElementServicesForProbe(probe)
     services.forEach(service => {
       const app = service.app
       const forecastName = service.forecast.name
       const elementName = service.element.name
       // Callback to be called (if not already registered)
-      if (!service.hasOwnProperty(refreshCallbackName)) {
+      if (!_.has(service, refreshCallbackName)) {
         debug('No existing refresh callback for probe ' + probe._id.toString() + ' on element ' + forecastName + '/' + elementName + ', registering')
         // Internal callback
-        let refreshCallback = async forecast => {
+        const refreshCallback = async forecast => {
           // Do not process tiles but only raw data
           if (forecast.geometry) return
           // Find probe results associated to this forecast data set
@@ -368,7 +368,7 @@ export default {
             let features = await this.getResultsForProbe(probe, service, forecast)
             // Possible on first probing
             if (features.length === 0) {
-              let result = await this.get(probe._id, { query: { $select: ['forecast', 'elements', 'features'] } })
+              const result = await this.get(probe._id, { query: { $select: ['forecast', 'elements', 'features'] } })
               features = result.features
             }
             logger.verbose('Probing forecast data for element ' + forecastName + '/' + elementName + ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
@@ -383,7 +383,7 @@ export default {
           }
         }
         // External callback
-        let syncRefreshCallback = async (forecast) => {
+        const syncRefreshCallback = async (forecast) => {
           // Need to convert from string to in-memory date objects
           forecast.runTime = moment.utc(forecast.runTime)
           forecast.forecastTime = moment.utc(forecast.forecastTime)
@@ -406,7 +406,7 @@ export default {
   unregisterForecastUpdates (probe) {
     const refreshCallbackName = this.getRefreshCallbackName(probe)
     // Retrieve target elements
-    let services = this.getElementServicesForProbe(probe)
+    const services = this.getElementServicesForProbe(probe)
     services.forEach(service => {
       // Unregister for forecast data update
       debug('Removing existing refresh callback for probe ' + probe._id.toString() + ' on element ' + service.forecast.name + '/' + service.element.name + ', registering')
@@ -453,27 +453,27 @@ export default {
       this.registerForecastUpdates(probe)
     } else {
       // Retrieve target elements
-      let services = this.getElementServicesForProbe(probe)
+      const services = this.getElementServicesForProbe(probe)
       debug('Probing following services for on-demand probe', services.map(service => service.name))
       // When probing a location we use tiles, take care to use only single time tiles not aggregated if any
-      let forecastQuery = (geometry ? { timeseries: false } : {})
+      const forecastQuery = (geometry ? { timeseries: false } : {})
       Object.assign(forecastQuery, _.omit(query, ['aggregate']))
       debug('Probing query', forecastQuery)
       // Then run all probes
       try {
         // Initialize features data
-        let features = probe.features
+        const features = probe.features
         features.forEach(feature => {
           // If we have a time range for on-demand probing tag features using an array
           if (isTimeRange && !feature.forecastTime) feature.forecastTime = {}
           // Take care to initialize properties holder if not given in input feature
           if (!feature.properties) feature.properties = {}
         })
-        for (let service of services) {
+        for (const service of services) {
           // Will get all available forecast times (probing stream) or selected one(s) (on-demand probe)
-          let forecasts = await service.find({ paginate: false, query: forecastQuery })
+          const forecasts = await service.find({ paginate: false, query: forecastQuery })
           debug('Probing following forecasts for probe ' + (probe._id ? probe._id : 'on-demand '), forecasts)
-          for (let forecast of forecasts) {
+          for (const forecast of forecasts) {
             // Ask to retrieve forecast data and perform probing
             await this.probeForecastTime(features, probe, service, forecast)
           }
@@ -485,7 +485,7 @@ export default {
 
     if (forecastTime && isTimeRange) {
       // If we do not aggregate and generate a separated feature per time
-      let features = {}
+      const features = {}
       // Rearrange data so that we get ordered arrays indexed by element instead of maps
       probe.features.forEach(feature => {
         // Split data according to time if required
@@ -495,7 +495,7 @@ export default {
               const featureId = (Array.isArray(probe.featureId)
                 ? probe.featureId.map(id => _.get(feature, id)).join('-')
                 : _.get(feature, probe.featureId))
-              let featuresForId = features[featureId]
+              const featuresForId = features[featureId]
               let featureForTime
               if (featuresForId) featureForTime = featuresForId[time]
               if (!featureForTime) {
@@ -516,7 +516,7 @@ export default {
           feature.runTime = _.mapValues(feature.runTime,
             (times, element) => times.map(time => moment.utc(time)).sort((a, b) => a - b))
           // Then build the associated array of interpolated values
-          let properties = {}
+          const properties = {}
           _.forOwn(feature.forecastTime, (times, element) => {
             properties[element] = []
             times.forEach(time => properties[element].push(this.getValueAtTime(feature, element, time)))

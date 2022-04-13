@@ -1,7 +1,7 @@
 import fs from 'fs-extra'
 import path from 'path'
 import logger from 'winston'
-import { getNearestRunTime, getNearestForecastTime } from '../common'
+import { getNearestRunTime, getNearestForecastTime } from '../common/index.js'
 
 export default {
 

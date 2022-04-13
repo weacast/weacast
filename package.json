@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "install": "lerna bootstrap",
+    "lint": "lerna run lint",
     "test": "nyc lerna run test"
   },
   "devDependencies": {

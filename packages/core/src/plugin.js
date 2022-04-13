@@ -1,5 +1,5 @@
 import logger from 'winston'
-import initializeElements from './elements'
+import initializeElements from './elements.js'
 
 // Create all element services
 export default async function initializePlugin (app, name, servicesPath) {

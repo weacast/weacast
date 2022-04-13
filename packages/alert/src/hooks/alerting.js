@@ -1,12 +1,12 @@
 // import logger from 'winston'
 // import makeDebug from 'debug'
-import { getItems, replaceItems } from 'feathers-hooks-common'
+import feathersHooks from 'feathers-hooks-common'
 import { hooks } from '@weacast/core'
 // const debug = makeDebug('weacast:weacast-core')
 
 // Need to convert from server side types (moment dates) to basic JS types when "writing" to DB adapters
 export function marshallAlert (hook) {
-  let items = getItems(hook)
+  let items = feathersHooks.getItems(hook)
   const isArray = Array.isArray(items)
   items = (isArray ? items : [items])
 
@@ -18,12 +18,12 @@ export function marshallAlert (hook) {
     if (item.conditions) item.conditions = JSON.stringify(item.conditions)
   })
 
-  replaceItems(hook, isArray ? items : items[0])
+  feathersHooks.replaceItems(hook, isArray ? items : items[0])
 }
 
 // Need to convert back to server side types (moment dates) from basic JS types when "reading" from DB adapters
 export function unmarshallAlert (hook) {
-  let items = getItems(hook)
+  let items = feathersHooks.getItems(hook)
   const isArray = Array.isArray(items)
   items = (isArray ? items : [items])
 
@@ -35,5 +35,5 @@ export function unmarshallAlert (hook) {
     if (item.conditions) item.conditions = JSON.parse(item.conditions)
   })
 
-  replaceItems(hook, isArray ? items : items[0])
+  feathersHooks.replaceItems(hook, isArray ? items : items[0])
 }

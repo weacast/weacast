@@ -1,5 +1,8 @@
 import _ from 'lodash'
 import logger from 'winston'
+import makeDebug from 'debug'
+
+const debug = makeDebug('weacast:weacast-core')
 
 // Create all element services
 export default async function initializeElements (app, forecast, servicesPath) {
@@ -19,7 +22,7 @@ export default async function initializeElements (app, forecast, servicesPath) {
   }
 
   // Create download buckets
-  let elementBuckets = {}
+  const elementBuckets = {}
   forecast.elements.forEach(element => {
     const bucket = element.bucket || 0
     // Initialize bucket
@@ -30,14 +33,25 @@ export default async function initializeElements (app, forecast, servicesPath) {
   // Then generate services for each forecast element in buckets
   // Retrieve generic elements options if any
   const elementServiceOptions = app.getServiceOptions('elements')
-  elementBuckets = _.mapValues(elementBuckets, elements => {
-    return elements.map(element => app.createElementService(forecast, element, servicesPath,
-      Object.assign({}, element.serviceOptions, elementServiceOptions)))
-  })
+  const buckets = _.keys(elementBuckets)
+  // Iterate over buckets
+  for (let i = 0; i < buckets.length; i++) {
+    const bucket = buckets[i]
+    const elements = elementBuckets[bucket]
+    const elementServices = []
+    for (let j = 0; j < elements.length; j++) {
+      const element = elements[j]
+      debug('Creating service for element ' + element.name)
+      const elementService = await app.createElementService(forecast, element, servicesPath,
+        Object.assign({}, element.serviceOptions, elementServiceOptions))
+      elementServices.push(elementService)
+    }
+    // Keep track of services
+    elementBuckets[bucket] = elementServices
+  }
 
   async function update () {
     // Iterate over buckets
-    const buckets = _.keys(elementBuckets)
     for (let i = 0; i < buckets.length; i++) {
       const bucket = buckets[i]
       // For each bucket launch download tasks in parallel
@@ -67,7 +81,7 @@ export default async function initializeElements (app, forecast, servicesPath) {
   async function clean () {
     // Iterate over required elements
     for (let i = 0; i < elementsToClean.length; i++) {
-      let service = app.getService(forecast.name + '/' + elementsToClean[i].name)
+      const service = app.getService(forecast.name + '/' + elementsToClean[i].name)
       // Launch clean task
       try {
         await service.cleanForecastData()

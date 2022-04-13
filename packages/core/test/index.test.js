@@ -1,12 +1,14 @@
-
 import path from 'path'
+import { fileURLToPath } from 'url'
 import logger from 'winston'
 import fs from 'fs-extra'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
 import moment from 'moment'
-import core, { weacast } from '../src'
-import { getNearestRunTime, getNearestForecastTime } from '../src/common'
+import core, { weacast } from '../src/index.js'
+import { getNearestRunTime, getNearestForecastTime } from '../src/common/index.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('weacast-core', () => {
   let app
@@ -18,7 +20,7 @@ describe('weacast-core', () => {
     return app.db.connect()
   })
 
-  it('is CommonJS compatible', () => {
+  it('is ES module compatible', () => {
     expect(typeof core).to.equal('function')
   })
 
@@ -35,20 +37,20 @@ describe('weacast-core', () => {
     expect(forecastDate.format()).to.equal(moment.utc('2018-11-08T00:00:00.000Z').format())
   })
 
-  it('registers the forecasts service', () => {
-    app.configure(core)
-    let service = app.getService('forecasts')
+  it('registers the forecasts service', async () => {
+    await app.configure(core)
+    const service = app.getService('forecasts')
     expect(service).toExist()
   })
 
   it('registers the log options', (done) => {
-    let log = 'This is a log test'
-    let now = new Date()
+    const log = 'This is a log test'
+    const now = new Date()
     logger.info(log)
     // FIXME: need to let some time to proceed with log file
     // Didn't find a better way since fs.watch() does not seem to work...
     setTimeout(() => {
-      let logFilePath = path.join(__dirname, 'test-log-' + now.toLocaleString('sv').slice(0, 10) + '.log')
+      const logFilePath = path.join(__dirname, 'test-log-' + now.toLocaleString('sv').slice(0, 10) + '.log')
       fs.readFile(logFilePath, 'utf8', (err, content) => {
         expect(err).beNull()
         expect(content.includes(log)).to.equal(true)
@@ -57,5 +59,5 @@ describe('weacast-core', () => {
     }, 2500)
   })
   // Let enough time to process
-  .timeout(5000)
+    .timeout(5000)
 })

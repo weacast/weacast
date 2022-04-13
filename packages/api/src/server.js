@@ -1,4 +1,5 @@
 import fs from 'fs-extra'
+import { pathToFileURL } from 'url'
 import https from 'https'
 import proxyMiddleware from 'http-proxy-middleware'
 import express from '@feathersjs/express'
@@ -53,7 +54,8 @@ export class Server {
     // Custom configuration entry point if any
     const pluginPath = app.get('pluginPath')
     if (fs.pathExistsSync(pluginPath)) {
-      const plugin = require(pluginPath)
+      const pluginModule = await import(pathToFileURL(pluginPath))
+      const plugin = pluginModule.default
       await app.configure(plugin)
     }
 
@@ -67,8 +69,7 @@ export class Server {
       }, app)
       logger.info('Configuring HTTPS server at port ' + port.toString())
       await server.listen(port)
-    }
-    else {
+    } else {
       const port = app.get('port')
       logger.info('Configuring HTTP server at port ' + port.toString())
       await app.listen(port)

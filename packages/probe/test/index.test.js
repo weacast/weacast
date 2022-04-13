@@ -1,4 +1,5 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 import fs from 'fs-extra'
 import _ from 'lodash'
 import chai, { util, expect } from 'chai'
@@ -6,7 +7,9 @@ import chailint from 'chai-lint'
 import spies from 'chai-spies'
 import core, { weacast } from '@weacast/core'
 import gfs from '@weacast/gfs'
-import probe from '../src'
+import probe from '../src/index.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('weacast-probe', () => {
   let app, uService, vService, probeService, probeResultService,
@@ -24,25 +27,25 @@ describe('weacast-probe', () => {
 
     app = weacast()
     return app.db.connect()
-    .then(_ => {
+      .then(_ => {
       // Disable TTL because we keep past forecast times so that the number of forecasts is predictable for tests
       // but otherwise MongoDB will remove them automatically
-      app.db._db.executeDbAdminCommand({ setParameter: 1, ttlMonitorEnabled: false })
-    })
+        app.db._db.executeDbAdminCommand({ setParameter: 1, ttlMonitorEnabled: false })
+      })
   })
 
-  it('is CommonJS compatible', () => {
+  it('is ES module compatible', () => {
     expect(typeof probe).to.equal('function')
   })
 
   it('registers the probes service', async () => {
-    app.configure(core)
+    await app.configure(core)
     await app.configure(gfs)
     uService = app.getService('gfs-world/u-wind')
     expect(uService).toExist()
     vService = app.getService('gfs-world/v-wind')
     expect(vService).toExist()
-    app.configure(probe)
+    await app.configure(probe)
     probeService = app.getService('probes')
     expect(probeService).toExist()
     probeResultService = app.getService('probe-results')
@@ -51,7 +54,7 @@ describe('weacast-probe', () => {
     spyUpdate = chai.spy.on(probeService, 'updateFeaturesInDatabase')
   })
   // Let enough time to process
-  .timeout(5000)
+    .timeout(5000)
 
   it('performs element download process', async () => {
     // Clear any previous data
@@ -65,7 +68,7 @@ describe('weacast-probe', () => {
     ])
   })
   // Let enough time to download a couple of data
-  .timeout(60000)
+    .timeout(60000)
 
   it('performs probing element on-demand at forecast time', async () => {
     const forecasts = await uService.find({ paginate: false })
@@ -92,21 +95,21 @@ describe('weacast-probe', () => {
       expect(typeof feature.properties['u-wind']).to.equal('number')
       expect(typeof feature.properties['v-wind']).to.equal('number')
       // Test if derived direction values are also present
-      expect(feature.properties['windDirection']).toExist()
-      expect(feature.properties['windSpeed']).toExist()
-      expect(typeof feature.properties['windDirection']).to.equal('number')
-      expect(typeof feature.properties['windSpeed']).to.equal('number')
+      expect(feature.properties.windDirection).toExist()
+      expect(feature.properties.windSpeed).toExist()
+      expect(typeof feature.properties.windDirection).to.equal('number')
+      expect(typeof feature.properties.windSpeed).to.equal('number')
     })
     // For debug purpose only
     // fs.outputJsonSync(path.join(__dirname, 'data', 'runways-probe.geojson'), data.layer)
   })
   // Let enough time to process
-  .timeout(10000)
+    .timeout(10000)
 
   it('performs probing element on-demand at specific location for forecast time range', async () => {
     const geometry = {
       type: 'Point',
-      coordinates: [ 1.5, 43 ]
+      coordinates: [1.5, 43]
     }
     const query = {
       forecastTime: {
@@ -151,34 +154,34 @@ describe('weacast-probe', () => {
     expect(typeof feature.properties['u-wind'][1]).to.equal('number')
     expect(typeof feature.properties['v-wind'][1]).to.equal('number')
     // Test if derived direction values are also present
-    expect(feature.forecastTime['windDirection']).toExist()
-    expect(feature.forecastTime['windSpeed']).toExist()
-    expect(feature.forecastTime['windDirection'].length).to.equal(2)
-    expect(feature.forecastTime['windSpeed'].length).to.equal(2)
-    expect(feature.forecastTime['windDirection'][0].isBefore(feature.forecastTime['windDirection'][1])).beTrue()
-    expect(feature.forecastTime['windSpeed'][0].isBefore(feature.forecastTime['windSpeed'][1])).beTrue()
-    expect(feature.runTime['windDirection']).toExist()
-    expect(feature.runTime['windSpeed']).toExist()
-    expect(feature.runTime['windDirection'].length).to.equal(2)
-    expect(feature.runTime['windSpeed'].length).to.equal(2)
-    expect(feature.runTime['windDirection'][0].isSameOrBefore(feature.runTime['windDirection'][1])).beTrue()
-    expect(feature.runTime['windSpeed'][0].isSameOrBefore(feature.runTime['windSpeed'][1])).beTrue()
-    expect(feature.properties['windDirection']).toExist()
-    expect(feature.properties['windSpeed']).toExist()
-    expect(feature.properties['windDirection'].length).to.equal(2)
-    expect(feature.properties['windSpeed'].length).to.equal(2)
-    expect(typeof feature.properties['windDirection'][0]).to.equal('number')
-    expect(typeof feature.properties['windSpeed'][0]).to.equal('number')
-    expect(typeof feature.properties['windDirection'][1]).to.equal('number')
-    expect(typeof feature.properties['windSpeed'][1]).to.equal('number')
+    expect(feature.forecastTime.windDirection).toExist()
+    expect(feature.forecastTime.windSpeed).toExist()
+    expect(feature.forecastTime.windDirection.length).to.equal(2)
+    expect(feature.forecastTime.windSpeed.length).to.equal(2)
+    expect(feature.forecastTime.windDirection[0].isBefore(feature.forecastTime.windDirection[1])).beTrue()
+    expect(feature.forecastTime.windSpeed[0].isBefore(feature.forecastTime.windSpeed[1])).beTrue()
+    expect(feature.runTime.windDirection).toExist()
+    expect(feature.runTime.windSpeed).toExist()
+    expect(feature.runTime.windDirection.length).to.equal(2)
+    expect(feature.runTime.windSpeed.length).to.equal(2)
+    expect(feature.runTime.windDirection[0].isSameOrBefore(feature.runTime.windDirection[1])).beTrue()
+    expect(feature.runTime.windSpeed[0].isSameOrBefore(feature.runTime.windSpeed[1])).beTrue()
+    expect(feature.properties.windDirection).toExist()
+    expect(feature.properties.windSpeed).toExist()
+    expect(feature.properties.windDirection.length).to.equal(2)
+    expect(feature.properties.windSpeed.length).to.equal(2)
+    expect(typeof feature.properties.windDirection[0]).to.equal('number')
+    expect(typeof feature.properties.windSpeed[0]).to.equal('number')
+    expect(typeof feature.properties.windDirection[1]).to.equal('number')
+    expect(typeof feature.properties.windSpeed[1]).to.equal('number')
   })
   // Let enough time to process
-  .timeout(10000)
+    .timeout(10000)
 
   it('performs probing single element on-demand at specific location for forecast time range', async () => {
     const geometry = {
       type: 'Point',
-      coordinates: [ 1.5, 43 ]
+      coordinates: [1.5, 43]
     }
     const query = {
       forecastTime: {
@@ -217,12 +220,12 @@ describe('weacast-probe', () => {
     expect(typeof feature.properties['u-wind'][1]).to.equal('number')
   })
   // Let enough time to process
-  .timeout(10000)
+    .timeout(10000)
 
   it('performs probing element on-demand at specific location for forecast time range without aggregation', async () => {
     const geometry = {
       type: 'Point',
-      coordinates: [ 1.5, 43 ]
+      coordinates: [1.5, 43]
     }
     const query = {
       forecastTime: {
@@ -261,7 +264,7 @@ describe('weacast-probe', () => {
     expect(typeof features[1].properties['v-wind']).to.equal('number')
   })
   // Let enough time to process
-  .timeout(10000)
+    .timeout(10000)
 
   it('creates probing stream on element', async () => {
     const data = await probeService.create(geojson)
@@ -275,7 +278,7 @@ describe('weacast-probe', () => {
 
   it('performs probing element on forecast update', (done) => {
     uService.Model.drop()
-    .then(_ => uService.updateForecastData())
+      .then(_ => uService.updateForecastData())
     // We need to register to results update event to know when to proceed
     let updateCount = 0
     probeService.on('results', async event => {
@@ -298,20 +301,20 @@ describe('weacast-probe', () => {
           expect(typeof feature.properties['u-wind']).to.equal('number')
           expect(typeof feature.properties['v-wind']).to.equal('number')
           // Test if derived direction values are also present
-          expect(feature.properties['windDirection']).toExist()
-          expect(feature.properties['windSpeed']).toExist()
-          expect(typeof feature.properties['windDirection']).to.equal('number')
-          expect(typeof feature.properties['windSpeed']).to.equal('number')
+          expect(feature.properties.windDirection).toExist()
+          expect(feature.properties.windSpeed).toExist()
+          expect(typeof feature.properties.windDirection).to.equal('number')
+          expect(typeof feature.properties.windSpeed).to.equal('number')
         })
         done()
       }
     })
   })
   // Let enough time to download a couple of data
-  .timeout(30000)
+    .timeout(30000)
 
   it('performs spatial filtering on probe results', async () => {
-    let geometry = {
+    const geometry = {
       $near: {
         $geometry: {
           type: 'Point',
@@ -371,7 +374,7 @@ describe('weacast-probe', () => {
   })
 
   it('performs element value filtering on probe results', async () => {
-    let query = { probeId }
+    const query = { probeId }
     query['properties.windSpeed'] = { $gt: -1, $lt: 0 }
     let features = await probeResultService.find({
       paginate: false,
@@ -389,7 +392,7 @@ describe('weacast-probe', () => {
   })
 
   it('performs element aggregation on probe results for forecast time range', async () => {
-    let query = {
+    const query = {
       probeId,
       forecastTime: {
         $gte: firstForecastTime,
@@ -399,30 +402,30 @@ describe('weacast-probe', () => {
       $groupBy: 'properties.Ident',
       $aggregate: ['windDirection', 'windSpeed']
     }
-    let features = await probeResultService.find({
+    const features = await probeResultService.find({
       paginate: false,
       query
     })
     expect(features.length).to.equal(1)
     const feature = features[0]
-    expect(feature.forecastTime['windDirection']).toExist()
-    expect(feature.forecastTime['windSpeed']).toExist()
-    expect(feature.forecastTime['windDirection'].length).to.equal(2)
-    expect(feature.forecastTime['windSpeed'].length).to.equal(2)
-    expect(feature.forecastTime['windDirection'][0].isBefore(feature.forecastTime['windDirection'][1])).beTrue()
-    expect(feature.forecastTime['windSpeed'][0].isBefore(feature.forecastTime['windSpeed'][1])).beTrue()
-    expect(feature.runTime['windDirection']).toExist()
-    expect(feature.runTime['windSpeed']).toExist()
-    expect(feature.runTime['windDirection'].length).to.equal(2)
-    expect(feature.runTime['windSpeed'].length).to.equal(2)
-    expect(feature.runTime['windDirection'][0].isSameOrBefore(feature.runTime['windDirection'][1])).beTrue()
-    expect(feature.runTime['windSpeed'][0].isSameOrBefore(feature.runTime['windSpeed'][1])).beTrue()
-    expect(feature.properties['windSpeed'].length).to.equal(2)
-    expect(feature.properties['windDirection'].length).to.equal(2)
-    expect(typeof feature.properties['windDirection'][0]).to.equal('number')
-    expect(typeof feature.properties['windSpeed'][0]).to.equal('number')
-    expect(typeof feature.properties['windDirection'][1]).to.equal('number')
-    expect(typeof feature.properties['windSpeed'][1]).to.equal('number')
+    expect(feature.forecastTime.windDirection).toExist()
+    expect(feature.forecastTime.windSpeed).toExist()
+    expect(feature.forecastTime.windDirection.length).to.equal(2)
+    expect(feature.forecastTime.windSpeed.length).to.equal(2)
+    expect(feature.forecastTime.windDirection[0].isBefore(feature.forecastTime.windDirection[1])).beTrue()
+    expect(feature.forecastTime.windSpeed[0].isBefore(feature.forecastTime.windSpeed[1])).beTrue()
+    expect(feature.runTime.windDirection).toExist()
+    expect(feature.runTime.windSpeed).toExist()
+    expect(feature.runTime.windDirection.length).to.equal(2)
+    expect(feature.runTime.windSpeed.length).to.equal(2)
+    expect(feature.runTime.windDirection[0].isSameOrBefore(feature.runTime.windDirection[1])).beTrue()
+    expect(feature.runTime.windSpeed[0].isSameOrBefore(feature.runTime.windSpeed[1])).beTrue()
+    expect(feature.properties.windSpeed.length).to.equal(2)
+    expect(feature.properties.windDirection.length).to.equal(2)
+    expect(typeof feature.properties.windDirection[0]).to.equal('number')
+    expect(typeof feature.properties.windSpeed[0]).to.equal('number')
+    expect(typeof feature.properties.windDirection[1]).to.equal('number')
+    expect(typeof feature.properties.windSpeed[1]).to.equal('number')
   })
 
   it('performs probing results removal on probe removal', async () => {

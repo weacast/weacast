@@ -1,23 +1,23 @@
 import moment from 'moment'
-import { disallow, when } from 'feathers-hooks-common'
-import * as hooks from '../../hooks'
+import feathersHooks from 'feathers-hooks-common'
+import * as hooks from '../../hooks/index.js'
 
-module.exports = {
+export default {
   before: {
     all: [],
     find: [],
     get: [],
     create: [
       // Add default expiration date if none provided
-      when(hook => !hook.data.expireAt, hook => {
+      feathersHooks.when(hook => !hook.data.expireAt, hook => {
         hook.data.expireAt = moment.utc().add({ days: 1 })
         return hook
       }),
       hooks.marshallAlert
     ],
-    update: disallow(),
+    update: feathersHooks.disallow(),
     patch: [
-      disallow('external'),
+      feathersHooks.disallow('external'),
       hooks.marshallAlert
     ],
     remove: []
@@ -25,12 +25,12 @@ module.exports = {
 
   after: {
     all: [],
-    find: [ hooks.unmarshallAlert ],
-    get: [ hooks.unmarshallAlert ],
-    create: [ hooks.unmarshallAlert, async hook => hook.service.registerAlert(hook.result) ],
+    find: [hooks.unmarshallAlert],
+    get: [hooks.unmarshallAlert],
+    create: [hooks.unmarshallAlert, async hook => hook.service.registerAlert(hook.result)],
     update: [],
-    patch: [ hooks.unmarshallAlert ],
-    remove: [ hooks.unmarshallAlert, async hook => hook.service.unregisterAlert(hook.result) ]
+    patch: [hooks.unmarshallAlert],
+    remove: [hooks.unmarshallAlert, async hook => hook.service.unregisterAlert(hook.result)]
   },
 
   error: {

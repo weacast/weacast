@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
 import core, { weacast } from '@weacast/core'
-import gfs from '../src'
+import gfs from '../src/index.js'
 
 describe('weacast-gfs', () => {
   let app, service
@@ -15,13 +15,13 @@ describe('weacast-gfs', () => {
     return app.db.connect()
   })
 
-  it('is CommonJS compatible', () => {
+  it('is ES module compatible', () => {
     expect(typeof gfs).to.equal('function')
   })
 
   it('registers the element services', async () => {
     expect(typeof gfs).to.equal('function')
-    app.configure(core)
+    await app.configure(core)
     await app.configure(gfs)
     service = app.getService('gfs-world/temperature')
     expect(service).toExist()
@@ -33,15 +33,15 @@ describe('weacast-gfs', () => {
     fs.emptyDirSync(app.get('forecastPath'))
 
     return service.updateForecastData()
-    .then(_ => {
-      let files = fs.readdirSync(service.getDataDirectory())
-      expect(files.length).to.equal(6)
-      expect(files.filter(item => path.extname(item) === '.json').length).to.equal(3)
-      expect(files.filter(item => path.extname(item) === '.grib').length).to.equal(3)
-    })
+      .then(_ => {
+        const files = fs.readdirSync(service.getDataDirectory())
+        expect(files.length).to.equal(6)
+        expect(files.filter(item => path.extname(item) === '.json').length).to.equal(3)
+        expect(files.filter(item => path.extname(item) === '.grib').length).to.equal(3)
+      })
   })
   // Let enough time to download a couple of data
-  .timeout(60000)
+    .timeout(60000)
 
   // Cleanup
   after(() => {

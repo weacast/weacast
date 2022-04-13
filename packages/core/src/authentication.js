@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import makeDebug from 'debug'
 import { AuthenticationService, JWTStrategy } from '@feathersjs/authentication'
 import { LocalStrategy } from '@feathersjs/authentication-local'
@@ -6,11 +7,11 @@ import { expressOauth, OAuthStrategy } from '@feathersjs/authentication-oauth'
 const debug = makeDebug('feathers-authentication-oauth2:verify')
 
 export class OAuth2Verifier extends OAuthStrategy {
-  async getEntityData(profile, entity) {
+  async getEntityData (profile, entity) {
     return Object.assign({}, entity, profile)
   }
 
-  async createEntity(profile) {
+  async createEntity (profile) {
     if (!profile.id) {
       profile.id = profile.sub
       delete profile.sub
@@ -19,7 +20,7 @@ export class OAuth2Verifier extends OAuthStrategy {
     return { profile }
   }
 
-  async updateEntity(entity, profile) {
+  async updateEntity (entity, profile) {
     if (!profile.id) {
       profile.id = profile.sub
       delete profile.sub
@@ -28,7 +29,7 @@ export class OAuth2Verifier extends OAuthStrategy {
     return { profile }
   }
 
-  async getEntityQuery(profile) {
+  async getEntityQuery (profile) {
     const options = this.authentication.configuration
     const query = {
       $or: [
@@ -41,7 +42,7 @@ export class OAuth2Verifier extends OAuthStrategy {
     })
 
     debug('Finding user', query)
-    
+
     return query
   }
 }
@@ -52,7 +53,7 @@ export default function auth (app) {
   if (!config) return
 
   const emailFieldInProfile = config.emailFieldInProfile
-    ? (Array.isArray(config.emailFieldInProfile) ? config.emailFieldInProfile : [ config.emailFieldInProfile ])
+    ? (Array.isArray(config.emailFieldInProfile) ? config.emailFieldInProfile : [config.emailFieldInProfile])
     : ['email', 'emails[0].value']
   const emailField = config.emailField || 'email'
 
@@ -71,5 +72,5 @@ export default function auth (app) {
   authentication.register('cognito', new OAuth2Verifier())
 
   app.use(`${app.get('apiPath')}/authentication`, authentication)
-  app.configure(expressOauth());
+  app.configure(expressOauth())
 }

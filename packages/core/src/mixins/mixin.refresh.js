@@ -6,7 +6,7 @@ import request from 'request'
 import * as errors from '@feathersjs/errors'
 import logger from 'winston'
 import makeDebug from 'debug'
-import { Grid } from '../common/grid'
+import { Grid } from '../common/grid.js'
 const debug = makeDebug('weacast:weacast-core')
 
 export default {

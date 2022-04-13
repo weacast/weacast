@@ -3,7 +3,8 @@
   "description": "Basic utils to support Weacast and plugins",
   "version": "1.5.0",
   "homepage": "https://github.com/weacast/weacast-core",
-  "main": "lib/",
+  "main": "src/index.js",
+  "type": "module",
   "keywords": [
     "weacast",
     "weacast-plugin"
@@ -22,26 +23,16 @@
     "url": "https://github.com/weacast/weacast-core/issues"
   },
   "scripts": {
-    "prepublish": "npm run compile",
-    "compile": "shx rm -rf lib/ && babel -d lib/ src/ -s",
-    "watch": "npm run compile && babel --watch -d lib/ src/",
     "lint": "standard src/**/*.js test/**/*.js --fix",
-    "mocha": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --exit --require babel-core/register",
-    "test": "npm run compile && npm run lint && npm run mocha",
-    "start": "npm run compile && node lib"
+    "mocha": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --exit",
+    "test": "npm run lint && npm run mocha",
+    "start": "node src/index.js"
   },
   "standard": {
-    "parser": "babel-eslint",
-    "plugins": [
-      "html"
-    ],
     "sourceType": "module",
     "env": [
       "mocha"
     ]
-  },
-  "directories": {
-    "lib": "lib"
   },
   "dependencies": {
     "@feathersjs/authentication": "^5.0.0-pre.16",
@@ -67,22 +58,14 @@
     "request": "^2.81.0",
     "socket.io-client": "^4.4.1",
     "sublevelup": "^4.0.0",
-    "winston": "^3.5.1",
+    "winston": "^3.6.0",
     "winston-daily-rotate-file": "^4.6.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-eslint": "^7.2.3",
-    "babel-plugin-add-module-exports": "^1.0.4",
-    "babel-plugin-transform-export-extensions": "^6.22.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
     "chai": "^4.3.6",
     "chai-lint": "^0.1.1",
     "containerized": "^1.0.2",
     "cross-env": "^7.0.3",
-    "eslint-plugin-html": "^6.2.0",
     "mocha": "^9.2.0",
     "nock": "^13.2.4",
     "shx": "^0.3.4",

@@ -1,21 +1,21 @@
 import makeDebug from 'debug'
-import services from './services'
-import initializeElements from './elements'
-import initializePlugin from './plugin'
-import weacast from './application'
-import hooks from './services/elements/elements.hooks'
+import services from './services/index.js'
+import initializeElements from './elements.js'
+import initializePlugin from './plugin.js'
+import weacast from './application.js'
+import hooks from './services/elements/elements.hooks.js'
 
-export let elements = { hooks }
+export const elements = { hooks }
 export { weacast }
 export { initializeElements, initializePlugin }
-export { Database } from './db'
-export * from './common'
-export * as hooks from './hooks'
-export * from './mixins'
+export { Database } from './db.js'
+export * from './common/index.js'
+export * as hooks from './hooks/index.js'
+export * from './mixins/index.js'
 
 const debug = makeDebug('weacast:weacast-core')
 
-export default function init (app) {
+export default async function init (app) {
   debug('Initializing weacast')
-  app.configure(services)
+  await app.configure(services)
 }

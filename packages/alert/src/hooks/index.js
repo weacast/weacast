@@ -1,1 +1,1 @@
-export * from './alerting'
+export * from './alerting.js'

@@ -26,7 +26,6 @@ async function main () {
 if (process.env.LAUNCH_DELAY) {
   logger.info(`Waiting ${process.env.LAUNCH_DELAY / 1000}s for server to start...`)
   setTimeout(main, process.env.LAUNCH_DELAY)
-}
-else {
+} else {
   main()
 }

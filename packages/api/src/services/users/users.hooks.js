@@ -1,4 +1,4 @@
-import commonHooks from 'feathers-hooks-common'
+import feathersHooks from 'feathers-hooks-common'
 import _ from 'lodash'
 import { hooks } from '@feathersjs/authentication-local'
 import gravatar from '../../hooks/gravatar.js'
@@ -11,7 +11,7 @@ export default {
     all: [],
     find: [],
     get: [],
-    create: [commonHooks.when(hook => _.get(hook.app.get('authentication'), 'disallowRegistration'), commonHooks.disallow('external')),
+    create: [feathersHooks.when(hook => _.get(hook.app.get('authentication'), 'disallowRegistration'), feathersHooks.disallow('external')),
       github(), google(), oidc(), cognito(), hashPassword(), gravatar()],
     update: [],
     patch: [],
@@ -19,7 +19,7 @@ export default {
   },
 
   after: {
-    all: [commonHooks.when(hook => hook.params.provider, commonHooks.discard('password'))],
+    all: [feathersHooks.when(hook => hook.params.provider, feathersHooks.discard('password'))],
     find: [],
     get: [],
     create: [],

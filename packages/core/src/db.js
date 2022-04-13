@@ -1,9 +1,10 @@
-import { MongoClient } from 'mongodb'
+import mongo from 'mongodb'
 import _ from 'lodash'
 import logger from 'winston'
 import makeDebug from 'debug'
 import errors from '@feathersjs/errors'
 
+const { MongoClient } = mongo
 const debug = makeDebug('weacast:weacast-core:db')
 
 export class Database {

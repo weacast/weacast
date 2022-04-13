@@ -1,9 +1,10 @@
 import path from 'path'
+import { fileURLToPath, pathToFileURL } from 'url'
 import makeDebug from 'debug'
 import _ from 'lodash'
 import logger from 'winston'
 import 'winston-daily-rotate-file'
-import elementMixins from './mixins'
+import elementMixins from './mixins/index.js'
 import compress from 'compression'
 import cors from 'cors'
 import helmet from 'helmet'
@@ -12,11 +13,13 @@ import errors from '@feathersjs/errors'
 import configuration from '@feathersjs/configuration'
 import express from '@feathersjs/express'
 import socketio from '@feathersjs/socketio'
-import { GridFSBucket } from 'mongodb'
-import { Database } from './db'
-import auth from './authentication'
+import mongo from 'mongodb'
+import { Database } from './db.js'
+import auth from './authentication.js'
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const { rest } = express
+const { GridFSBucket } = mongo
 const debug = makeDebug('weacast:weacast-core:application')
 
 function declareService (name, app, service) {
@@ -28,9 +31,10 @@ function declareService (name, app, service) {
   return app.getService(name)
 }
 
-function configureService (name, service, servicesPath) {
+async function configureService (name, service, servicesPath) {
   try {
-    const hooks = require(path.join(servicesPath, name, name + '.hooks'))
+    const hooksModule = await import(pathToFileURL(path.join(servicesPath, name, name + '.hooks.js')))
+    const hooks = hooksModule.default
     service.hooks(hooks)
     debug(name + ' service hooks configured on path ' + servicesPath)
   } catch (error) {
@@ -43,7 +47,8 @@ function configureService (name, service, servicesPath) {
   }
 
   try {
-    const channels = require(path.join(servicesPath, name, name + '.channels'))
+    const channelsModule = await import(pathToFileURL(path.join(servicesPath, name, name + '.channels.js')))
+    const channels = channelsModule.default
     _.forOwn(channels, (publisher, event) => {
       if (event === 'all') service.publish(publisher)
       else service.publish(event, publisher)
@@ -61,9 +66,11 @@ function configureService (name, service, servicesPath) {
   return service
 }
 
-export function createService (name, app, modelsPath, servicesPath, options) {
-  const createFeathersService = require('feathers-' + app.db.adapter)
-  const configureModel = require(path.join(modelsPath, name + '.model.' + app.db.adapter))
+export async function createService (name, app, modelsPath, servicesPath, options) {
+  const feathersServiceModule = await import('feathers-' + app.db.adapter)
+  const createFeathersService = feathersServiceModule.default
+  const modelModule = await import(pathToFileURL(path.join(modelsPath, name + '.model.' + app.db.adapter + '.js')))
+  const configureModel = modelModule.default
 
   const paginate = app.get('paginate')
   const serviceOptions = Object.assign({
@@ -79,10 +86,11 @@ export function createService (name, app, modelsPath, servicesPath, options) {
   // Get our initialized service so that we can register hooks and filters
   service = declareService(name, app, service)
   // Register hooks and filters
-  service = configureService(name, service, servicesPath)
+  service = await configureService(name, service, servicesPath)
   // Optionally a specific service mixin can be provided, apply it
   try {
-    const serviceMixin = require(path.join(servicesPath, name, name + '.service'))
+    const serviceMixinModule = await import(pathToFileURL(path.join(servicesPath, name, name + '.service.js')))
+    const serviceMixin = serviceMixinModule.default
     Object.assign(service, serviceMixin)
   } catch (error) {
     debug('No ' + name + ' service mixin configured on path ' + servicesPath)
@@ -100,10 +108,12 @@ export function createService (name, app, modelsPath, servicesPath, options) {
   return service
 }
 
-export function createElementService (forecast, element, app, servicesPath, options) {
-  const createFeathersService = require('feathers-' + app.db.adapter)
-  const configureModel = require(path.join(__dirname, 'models', 'elements.model.' + app.db.adapter))
-  let serviceName = forecast.name + '/' + element.name
+export async function createElementService (forecast, element, app, servicesPath, options) {
+  const feathersServiceModule = await import('feathers-' + app.db.adapter)
+  const createFeathersService = feathersServiceModule.default
+  const modelModule = await import(pathToFileURL(path.join(__dirname, 'models', 'elements.model.' + app.db.adapter + '.js')))
+  const configureModel = modelModule.default
+  const serviceName = forecast.name + '/' + element.name
   // The service object can be directly provided
   const isService = servicesPath && (typeof servicesPath === 'object')
   const paginate = app.get('paginate')
@@ -121,16 +131,17 @@ export function createElementService (forecast, element, app, servicesPath, opti
   // Register hooks and filters
   // If no service file path provided use default
   if (servicesPath && !isService) {
-    service = configureService(forecast.model, service, servicesPath)
+    service = await configureService(forecast.model, service, servicesPath)
   } else {
-    service = configureService('elements', service, path.join(__dirname, 'services'))
+    service = await configureService('elements', service, path.join(__dirname, 'services'))
   }
 
   // Apply all element mixins
   elementMixins.forEach(mixin => { Object.assign(service, mixin) })
   // Optionnally a specific service mixin can be provided, apply it
   if (servicesPath && !isService) {
-    const serviceMixin = require(path.join(servicesPath, forecast.model, forecast.model + '.service'))
+    const serviceMixinModule = await import(pathToFileURL(path.join(servicesPath, forecast.model, forecast.model + '.service.js')))
+    const serviceMixin = serviceMixinModule.default
     Object.assign(service, serviceMixin)
   }
   // Then configuration
@@ -163,10 +174,10 @@ function getElementServices (app, name) {
   }
 
   // Iterate over configured forecast models
-  let services = []
-  for (let forecast of forecasts) {
-    for (let element of forecast.elements) {
-      let service = app.getService(forecast.name + '/' + element.name)
+  const services = []
+  for (const forecast of forecasts) {
+    for (const element of forecast.elements) {
+      const service = app.getService(forecast.name + '/' + element.name)
       if (service) {
         services.push(service)
       }
@@ -178,9 +189,9 @@ function getElementServices (app, name) {
 function setupLogger (logsConfig) {
   logsConfig = _.omit(logsConfig, ['level'])
   // We have one entry per log type
-  let logsTypes = logsConfig ? Object.getOwnPropertyNames(logsConfig) : []
+  const logsTypes = logsConfig ? Object.getOwnPropertyNames(logsConfig) : []
   // Create corresponding winston transports with options
-  let transports = []
+  const transports = []
   logsTypes.forEach(logType => {
     const options = logsConfig[logType]
     transports.push(new logger.transports[logType](options))
@@ -192,7 +203,7 @@ function setupLogger (logsConfig) {
       level: _.get(logsConfig, 'level', (process.env.NODE_ENV === 'development' ? 'debug' : 'info')),
       format: logger.format.combine(
         logger.format.simple(),
-        logger.format.printf(msg => 
+        logger.format.printf(msg =>
           colorizer.colorize(msg.level, `${msg.level}: ${msg.message}`)
         )
       ),
@@ -206,7 +217,7 @@ function setupLogger (logsConfig) {
 }
 
 export default function weacast () {
-  let app = express(feathers())
+  const app = express(feathers())
   // Load app configuration first
   app.configure(configuration())
   // Then setup logger
@@ -223,16 +234,18 @@ export default function weacast () {
     return app.service(app.get('apiPath') + '/' + path)
   }
   // This is used to create standard services
-  app.createService = function (name, modelsPath, servicesPath, options) {
-    return createService(name, app, modelsPath, servicesPath, options)
+  app.createService = async function (name, modelsPath, servicesPath, options) {
+    const service = await createService(name, app, modelsPath, servicesPath, options)
+    return service
   }
   // This is used to retrieve all element services registered by forecast model plugins
   app.getElementServices = function (name) {
     return getElementServices(app, name)
   }
   // This is used to create forecast element services
-  app.createElementService = function (forecast, element, servicesPath, options) {
-    return createElementService(forecast, element, app, servicesPath, options)
+  app.createElementService = async function (forecast, element, servicesPath, options) {
+    const service = await createElementService(forecast, element, app, servicesPath, options)
+    return service
   }
   // Override Feathers configure that do not manage async operations,
   // here we also simply call the function given as parameter but await for it

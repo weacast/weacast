@@ -1,15 +1,15 @@
-import { disallow } from 'feathers-hooks-common'
-import * as hooks from '../../hooks'
+import feathersHooks from 'feathers-hooks-common'
+import * as hooks from '../../hooks/index.js'
 
-module.exports = {
+export default {
   before: {
     all: [],
     find: [],
     get: [],
-    create: disallow('external'),
-    update: disallow('external'),
-    patch: disallow('external'),
-    remove: disallow('external')
+    create: feathersHooks.disallow('external'),
+    update: feathersHooks.disallow('external'),
+    patch: feathersHooks.disallow('external'),
+    remove: feathersHooks.disallow('external')
   },
 
   after: {

@@ -17,7 +17,7 @@ export default async function () {
       res.set('Content-Type', 'application/json')
       return res.status(200).json({ isRunning: true })
     })
-    if (authConfig) app.createService('users', modelPath, servicePath)
+    if (authConfig) await app.createService('users', modelPath, servicePath)
     app.configure(core)
     // Setup if we use local loaders
     const loaders = app.get('loaders')
@@ -26,15 +26,13 @@ export default async function () {
       for (let i = 0; i < loaders.length; i++) {
         // Setup loader plugins by dynamically require them
         try {
-          const plugin = require(`@weacast/${loaders[i]}`)
+          const plugin = await import(`@weacast/${loaders[i]}`)
           await app.configure(plugin)
-        }
-        catch (error) {
+        } catch (error) {
           logger.error(error.message)
         }
       }
-    }
-    else {
+    } else {
       // Set up only elements services otherwise
       const forecasts = app.get('forecasts')
       // Iterate over configured forecast models
@@ -48,15 +46,14 @@ export default async function () {
     for (let i = 0; i < plugins.length; i++) {
       // Setup loader plugins by dynamically require them
       try {
-        const plugin = require(`@weacast/${plugins[i]}`)
+        const pluginModule = await import(`@weacast/${plugins[i]}`)
+        const plugin = pluginModule.default
         await app.configure(plugin)
-      }
-      catch (error) {
+      } catch (error) {
         logger.error(error.message)
       }
     }
-  }
-  catch (error) {
+  } catch (error) {
     logger.error(error.message)
   }
 

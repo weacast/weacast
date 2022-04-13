@@ -2,7 +2,7 @@
 // For more information on hooks see: http://docs.feathersjs.com/api/hooks.html
 
 // We need this to create the MD5 hash
-const crypto = require('crypto')
+import crypto from 'crypto'
 
 // The Gravatar image service
 const gravatarUrl = 'https://s.gravatar.com/avatar'

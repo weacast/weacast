@@ -1,5 +1,5 @@
-import elementMixin from './mixin.element'
-import refreshMixin from './mixin.refresh'
+import elementMixin from './mixin.element.js'
+import refreshMixin from './mixin.refresh.js'
 
 export default [
   elementMixin,

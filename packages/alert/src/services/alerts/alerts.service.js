@@ -6,21 +6,21 @@ import makeDebug from 'debug'
 const debug = makeDebug('weacast:weacast-alert:service')
 
 // Alert map
-let alerts = {}
+const alerts = {}
 
 export default {
 
   async registerAlert (alert) {
     if (alerts[alert._id.toString()]) return
     debug('Registering new alert ', alert)
-    let cronJob = new CronJob(alert.cron, () => this.checkAlert(alert))
+    const cronJob = new CronJob(alert.cron, () => this.checkAlert(alert))
     alerts[alert._id.toString()] = cronJob
     await this.checkAlert(alert)
     cronJob.start()
   },
 
   async unregisterAlert (alert) {
-    let cronJob = alerts[alert._id.toString()]
+    const cronJob = alerts[alert._id.toString()]
     if (!cronJob) return
     debug('Unregistering new alert ', alert)
     cronJob.stop()
@@ -35,7 +35,7 @@ export default {
     })
     const probeResultService = this.app.getService('probe-results')
     // Perform aggregation over time range
-    let query = Object.assign({
+    const query = Object.assign({
       probeId: alert.probeId,
       forecastTime: {
         $gte: now.clone().add(_.get(alert, 'period.start', { seconds: 0 })).toDate(),
@@ -58,7 +58,7 @@ export default {
     })
     const probesService = this.app.getService('probes')
     // Perform aggregation over time range
-    let query = Object.assign({
+    const query = Object.assign({
       forecastTime: {
         $gte: now.clone().add(_.get(alert, 'period.start', { seconds: 0 })).toDate(),
         $lte: now.clone().add(_.get(alert, 'period.end', { seconds: 24 * 3600 })).toDate()
@@ -70,12 +70,12 @@ export default {
       },
       aggregate: false
     })
-    let result = await probesService.create({
+    const result = await probesService.create({
       forecast: alert.forecast,
       elements: alert.elements
     }, { query })
     // Let sift performs condition matching as in this case MongoDB cannot
-    let results = result.features.filter(sift(conditions))
+    const results = result.features.filter(sift(conditions))
     return results
   },
 
@@ -106,7 +106,7 @@ export default {
     }
     debug('Alert ' + alert._id.toString() + ' status', status, ' with ' + results.length + ' triggers')
     // Emit event
-    let event = { alert }
+    const event = { alert }
     if (isActive) event.triggers = results
     // As we keep in-memory objects avoid them being mutated by hooks processing operation payload
     await this.patch(alert._id.toString(), { status: Object.assign({}, status) })

@@ -1,8 +1,11 @@
 // import logger from 'winston'
 // import makeDebug from 'debug'
-import { getItems, replaceItems, discard } from 'feathers-hooks-common'
-import { ObjectID } from 'mongodb'
+import feathersHooks from 'feathers-hooks-common'
+import mongo from 'mongodb'
 import _ from 'lodash'
+
+const { getItems, replaceItems, discard } = feathersHooks
+const { ObjectID } = mongo
 
 // const debug = makeDebug('weacast:weacast-core')
 const discardFeaturesField = discard('features')

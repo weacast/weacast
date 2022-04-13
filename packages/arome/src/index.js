@@ -1,7 +1,10 @@
 import path from 'path'
-import hooks from './services/arome/arome.hooks'
-import service from './services/arome/arome.service'
+import { fileURLToPath } from 'url'
+import hooks from './services/arome/arome.hooks.js'
+import service from './services/arome/arome.service.js'
 import { initializePlugin } from '@weacast/core'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const init = async function () {
   const app = this

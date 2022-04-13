@@ -1,3 +1,3 @@
-module.exports = function (app, options) {
+export default function (app, options) {
   options.Model = app.db.collection('probes', options.dbName)
 }

@@ -1,8 +1,10 @@
-import { SKIP } from '@feathersjs/feathers'
+import feathers from '@feathersjs/feathers'
 
-export * from './marshall'
-export * from './query'
-export * from './logger'
+const { SKIP } = feathers
+
+export * from './marshall.js'
+export * from './query.js'
+export * from './logger.js'
 
 export function skipEvents (hook) {
   return SKIP

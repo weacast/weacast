@@ -1,4 +1,4 @@
-module.exports = function (forecast, element, app, options) {
+export default function (forecast, element, app, options) {
   options.Model = app.db.collection(`${forecast.name}-${element.name}`, element.dbName || forecast.dbName || options.dbName)
   // When a forecast is in the past we should not care anymore,
   // however it is still potentially valid at least until we reach the next forecast

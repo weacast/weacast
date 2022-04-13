@@ -1,9 +1,12 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 
-module.exports = function () {
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+export default async function () {
   const app = this
 
-  app.createService('forecasts',
+  await app.createService('forecasts',
     path.join(__dirname, '..', 'models'),
     path.join(__dirname, '..', 'services'),
     app.getServiceOptions('forecasts'))

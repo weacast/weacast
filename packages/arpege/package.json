@@ -3,7 +3,8 @@
   "description": "ARPEGE weather forecast model plugin for Weacast",
   "version": "1.6.0",
   "homepage": "https://github.com/weacast/weacast-arpege",
-  "main": "lib/",
+  "main": "src/index.js",
+  "type": "module",
   "keywords": [
     "weacast",
     "weacast-plugin"
@@ -22,22 +23,16 @@
     "url": "https://github.com/weacast/weacast-arpege/issues"
   },
   "scripts": {
-    "prepublish": "npm run compile",
-    "compile": "shx rm -rf lib/ && babel -d lib/ src/ -s",
-    "watch": "npm run compile && babel --watch -d lib/ src/",
     "lint": "standard src/**/*.js test/**/*.js --fix",
-    "mocha": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --exit --require babel-core/register",
-    "test": "npm run compile && npm run lint && npm run mocha",
-    "start": "npm run compile && node lib"
+    "mocha": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --exit",
+    "test": "npm run lint && npm run mocha",
+    "start": "node src/index.js"
   },
   "standard": {
     "sourceType": "module",
     "env": [
       "mocha"
     ]
-  },
-  "directories": {
-    "lib": "lib"
   },
   "dependencies": {
     "@weacast/core": "^1.5.0",
@@ -47,12 +42,6 @@
     "winston": "^3.6.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-plugin-add-module-exports": "^1.0.4",
-    "babel-plugin-transform-export-extensions": "^6.22.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
     "chai": "^4.3.6",
     "chai-lint": "^0.1.1",
     "containerized": "^1.0.2",
