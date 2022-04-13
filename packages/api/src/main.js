@@ -15,9 +15,10 @@ async function main () {
     fs.ensureDirSync(logPath)
   }
 
-  process.on('unhandledRejection', (reason, p) =>
+  process.on('unhandledRejection', (reason, p) => {
+    console.error(p, reason)
     logger.error('Unhandled Rejection at: Promise ', p, reason)
-  )
+  })
 
   await server.run()
   logger.info('Server started listening')
