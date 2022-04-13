@@ -69,12 +69,14 @@ module.exports = {
   },
   authentication: {
     secret: process.env.APP_SECRET || 'b5KqXTye4fVxhGFpwMVZRO3R56wS5LNoJHifwgGOFkB5GfMWvIdrWyQxEJXswhAC',
-    strategies: [
-      'jwt',
-      'local'
-    ],
+    authStrategies: ['jwt', 'local'],
     path: API_PREFIX + '/authentication',
     service: API_PREFIX + '/users',
+    entity: 'users',
+    local: {
+      usernameField: 'email',
+      passwordField: 'password'
+    },
     jwtOptions: {
       header: { typ: 'access' }, // See https://tools.ietf.org/html/rfc7519#section-5.1
       audience: process.env.SUBDOMAIN || 'kalisio', // The resource server where the token is processed
@@ -82,41 +84,37 @@ module.exports = {
       algorithm: 'HS256', // See https://github.com/auth0/node-jsonwebtoken#jwtsignpayload-secretorprivatekey-options-callback
       expiresIn: '1d'
     },
+    oauth: {
+      redirect: '/',
+      github: {
+        clientID: process.env.GITHUB_CLIENT_ID || '20da06587907b8048edb',
+        clientSecret: process.env.GITHUB_CLIENT_SECRET || '22029773f71829af8eaba6c0d6599843026cbf15',
+        callbackURL: domain + '/auth/github/callback',
+        successRedirect: domain + '/'
+      },
+      google: {
+        clientID: process.env.GOOGLE_CLIENT_ID || '879164794322-ed4nl0j3sdsr00bjbrsqdcskon1k7go4.apps.googleusercontent.com',
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'mZZejuVZ4_oG9WpoGPXTJKFe',
+        callbackURL: domain + '/auth/google/callback',
+        successRedirect: domain + '/',
+        scope: ['profile', 'email']
+      },
+      cognito: {
+        clientID: process.env.COGNITO_CLIENT_ID || '1vmieaua4phmqr4tt0v664aqq5',
+        clientSecret: process.env.COGNITO_CLIENT_SECRET || 'kp5v6511tsn1tss6mka3chnekaifs6aemt9un2sg3m2ja2veuoa',
+        clientDomain: 'https://weacast.auth.eu-west-1.amazoncognito.com',
+        callbackURL: domain + '/auth/cognito/callback',
+        successRedirect: domain + '/',
+        region: 'eu-west-1'
+      }
+    },
     defaultUsers: [
       {
         email: 'weacast@weacast.xyz',
         password: 'weacast'
       }
     ],
-    disallowRegistration: false,
-    github: {
-      clientID: process.env.GITHUB_CLIENT_ID || '20da06587907b8048edb',
-      clientSecret: process.env.GITHUB_CLIENT_SECRET || '22029773f71829af8eaba6c0d6599843026cbf15',
-      callbackURL: domain + '/auth/github/callback',
-      successRedirect: domain + '/'
-    },
-    google: {
-      clientID: process.env.GOOGLE_CLIENT_ID || '879164794322-ed4nl0j3sdsr00bjbrsqdcskon1k7go4.apps.googleusercontent.com',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'mZZejuVZ4_oG9WpoGPXTJKFe',
-      callbackURL: domain + '/auth/google/callback',
-      successRedirect: domain + '/',
-      scope: ['profile', 'email']
-    },
-    cognito: {
-      clientID: process.env.COGNITO_CLIENT_ID || '1vmieaua4phmqr4tt0v664aqq5',
-      clientSecret: process.env.COGNITO_CLIENT_SECRET || 'kp5v6511tsn1tss6mka3chnekaifs6aemt9un2sg3m2ja2veuoa',
-      clientDomain: 'https://weacast.auth.eu-west-1.amazoncognito.com',
-      callbackURL: domain + '/auth/cognito/callback',
-      successRedirect: domain + '/',
-      region: 'eu-west-1'
-    },
-    // Required for OAuth2 to work correctly
-    cookie: {
-      enabled: true,
-      name: 'weacast-jwt',
-      httpOnly: false,
-      secure: (process.env.NODE_ENV !== 'development')
-    }
+    disallowRegistration: false
   },
   logs: {
     Console: {
