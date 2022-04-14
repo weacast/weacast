@@ -1,4 +1,3 @@
-// import logger from 'winston'
 // import makeDebug from 'debug'
 import feathersHooks from 'feathers-hooks-common'
 import { hooks } from '@weacast/core'

@@ -1,12 +1,11 @@
 import _ from 'lodash'
-import logger from 'winston'
 import makeDebug from 'debug'
 
 const debug = makeDebug('weacast:weacast-core')
 
 // Create all element services
 export default async function initializeElements (app, forecast, servicesPath) {
-  logger.info('Initializing ' + forecast.name + ' forecast')
+  app.logger.info('Initializing ' + forecast.name + ' forecast')
   const forecastsService = app.getService('forecasts')
   // Register the forecast model if not already done
   const result = await forecastsService.find({
@@ -57,7 +56,7 @@ export default async function initializeElements (app, forecast, servicesPath) {
       // For each bucket launch download tasks in parallel
       await Promise.all(elementBuckets[bucket].map(service => {
         return service.updateForecastData().catch(error => {
-          logger.error(error.message)
+          app.logger.error(error.message)
           service.updateRunning = false
         })
       }))
@@ -70,7 +69,7 @@ export default async function initializeElements (app, forecast, servicesPath) {
     setTimeout(update, 30 * 1000)
     // Then plan next updates according to provided update interval if required
     if (forecast.updateInterval > 0) {
-      logger.info('Installing forecast update on ' + forecast.name + ' with interval (s) ' + forecast.updateInterval)
+      app.logger.info('Installing forecast update on ' + forecast.name + ' with interval (s) ' + forecast.updateInterval)
       setInterval(update, 1000 * forecast.updateInterval)
     }
   }
@@ -86,7 +85,7 @@ export default async function initializeElements (app, forecast, servicesPath) {
       try {
         await service.cleanForecastData()
       } catch (error) {
-        logger.error(error.message)
+        app.logger.error(error.message)
       }
     }
   }
@@ -100,7 +99,7 @@ export default async function initializeElements (app, forecast, servicesPath) {
     const cleanInterval = (forecast.updateInterval >= 0 ? forecast.updateInterval : 30 * 60)
     if (cleanInterval > 0) {
       setTimeout(() => {
-        logger.info('Installing forecast cleanup on ' + forecast.name + ' with interval (s) ' + cleanInterval)
+        app.logger.info('Installing forecast cleanup on ' + forecast.name + ' with interval (s) ' + cleanInterval)
         setInterval(clean, 1000 * cleanInterval)
       }, 0.5 * cleanInterval)
     }

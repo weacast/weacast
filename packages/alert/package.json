@@ -43,8 +43,7 @@
     "fs-extra": "^10.0.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
-    "sift": "^16.0.0",
-    "winston": "^3.6.0"
+    "sift": "^16.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.6",

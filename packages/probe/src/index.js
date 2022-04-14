@@ -1,7 +1,6 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs-extra'
-import logger from 'winston'
 import mubsub from 'mubsub'
 import _ from 'lodash'
 import makeDebug from 'debug'
@@ -49,7 +48,7 @@ export default async function init () {
         if (!createdProbe) {
           // One probe for each forecast model and elements except if custom filter provided
           const elementFilter = defaultProbe.filter || defaultElementFilter
-          logger.info('Initializing default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name)
+          app.logger.info('Initializing default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name)
           const options = Object.assign({
             name: probeName,
             forecast: forecast.name,
@@ -59,10 +58,10 @@ export default async function init () {
             const geojson = fs.readJsonSync(defaultProbe.fileName)
             Object.assign(geojson, options)
             const probe = await probesService.create(geojson)
-            logger.info('Initialized default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name)
+            app.logger.info('Initialized default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name)
             probes.push(probe)
           } else {
-            logger.info('Skipping default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name + ' (no target elements)')
+            app.logger.info('Skipping default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name + ' (no target elements)')
           }
         }
       }

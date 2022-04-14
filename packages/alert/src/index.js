@@ -1,7 +1,6 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs-extra'
-import logger from 'winston'
 import makeDebug from 'debug'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -32,10 +31,10 @@ export default async function init () {
         const probeFilter = defaultAlert.filter || defaultProbeFilter
         for (const probe of probes) {
           if (typeof probeFilter === 'function' && !probeFilter(probe)) {
-            logger.info('Skipping default alert ' + defaultAlert.fileName + ' for probe ' + probe._id)
+            app.logger.info('Skipping default alert ' + defaultAlert.fileName + ' for probe ' + probe._id)
             continue
           }
-          logger.info('Initializing default alert ' + defaultAlert.fileName + ' for probe ' + probe._id)
+          app.logger.info('Initializing default alert ' + defaultAlert.fileName + ' for probe ' + probe._id)
           const geojson = fs.readJsonSync(defaultAlert.fileName)
           const options = Object.assign({
             name: alertName,
@@ -43,7 +42,7 @@ export default async function init () {
           }, defaultAlert.options)
           Object.assign(options.conditions, { geometry: { $geoWithin: { $geometry: geojson.geometry } } })
           await alertsService.create(options)
-          logger.info('Initialized default alert ' + defaultAlert.fileName + ' for probe ' + probe._id)
+          app.logger.info('Initialized default alert ' + defaultAlert.fileName + ' for probe ' + probe._id)
         }
       }
     }

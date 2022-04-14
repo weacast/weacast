@@ -3,7 +3,6 @@ import { pathToFileURL } from 'url'
 import https from 'https'
 import proxyMiddleware from 'http-proxy-middleware'
 import express from '@feathersjs/express'
-import logger from 'winston'
 import { weacast } from '@weacast/core'
 import distribution from '@kalisio/feathers-distributed'
 
@@ -67,11 +66,11 @@ export class Server {
         key: fs.readFileSync(httpsConfig.key),
         cert: fs.readFileSync(httpsConfig.cert)
       }, app)
-      logger.info('Configuring HTTPS server at port ' + port.toString())
+      app.logger.info('Configuring HTTPS server at port ' + port.toString())
       await server.listen(port)
     } else {
       const port = app.get('port')
-      logger.info('Configuring HTTP server at port ' + port.toString())
+      app.logger.info('Configuring HTTP server at port ' + port.toString())
       await app.listen(port)
     }
   }

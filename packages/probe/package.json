@@ -44,8 +44,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "mongodb": "^2.2.26",
-    "mubsub": "^1.4.0",
-    "winston": "^3.6.0"
+    "mubsub": "^1.4.0"
   },
   "devDependencies": {
     "chai": "^4.3.6",

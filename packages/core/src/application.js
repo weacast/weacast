@@ -186,8 +186,9 @@ function getElementServices (app, name) {
   return services
 }
 
-function setupLogger (logsConfig) {
-  logsConfig = _.omit(logsConfig, ['level'])
+function setupLogger (app) {
+  debug('Setup application loggers')
+  const logsConfig = _.omit(app.get('logs'), ['level'])
   // We have one entry per log type
   const logsTypes = logsConfig ? Object.getOwnPropertyNames(logsConfig) : []
   // Create corresponding winston transports with options
@@ -196,11 +197,13 @@ function setupLogger (logsConfig) {
     const options = logsConfig[logType]
     transports.push(new logger.transports[logType](options))
   })
+  // Use winston default logger
+  app.logger = logger
   // Reconfigure default winston logger
   try {
     const colorizer = logger.format.colorize()
     logger.configure({
-      level: _.get(logsConfig, 'level', (process.env.NODE_ENV === 'development' ? 'debug' : 'info')),
+      level: _.get(app.get('logs'), 'level', (process.env.NODE_ENV === 'development' ? 'debug' : 'info')),
       format: logger.format.combine(
         logger.format.simple(),
         logger.format.printf(msg =>
@@ -221,7 +224,7 @@ export default function weacast () {
   // Load app configuration first
   app.configure(configuration())
   // Then setup logger
-  setupLogger(app.get('logs'))
+  setupLogger(app)
 
   // This retrieve corresponding service options from app config if any
   app.getServiceOptions = function (name) {

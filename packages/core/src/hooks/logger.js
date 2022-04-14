@@ -1,6 +1,4 @@
 // A hook that logs service method before, after and error
-import logger from 'winston'
-
 export function log (hook) {
   let message = `${hook.type}: ${hook.path} - Method: ${hook.method}`
 
@@ -9,15 +7,20 @@ export function log (hook) {
   }
 
   if (hook.error) {
-    logger.error(message)
+    hook.app.logger.error(message, hook.error.stack)
   } else {
-    logger.debug(message)
+    hook.app.logger.debug(message)
   }
 
-  logger.silly('hook.data', hook.data)
-  logger.silly('hook.params', hook.params)
+  // Required as the logger causes high CPU usage to serialize messages
+  // even if the current log level should discard it
+  // See https://github.com/kalisio/kdk/issues/287
+  if (process.env.NODE_ENV === 'development') {
+    hook.app.logger.silly('hook.data', hook.data)
+    hook.app.logger.silly('hook.params', hook.params)
 
-  if (hook.result) {
-    logger.silly('hook.result', hook.result)
+    if (hook.result) {
+      hook.app.logger.silly('hook.result', hook.result)
+    }
   }
 }

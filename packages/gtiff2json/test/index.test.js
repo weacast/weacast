@@ -20,4 +20,6 @@ describe('weacast-gtiff2json', () => {
       chai.expect(points).to.deep.equal(jsonArray)
     })
   })
+  // Let enough time to process
+    .timeout(10000)
 })

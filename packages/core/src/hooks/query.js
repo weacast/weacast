@@ -1,6 +1,5 @@
 import moment from 'moment'
 import fs from 'fs-extra'
-import logger from 'winston'
 import _ from 'lodash'
 import path from 'path'
 import makeDebug from 'debug'
@@ -231,7 +230,7 @@ function readFile (service, item) {
         let errorMessage = 'Cannot read converted ' + service.forecast.name + '/' + service.element.name + ' forecast'
         if (item.forecastTime) errorMessage += ' at ' + item.forecastTime.format()
         if (item.runTime) errorMessage += ' for run ' + item.runTime.format()
-        logger.error(errorMessage)
+        service.app.logger.error(errorMessage)
         debug('Input JSON file was : ' + item.convertedFilePath)
         reject(error)
       })

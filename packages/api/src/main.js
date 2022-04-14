@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 import fs from 'fs-extra'
-import logger from 'winston'
 import _ from 'lodash'
 import { Server } from './server.js'
 
-async function main () {
-  const server = new Server()
+let server
+
+function createServer () {
+  server = new Server()
 
   const config = server.app.get('logs')
   const logPath = _.get(config, 'DailyRotateFile.dirname')
@@ -15,18 +16,29 @@ async function main () {
     fs.ensureDirSync(logPath)
   }
 
-  process.on('unhandledRejection', (reason, p) => {
-    console.error(p, reason)
-    logger.error('Unhandled Rejection at: Promise ', p, reason)
-  })
+  process.on('unhandledRejection', (reason, p) =>
+    server.app.logger.error('Unhandled Rejection: ', reason)
+  )
+}
 
+async function runServer () {
   await server.run()
-  logger.info('Server started listening')
+  server.app.logger.info('Server started listening')
 }
 
-if (process.env.LAUNCH_DELAY) {
-  logger.info(`Waiting ${process.env.LAUNCH_DELAY / 1000}s for server to start...`)
-  setTimeout(main, process.env.LAUNCH_DELAY)
+if (require.main === module) {
+  if (process.env.LAUNCH_DELAY) {
+    console.log(`Waiting ${process.env.LAUNCH_DELAY / 1000}s for server to start...`)
+    setTimeout(() => {
+      createServer()
+      runServer()
+    }, process.env.LAUNCH_DELAY)
+  } else {
+    createServer()
+    runServer()
+  }
 } else {
-  main()
+  createServer()
 }
+
+export default server

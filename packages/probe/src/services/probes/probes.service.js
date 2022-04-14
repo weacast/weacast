@@ -1,4 +1,3 @@
-import logger from 'winston'
 import makeDebug from 'debug'
 import _ from 'lodash'
 import dot from 'dot-object'
@@ -143,9 +142,9 @@ export default {
     try {
       const response = await resultService.Model.bulkWrite(operations)
 
-      logger.verbose(`Produced ${response.upsertedCount + response.modifiedCount} results (${response.upsertedCount} creates - ${response.modifiedCount} updates)
-                      for probe ${probe._id} on element ${elementService.forecast.name + '/' + elementService.element.name}
-                      at ${forecastTime.format()} for run ${runTime.format()}`)
+      this.app.logger.verbose(`Produced ${response.upsertedCount + response.modifiedCount} results (${response.upsertedCount} creates - ${response.modifiedCount} updates)
+        for probe ${probe._id} on element ${elementService.forecast.name + '/' + elementService.element.name}
+        at ${forecastTime.format()} for run ${runTime.format()}`)
 
       if (response.hasWriteErrors()) response.getWriteErrors().forEach(error => console.log(error))
       return features
@@ -371,7 +370,7 @@ export default {
               const result = await this.get(probe._id, { query: { $select: ['forecast', 'elements', 'features'] } })
               features = result.features
             }
-            logger.verbose('Probing forecast data for element ' + forecastName + '/' + elementName + ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
+            this.app.logger.verbose('Probing forecast data for element ' + forecastName + '/' + elementName + ' at ' + forecast.forecastTime.format() + ' on run ' + forecast.runTime.format())
             await this.probeForecastTime(features, probe, service, forecast)
             await this.updateFeaturesInDatabase(features, probe, service, forecast)
             // Send a message so that clients know there are new results, indeed for performance reasons standard events have been disabled on results
@@ -379,7 +378,7 @@ export default {
             delete forecast.data
             this.emit('results', { probe, forecast })
           } catch (error) {
-            logger.error(error.message)
+            this.app.logger.error(error.message)
           }
         }
         // External callback
@@ -479,7 +478,7 @@ export default {
           }
         }
       } catch (error) {
-        logger.error(error.message)
+        this.app.logger.error(error.message)
       }
     }
 

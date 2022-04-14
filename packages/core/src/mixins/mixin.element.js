@@ -1,6 +1,5 @@
 import fs from 'fs-extra'
 import path from 'path'
-import logger from 'winston'
 import { getNearestRunTime, getNearestForecastTime } from '../common/index.js'
 
 export default {
@@ -29,11 +28,11 @@ export default {
       this.gfs.openDownloadStreamByName(filePath)
         .pipe(fs.createWriteStream(outputPath))
         .on('error', error => {
-          logger.error('Unable to read ' + filePath + ' from GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
+          this.app.logger.error('Unable to read ' + filePath + ' from GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
           reject(error)
         })
         .on('finish', _ => {
-          logger.verbose('Read ' + filePath + ' from GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
+          this.app.logger.verbose('Read ' + filePath + ' from GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
           resolve()
         })
     })
@@ -48,11 +47,11 @@ export default {
       fs.createReadStream(inputPath)
         .pipe(this.gfs.openUploadStream(filePath, { metadata }))
         .on('error', error => {
-          logger.error('Unable to write file ' + filePath + ' to GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast', error)
+          this.app.logger.error('Unable to write file ' + filePath + ' to GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast', error)
           reject(error)
         })
         .on('finish', _ => {
-          logger.verbose('Written file ' + filePath + ' to GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
+          this.app.logger.verbose('Written file ' + filePath + ' to GridFS for ' + this.forecast.name + '/' + this.element.name + ' forecast')
           resolve()
         })
     })

@@ -1,6 +1,5 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
-import logger from 'winston'
 import core, { initializeElements } from '@weacast/core'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -30,7 +29,7 @@ export default async function () {
           const plugin = pluginModule.default
           await app.configure(plugin)
         } catch (error) {
-          logger.error(error.message)
+          app.logger.error(error.message)
         }
       }
     } else {
@@ -51,11 +50,11 @@ export default async function () {
         const plugin = pluginModule.default
         await app.configure(plugin)
       } catch (error) {
-        logger.error(error.message)
+        app.logger.error(error.message)
       }
     }
   } catch (error) {
-    logger.error(error.message)
+    app.logger.error(error.message)
   }
 
   // Create default users if not already done
@@ -67,7 +66,7 @@ export default async function () {
       defaultUsers.forEach(defaultUser => {
         const createdUser = users.find(user => user.email === defaultUser.email)
         if (!createdUser) {
-          logger.info('Initializing default user (email = ' + defaultUser.email + ', password = ' + defaultUser.password + ')')
+          app.logger.info('Initializing default user (email = ' + defaultUser.email + ', password = ' + defaultUser.password + ')')
           usersService.create({ email: defaultUser.email, password: defaultUser.password })
         }
       })

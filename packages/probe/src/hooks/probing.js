@@ -1,4 +1,3 @@
-// import logger from 'winston'
 // import makeDebug from 'debug'
 import feathersHooks from 'feathers-hooks-common'
 import mongo from 'mongodb'
@@ -7,7 +6,7 @@ import _ from 'lodash'
 const { getItems, replaceItems, discard } = feathersHooks
 const { ObjectID } = mongo
 
-// const debug = makeDebug('weacast:weacast-core')
+// const debug = makeDebug('weacast:weacast-probe')
 const discardFeaturesField = discard('features')
 
 export function marshallResultsQuery (hook) {

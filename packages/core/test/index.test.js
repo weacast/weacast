@@ -1,6 +1,5 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
-import logger from 'winston'
 import fs from 'fs-extra'
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
@@ -46,7 +45,7 @@ describe('weacast-core', () => {
   it('registers the log options', (done) => {
     const log = 'This is a log test'
     const now = new Date()
-    logger.info(log)
+    app.logger.info(log)
     // FIXME: need to let some time to proceed with log file
     // Didn't find a better way since fs.watch() does not seem to work...
     setTimeout(() => {

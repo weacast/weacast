@@ -4,7 +4,6 @@ import _ from 'lodash'
 import moment from 'moment'
 import request from 'request'
 import * as errors from '@feathersjs/errors'
-import logger from 'winston'
 import makeDebug from 'debug'
 import { Grid } from '../common/grid.js'
 const debug = makeDebug('weacast:weacast-core')
@@ -26,21 +25,21 @@ export default {
     const promise = new Promise((resolve, reject) => {
       const filePath = this.getForecastTimeFilePath(runTime, forecastTime)
       if (fs.existsSync(filePath)) {
-        logger.verbose('Already downloaded ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        this.app.logger.verbose('Already downloaded ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
         resolve(filePath)
         return
       }
       // Get request options
-      logger.verbose('Downloading ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+      this.app.logger.verbose('Downloading ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
       let errorMessage = 'Could not download ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format()
       // Get request options
       request.get(this.getForecastTimeRequest(runTime, forecastTime))
         .on('error', err => {
-          logger.error(errorMessage, err)
+          this.app.logger.error(errorMessage, err)
           reject(err)
         })
         .on('timeout', err => {
-          logger.error(errorMessage + ', provider timed out')
+          this.app.logger.error(errorMessage + ', provider timed out')
           reject(err)
         })
         .on('response', response => {
@@ -55,11 +54,11 @@ export default {
             response.pipe(file)
               .on('finish', _ => {
                 file.close()
-                logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+                this.app.logger.verbose('Written ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
                 resolve(filePath)
               })
               .on('error', err => {
-                logger.error(errorMessage + ', unable to write temporary file', err)
+                this.app.logger.error(errorMessage + ', unable to write temporary file', err)
                 debug('Output TIFF file was : ' + filePath)
                 reject(err)
               })
@@ -163,7 +162,7 @@ export default {
       resolution: this.forecast.resolution
     })
     const { tilesetSize } = grid.getTiling(this.forecast.tileResolution)
-    logger.verbose('Aggregating tiles for ' + this.forecast.name + '/' + this.element.name + ' forecast')
+    this.app.logger.verbose('Aggregating tiles for ' + this.forecast.name + '/' + this.element.name + ' forecast')
     // Iterate over tiles
     for (let j = 0; j < tilesetSize[1]; j++) {
       for (let i = 0; i < tilesetSize[0]; i++) {
@@ -185,7 +184,7 @@ export default {
           }
         }]).toArray()
         if (tiles.length !== 1) {
-          logger.error('Could not aggregate tiles for ' + this.forecast.name + '/' + this.element.name + ' forecast')
+          this.app.logger.error('Could not aggregate tiles for ' + this.forecast.name + '/' + this.element.name + ' forecast')
         } else {
           const tile = tiles[0]
           // Delete temporary tiles with a single forecast time
@@ -216,13 +215,13 @@ export default {
     const previousForecast = (result.length > 0 ? result[0] : null)
     // Check if we are already up-to-date
     if (previousForecast && runTime.isSameOrBefore(previousForecast.runTime)) {
-      logger.verbose('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')
+      this.app.logger.verbose('Up-to-date ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format() + ', not looking further')
       return previousForecast
     }
     // Otherwise download and process data
     let forecast = await this.processForecastTime(runTime, forecastTime)
     forecast = await this.updateForecastTimeInDatabase(forecast, previousForecast)
-    logger.verbose((previousForecast ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+    this.app.logger.verbose((previousForecast ? 'Updated ' : 'Created ') + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
     // Remove temporary file associated with data except when using fs data store
     // FIXME: trying to remove temporary files as soon as possible raises "EBUSY: resource busy or locked" because there is probably some async operation still running
     // For now we remove temporary files as a whole by removing the data dir on each update process of the element
@@ -247,21 +246,21 @@ export default {
       // 404 might be 'normal' errors because some data are not available at the planned run time from meteo providers
       // or some might vary the time steps available in the forecast depending on the run
       if (!error || !error.code || error.code !== 404) {
-        logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-        logger.error(error.message)
+        this.app.logger.error('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        this.app.logger.error(error.message)
       } else {
-        logger.verbose('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
-        logger.verbose(error.message)
+        this.app.logger.verbose('Could not update ' + this.forecast.name + '/' + this.element.name + ' forecast at ' + forecastTime.format() + ' for run ' + runTime.format())
+        this.app.logger.verbose(error.message)
       }
       const previousRunTime = runTime.clone().subtract({ seconds: this.forecast.runInterval })
       // When data for current time is not available we might try previous data
       // check here that we go back until the configured limit
       // because otherwise this means there is a real problem with the provider and/or we will have outdated data
       if (datetime.diff(previousRunTime, 'seconds') > this.forecast.oldestRunInterval) {
-        logger.verbose('Hit oldest run time limit ' + runTime.format() + ' on ' + this.forecast.name + '/' + this.element.name + ', there is a too much big gap in data from the provider')
+        this.app.logger.verbose('Hit oldest run time limit ' + runTime.format() + ' on ' + this.forecast.name + '/' + this.element.name + ', there is a too much big gap in data from the provider')
         throw error
       } else {
-        logger.verbose('Harvesting further run time ' + previousRunTime.format() + ' on ' + this.forecast.name + '/' + this.element.name)
+        this.app.logger.verbose('Harvesting further run time ' + previousRunTime.format() + ' on ' + this.forecast.name + '/' + this.element.name)
         await this.harvestForecastTime(datetime, previousRunTime, forecastTime)
       }
     }
@@ -303,12 +302,12 @@ export default {
   async updateForecastData () {
     // Avoid stacking updates
     if (this.updateRunning) {
-      logger.info('Skipping forecast data update on ' + this.forecast.name + '/' + this.element.name + ' as previous one is not yet finished')
+      this.app.logger.info('Skipping forecast data update on ' + this.forecast.name + '/' + this.element.name + ' as previous one is not yet finished')
       return
     }
     this.updateRunning = true
     const now = moment.utc()
-    logger.info('Checking for up-to-date forecast data on ' + this.forecast.name + '/' + this.element.name)
+    this.app.logger.info('Checking for up-to-date forecast data on ' + this.forecast.name + '/' + this.element.name)
     // Make sure we've got somewhere to put data and clean it up if we only use file as a temporary data store
     const dataDir = this.getDataDirectory()
     if (this.element.dataStore === 'fs') {
@@ -319,11 +318,11 @@ export default {
     // Try data refresh for current time
     try {
       const times = await this.refreshForecastData(now)
-      logger.info('Completed forecast data update on ' + this.forecast.name + '/' + this.element.name)
+      this.app.logger.info('Completed forecast data update on ' + this.forecast.name + '/' + this.element.name)
       this.updateRunning = false
       return times
     } catch (error) {
-      logger.error('Forecast data update on ' + this.forecast.name + '/' + this.element.name + ' failed')
+      this.app.logger.error('Forecast data update on ' + this.forecast.name + '/' + this.element.name + ' failed')
       this.updateRunning = false
       throw error
     }
@@ -332,19 +331,19 @@ export default {
   async cleanForecastData () {
     // Avoid stacking cleanups
     if (this.cleanupRunning) {
-      logger.info('Skipping forecast data cleanup on ' + this.forecast.name + '/' + this.element.name + ' as previous one is not yet finished')
+      this.app.logger.info('Skipping forecast data cleanup on ' + this.forecast.name + '/' + this.element.name + ' as previous one is not yet finished')
       return
     }
     this.cleanupRunning = true
     const now = moment.utc()
-    logger.info('Cleaning up forecast data on ' + this.forecast.name + '/' + this.element.name)
+    this.app.logger.info('Cleaning up forecast data on ' + this.forecast.name + '/' + this.element.name)
     // Try data cleanup for current time
     try {
       await this.cleanGridFS(now)
-      logger.info('Completed forecast data cleanup on ' + this.forecast.name + '/' + this.element.name)
+      this.app.logger.info('Completed forecast data cleanup on ' + this.forecast.name + '/' + this.element.name)
       this.cleanupRunning = false
     } catch (error) {
-      logger.error('Forecast data cleanup on ' + this.forecast.name + '/' + this.element.name + ' failed')
+      this.app.logger.error('Forecast data cleanup on ' + this.forecast.name + '/' + this.element.name + ' failed')
       this.cleanupRunning = false
       throw error
     }
