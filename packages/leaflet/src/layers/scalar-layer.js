@@ -1,7 +1,7 @@
 import L from 'leaflet'
-import { ForecastLayer } from './forecast-layer'
-import { Grid, createColorMap } from 'weacast-core/client'
-import { GridRenderer } from '../grid-renderer'
+import { Grid, createColorMap } from '@weacast/core/client.js'
+import { ForecastLayer } from './forecast-layer.js'
+import { GridRenderer } from '../grid-renderer.js'
 
 let ScalarLayer = ForecastLayer.extend({
 

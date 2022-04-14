@@ -1,8 +1,8 @@
 import L from 'leaflet'
 import 'leaflet-velocity'
 import 'leaflet-velocity/dist/leaflet-velocity.css'
-import { createColorMap } from 'weacast-core/client'
-import { ForecastLayer } from './forecast-layer'
+import { createColorMap } from '@weacast/core/client.js'
+import { ForecastLayer } from './forecast-layer.js'
 
 let FlowLayer = ForecastLayer.extend({
 

@@ -21,7 +21,7 @@ export function weacast (config) {
     api.configure(feathers.socketio(socket, { timeout: config.apiTimeout || 30000 }))
   }
   api.configure(feathers.authentication({
-    storage: window.localStorage,
+    storage: config.storage || window.localStorage,
     cookie: config.apiJwt || 'weacast-jwt',
     storageKey: config.apiJwt || 'weacast-jwt',
     path: config.apiPath + '/authentication'

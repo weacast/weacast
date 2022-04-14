@@ -1,1 +1,1 @@
-module.exports = require('./lib/client/index')
+export * from './src/client/index.js'

@@ -1,0 +1,62 @@
+{
+  "name": "@weacast/leaflet",
+  "description": "Basic utilitiess to support Weacast-based clients",
+  "version": "1.2.0",
+  "homepage": "https://github.com/weacast/weacast-leaflet",
+  "main": "src/index.js",
+  "type": "module",
+  "keywords": [
+    "weacast",
+    "weacast-plugin"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/weacast/weacast-leaflet.git"
+  },
+  "author": {
+    "name": "Weacast contributors",
+    "url": "https://github.com/weacast"
+  },
+  "contributors": [],
+  "bugs": {
+    "url": "https://github.com/weacast/weacast-leaflet/issues"
+  },
+  "scripts": {
+    "lint": "standard src/**/*.js test/**/*.js --fix",
+    "test": "cross-env NODE_CONFIG_DIR=./test/config/ mocha --exit -r jsdom-global/register"
+  },
+  "standard": {
+    "sourceType": "module",
+    "env": [
+      "mocha"
+    ]
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "chroma-js": "^2.4.2",
+    "leaflet": "^1.7.1",
+    "leaflet-pixi-overlay": "1.8.2",
+    "leaflet-velocity": "^2.1.2",
+    "lodash": "^4.17.21",
+    "loglevel": "^1.8.0",
+    "mathjs": "^10.4.3",
+    "pixi.js": "6.3.0",
+    "@weacast/core": "^1.5.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "chai-lint": "^0.1.1",
+    "config": "^3.3.7",
+    "containerized": "^1.0.2",
+    "cross-env": "^7.0.3",
+    "isomorphic-fetch": "^3.0.0",
+    "mocha": "^9.2.2",
+    "jsdom": "^19.0.0",
+    "jsdom-global": "^3.0.2",
+    "shx": "^0.3.4",
+    "standard": "^16.0.4"
+  }
+}

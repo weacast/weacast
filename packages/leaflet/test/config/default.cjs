@@ -4,5 +4,6 @@ module.exports = {
   transport: 'web-socket', // Could be 'http' or 'web-socket'
   logs: {
     level: 'error'
-  }
+  },
+  storage: {}
 }

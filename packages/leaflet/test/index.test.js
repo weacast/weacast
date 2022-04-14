@@ -1,9 +1,8 @@
 import chai, { util, expect } from 'chai'
 import chailint from 'chai-lint'
 import config from 'config'
-import 'jsdom-global/register'
 import fetch from 'isomorphic-fetch'
-import { weacast } from 'weacast-core/client'
+import { weacast } from '@weacast/core/client.js'
 
 window.fetch = fetch
 

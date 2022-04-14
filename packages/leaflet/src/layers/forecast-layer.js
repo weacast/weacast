@@ -1,5 +1,5 @@
 import L from 'leaflet'
-import { getNearestForecastTime } from 'weacast-core/common'
+import { getNearestForecastTime } from '@weacast/core/common.js'
 
 let ForecastLayer = L.Layer.extend({
 
