@@ -26,19 +26,15 @@ async function runServer () {
   server.app.logger.info('Server started listening')
 }
 
-if (require.main === module) {
-  if (process.env.LAUNCH_DELAY) {
-    console.log(`Waiting ${process.env.LAUNCH_DELAY / 1000}s for server to start...`)
-    setTimeout(() => {
-      createServer()
-      runServer()
-    }, process.env.LAUNCH_DELAY)
-  } else {
+if (process.env.LAUNCH_DELAY) {
+  console.log(`Waiting ${process.env.LAUNCH_DELAY / 1000}s for server to start...`)
+  setTimeout(() => {
     createServer()
     runServer()
-  }
+  }, process.env.LAUNCH_DELAY)
 } else {
   createServer()
+  runServer()
 }
 
 export default server
