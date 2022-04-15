@@ -1,6 +1,8 @@
-# The Basics - A Step-by-Step introduction to Weacast
+# The Basics
 
-## Deploying
+## Installing
+
+### The easy way : using Docker
 
 The Weacast web application demo includes the front-end side client as well as the back-end services/API. Once run it will continuously gather forecast data from configured model providers.
 
@@ -8,13 +10,12 @@ The Weacast web application demo includes the front-end side client as well as t
 After the first launch you will have to wait a few minutes before some data has been gathered and processed to be visible in the web app user interface
 :::
 
-### The easy way : using Docker
+
+Weacast provides Docker images on the [Docker Hub](https://hub.docker.com/r/weacast/weacast/) to ease deploying your own server. To run correctly it has to be linked with a standard [MongoDB container](https://hub.docker.com/_/mongo/) for the database. 
 
 ::: warning 
 This requires you to [install Docker](https://docs.docker.com/engine/installation/), the world’s leading software container platform.
-::: 
-
-Weacast provides Docker images on the [Docker Hub](https://hub.docker.com/r/weacast/weacast/) to ease deploying your own server. To run correctly it has to be linked with a standard [MongoDB container](https://hub.docker.com/_/mongo/) for the database. 
+:::
 
 The following commands should do the job:
 
@@ -89,19 +90,19 @@ First you have to ensure the same [prerequisites](./development.md#prerequisites
 
 ```bash
 // Clone Weacast demo app
-git clone https://github.com/weacast/weacast.git
-cd weacast
-
-// Client run
+git clone https://github.com/weacast/weacast-app.git
+cd weacast-app
 yarn install
+// Client run
 yarn run dev
 
-// In another terminal clone Weacast API
-git clone https://github.com/weacast/weacast-api.git
-cd weacast-api
-
-// Server run
+// In another terminal clone Weacast monorepo
+git clone https://github.com/weacast/weacast.git
+cd weacast
 yarn install
+// Server run
+export LOADERS=gfs
+cd packages/api
 yarn run dev
 ```
 
