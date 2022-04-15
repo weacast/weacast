@@ -1,7 +1,7 @@
 {
   "name": "@weacast/core",
   "description": "Basic utils to support Weacast and plugins",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "homepage": "https://github.com/weacast/weacast-core",
   "main": "src/index.js",
   "type": "module",
@@ -70,6 +70,5 @@
     "nock": "^13.2.4",
     "shx": "^0.3.4",
     "standard": "^16.0.4"
-  },
-  "peerDependencies": {}
+  }
 }

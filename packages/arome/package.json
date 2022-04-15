@@ -1,7 +1,7 @@
 {
   "name": "@weacast/arome",
   "description": "AROME weather forecast model plugin for Weacast",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "homepage": "https://github.com/weacast/weacast-arome",
   "main": "src/index.js",
   "type": "module",
@@ -35,16 +35,16 @@
     ]
   },
   "dependencies": {
-    "@weacast/arpege": "^1.6.0",
-    "@weacast/core": "^1.5.0"
+    "@weacast/arpege": "^2.0.0",
+    "@weacast/core": "^2.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.6",
     "chai-lint": "^0.1.1",
     "containerized": "^1.0.2",
     "cross-env": "^7.0.3",
-    "nyc": "^15.1.0",
     "mocha": "^9.2.2",
+    "nyc": "^15.1.0",
     "shx": "^0.3.4",
     "standard": "^16.0.4"
   }
