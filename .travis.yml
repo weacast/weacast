@@ -2,16 +2,14 @@ notifications:
   email: false
   slack:
     rooms:
-      secure: MjNqcgkuwcpKJfA/LzPJO6ce4tqVOACRzrZZXCm8oxcNo7NmchldR9MFAErQm7ZhCzLOCIPivRZ4vG9Mbd2mXx7XIhJnvO2pFf1yZNP2AtU1z60f9vWxXrj8TdvI+BVB6NhlmCbPvVecaNw9c6PrcKG8TNF7syzVa44XtpuRB8bMDQa7qGyy9hp3IGtPcmGZpxNIsqLN2RUzatwaTQnWoLj1bCmQAQTuULp6Y4cQvTMLWmMKlKcP2PQF5ov4ZbN1UmC1HwZwWlMHcsE7QHYfwlOnpfTjYjNxN1HHJ9ZZwwO3s1gi3an4XM6OEGyV8g6wPBJIvmrSs2OHP33Ab+QFeew2TLCi3UfRBETjY2KKIRKYcYCrRTPvYpo2NzY/NDW0D6kllrcY6fy6UlXKR0ACe4jiRDz6P8WumV2YRpCgoBpFbtKUUiJFTk7hCfpPYDacBe8Nneg0WkhXOfiqma03sU+56mDyoKatefnEadMVttCsfricSBkr4m+Yk9QSRLt988QMG8Yh8KNbxGybjZBXq90NMZncdL/VNKyqSGLiP2/qagglTw6tZyUsQRx6hmNxn6Vut8tCQCObxBu0gYmttMlfG4lX+nwFEn8EzrTyyXpbvEi7zFqe3HpoDxSa0cQwuqeuQZrm5uVoCytPbgNWY4nUBPKU2URNCE6fN4mOM74=
+      secure: ReGtSR7mDC2FTTHmJaw/Ov2j+3trKsiMpmi5YE7Zgf1TkQfgjBm6aH7hPyuTV1cMiUgy2I+uGfHHyeCny3fGU819gLS7IUd/ZHbO488kEy8OHhLoQOe+8fUXDNZEE76ju3JQsaqmlVNQvGXeDciWQbQuJ7Uvo2HaYsHFnNF2opEoW01XSQYXgYHt9x1+vQjAXELOf4Fg2JB0jlyTSDR7vR7jt+VRwhqCl0shjkfEzglw3Q4tLO0TJovFmwxWPMs2y6PjtGgSdnqzWR/YT98rW3z8KB4gbLQtbJ5aNkQUUdqjl5M+IiRzgcjYARKYeiFiIcba4qouh7KT7OEpLavyAc/jKzOGKjSPpTnnabQt1xRpoiv7ErWOUtiiCfodRZwvSXjkm2Mk1DQZGNVRk4Fk7Toq7PIoexuD/lXjf+lLnwoIeG1Q7kVb3G09OPy4zun1VQH/O9s6boI5/I91IoQVlIcC2PwF8LrukltKFgsOgOVMvgkUHS2UprDqZDzMf8vCrw8P6H2l5bbvOqNeV5Ne21JyGV3ZGuPzLtq0Aj6bpvTjW4nCBkUGNDcy/t7673R039psBNz3E0u2kg+YC8rFtwUN+WXRD/ttp6kE9XgTsI5PtYEdV6l9oOwBDClD6VpF1TOmHJiKGhHOhfMtuzvj0h46Vp7HgCm7FNzrWi4r07w=
     on_success: always
     on_failure: always
-
 stages:
 - name: BUILD
   if: commit_message !~ /\[skip build\]/
 - name: TEST
   if: commit_message !~ /\[skip test\]/
-
 jobs:
   include:
   - stage: BUILD
@@ -33,12 +31,14 @@ jobs:
     sudo: required
     services:
     - mongodb
-    addons:
-      code_climate:
-        repo_token: 2ef0777163fc915428b0f0e408ee3c0a0bbed237e43c244440a4af109357c35c
+    env:
+      global:
+      - CC_TEST_REPORTER_ID=5031ceee6955aff7d9006d42676460c00c8b05c131b21294d6526ac720c3d1ea
     install:
-    - npm install -g codeclimate-test-reporter
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - "./cc-test-reporter before-build"
     script:
     - bash .travis.test.sh
     after_script:
-    - codeclimate-test-reporter < coverage/lcov.info
+    - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
