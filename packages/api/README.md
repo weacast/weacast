@@ -2,7 +2,7 @@
 
 [![Build Status](https://app.travis-ci.com/weacast/weacast.svg?branch=master)](https://app.travis-ci.com/weacast/weacast)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
-[![Download Status](https://img.shields.io/npm/dm/weacast-api.svg?style=flat-square)](https://www.npmjs.com/package/weacast-api)
+[![Download Status](https://img.shields.io/npm/dm/@weacast/api.svg?style=flat-square)](https://www.npmjs.com/package/@weacast/api)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api?ref=badge_shield)
 
 > Microservice to expose Weacast API

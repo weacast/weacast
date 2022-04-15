@@ -2,7 +2,7 @@
 
 [![Build Status](https://app.travis-ci.com/weacast/weacast.svg?branch=master)](https://app.travis-ci.com/weacast/weacast)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
-[![Download Status](https://img.shields.io/npm/dm/weacast-alert.svg?style=flat-square)](https://www.npmjs.com/package/weacast-alert)
+[![Download Status](https://img.shields.io/npm/dm/@weacast/alert.svg?style=flat-square)](https://www.npmjs.com/package/@weacast/alert)
 
 > Forecast alert plugin for Weacast
 

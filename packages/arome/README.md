@@ -2,7 +2,7 @@
 
 [![Build Status](https://app.travis-ci.com/weacast/weacast.svg?branch=master)](https://app.travis-ci.com/weacast/weacast)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
-[![Download Status](https://img.shields.io/npm/dm/weacast-arome.svg?style=flat-square)](https://www.npmjs.com/package/weacast-arome)
+[![Download Status](https://img.shields.io/npm/dm/@weacast/arome.svg?style=flat-square)](https://www.npmjs.com/package/@weacast/arome)
 
 > AROME weather forecast model plugin for Weacast
 

@@ -1,7 +1,7 @@
 # @weacast/gtiff2json
 
 [![Build Status](https://app.travis-ci.com/weacast/weacast.svg?branch=master)](https://app.travis-ci.com/weacast/weacast)
-[![Download Status](https://img.shields.io/npm/dm/weacast-gtiff2json.svg?style=flat-square)](https://www.npmjs.com/package/weacast-gtiff2json)
+[![Download Status](https://img.shields.io/npm/dm/@weacast/gtiff2json.svg?style=flat-square)](https://www.npmjs.com/package/@weacast/gtiff2json)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-gtiff2json.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-gtiff2json?ref=badge_shield)
 
 A command line utility that decodes [GeoTIFF](https://en.wikipedia.org/wiki/GeoTIFF) files as JSON.
