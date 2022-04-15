@@ -1,9 +1,6 @@
 # @weacast/gfs
 
-[![Build Status](https://app.travis-ci.com/weacast/weacast-gfs.svg?branch=master)](https://app.travis-ci.com/weacast/weacast-gfs)
-[![Code Climate](https://codeclimate.com/github/weacast/weacast-gfs/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-gfs)
-[![Test Coverage](https://codeclimate.com/github/weacast/weacast-gfs/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-gfs/coverage)
-[![Dependency Status](https://img.shields.io/david/weacast/weacast-gfs.svg?style=flat-square)](https://david-dm.org/weacast/weacast-gfs)
+[![Build Status](https://app.travis-ci.com/weacast/weacast.svg?branch=master)](https://app.travis-ci.com/weacast/weacast)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
 [![Download Status](https://img.shields.io/npm/dm/weacast-gfs.svg?style=flat-square)](https://www.npmjs.com/package/weacast-gfs)
 

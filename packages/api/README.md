@@ -1,9 +1,6 @@
 # weacast-api
 
-[![Build Status](https://app.travis-ci.com/weacast/weacast-api.svg?branch=master)](https://app.travis-ci.com/weacast/weacast-api)
-[![Code Climate](https://codeclimate.com/github/weacast/weacast-api/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-api)
-[![Test Coverage](https://codeclimate.com/github/weacast/weacast-api/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-api/coverage)
-[![Dependency Status](https://img.shields.io/david/weacast/weacast-api.svg?style=flat-square)](https://david-dm.org/weacast/weacast-api)
+[![Build Status](https://app.travis-ci.com/weacast/weacast.svg?branch=master)](https://app.travis-ci.com/weacast/weacast)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
 [![Download Status](https://img.shields.io/npm/dm/weacast-api.svg?style=flat-square)](https://www.npmjs.com/package/weacast-api)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-api?ref=badge_shield)

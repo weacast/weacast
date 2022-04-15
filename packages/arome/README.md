@@ -1,9 +1,6 @@
 # @weacast/arome
 
-[![Build Status](https://app.travis-ci.com/weacast/weacast-arome.svg?branch=master)](https://app.travis-ci.com/weacast/weacast-arome)
-[![Code Climate](https://codeclimate.com/github/weacast/weacast-arome/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast-arome)
-[![Test Coverage](https://codeclimate.com/github/weacast/weacast-arome/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast-arome/coverage)
-[![Dependency Status](https://img.shields.io/david/weacast/weacast-arome.svg?style=flat-square)](https://david-dm.org/weacast/weacast-arome)
+[![Build Status](https://app.travis-ci.com/weacast/weacast.svg?branch=master)](https://app.travis-ci.com/weacast/weacast)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast-docs/)
 [![Download Status](https://img.shields.io/npm/dm/weacast-arome.svg?style=flat-square)](https://www.npmjs.com/package/weacast-arome)
 
