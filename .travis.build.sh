@@ -1,5 +1,6 @@
 #!/bin/bash
 source .travis.env.sh
+cd packages/api
 
 # Build docker with version number only on release
 if [[ -z "$TRAVIS_TAG" ]]
@@ -14,6 +15,3 @@ else
 	docker tag weacast/weacast-api weacast/weacast-api:$VERSION
 	docker push weacast/weacast-api:$VERSION
 fi
-
-
-

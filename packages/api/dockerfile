@@ -1,12 +1,11 @@
-FROM  node:12-buster AS Build
+FROM  node:16-buster AS Build
 
 WORKDIR /opt/weacast-api
 COPY . /opt/weacast-api
 
 RUN yarn install
-RUN npm run compile
 
-FROM  node:12-buster-slim
+FROM  node:16-buster-slim
 
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
 

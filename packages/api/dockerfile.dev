@@ -1,25 +1,14 @@
-FROM  node:12-buster AS Build
+FROM  node:16-buster AS Build
 
-WORKDIR /opt/kalisio-modules
+WORKDIR /opt/kalisio
 
 RUN git clone https://github.com/kalisio/feathers-distributed.git -b master --single-branch && cd feathers-distributed && yarn install && cd ..
 
-WORKDIR /opt/weacast-modules
+WORKDIR /opt/weacast
 
-RUN git clone https://github.com/weacast/weacast-core.git -b master --single-branch && cd weacast-core && yarn install && cd ..
-RUN git clone https://github.com/weacast/weacast-probe.git -b master --single-branch && cd weacast-probe && yarn install && cd ..
-RUN git clone https://github.com/weacast/weacast-alert.git -b master --single-branch && cd weacast-alert && yarn install && cd ..
-RUN git clone https://github.com/weacast/weacast-arpege.git -b master --single-branch && cd weacast-arpege && yarn install && cd ..
-RUN git clone https://github.com/weacast/weacast-arome.git -b master --single-branch && cd weacast-arome && yarn install && cd ..
-RUN git clone https://github.com/weacast/weacast-gfs.git -b master --single-branch && cd weacast-gfs && yarn install && cd ..
+RUN git clone https://github.com/weacast/weacast.git -b master --single-branch && cd weacast && yarn install && cd ..
 
-WORKDIR /opt/weacast-api
-COPY . /opt/weacast-api
-
-RUN yarn install
-RUN npm run compile
-
-FROM  node:12-buster-slim
+FROM  node:16-buster-slim
 
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
 
@@ -37,32 +26,16 @@ RUN apt-get update && apt-get -y install gdal-bin
 # Install curl for healthcheck
 RUN apt-get -y install curl
 
-COPY --from=Build /opt/kalisio-modules /opt/kalisio-modules
-COPY --from=Build /opt/weacast-modules /opt/weacast-modules
-COPY --from=Build /opt/weacast-api /opt/weacast-api
+COPY --from=Build /opt/kalisio /opt/kalisio
+COPY --from=Build /opt/weacast /opt/weacast
 
-WORKDIR /opt/kalisio-modules
+WORKDIR /opt/kalisio/feathers-distributed
 
-RUN cd feathers-distributed && yarn link && cd ..
+RUN yarn link
 
-WORKDIR /opt/weacast-modules
-
-RUN cd weacast-core && yarn link && cd ..
-RUN cd weacast-probe && yarn link weacast-core && yarn link && cd ..
-RUN cd weacast-alert && yarn link weacast-core && yarn link weacast-probe && yarn link && cd ..
-RUN cd weacast-arpege && yarn link weacast-core && yarn link && cd ..
-RUN cd weacast-arome && yarn link weacast-arpege && yarn link weacast-core && yarn link && cd ..
-RUN cd weacast-gfs && yarn link weacast-core && yarn link && cd ..
-
-WORKDIR /opt/weacast-api
+WORKDIR /opt/weacast/weacast/packages/api
 
 RUN yarn link @kalisio/feathers-distributed
-RUN yarn link weacast-core
-RUN yarn link weacast-probe
-RUN yarn link weacast-alert
-RUN yarn link weacast-arpege
-RUN yarn link weacast-arome
-RUN yarn link weacast-gfs
 
 EXPOSE 8081
 
