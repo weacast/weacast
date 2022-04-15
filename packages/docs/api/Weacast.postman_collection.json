@@ -1,0 +1,231 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Weacast",
+		"_postman_id": "d7404f3f-2e24-b1e1-d785-779f872d33e9",
+		"description": "Test weacast web services",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get forecasts",
+			"request": {
+				"url": "localhost:8080/api/forecasts",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJ1c2VySWQiOiI1OTEyMzAwMzAzOGMwNDIxOTgyNjQyZTAiLCJpYXQiOjE0OTQ4MzU4MTYsImV4cCI6MTQ5NDkyMjIxNiwiYXVkIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImlzcyI6ImZlYXRoZXJzIiwic3ViIjoiYW5vbnltb3VzIn0.uUChzDdhrsp1wQ8wdmmJJrfOgzHYnSu-ai7SbTFiEfM",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version='1.0' encoding='utf-8'?>\r\n<GetFeature \r\n xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\r\n xmlns:gml='http://www.opengis.net/gml'\r\n xmlns:ogc='http://www.opengis.net/ogc'\r\n xmlns:wfs='http://www.opengis.net/wfs'\r\n xmlns='http://www.opengis.net/wfs'\r\n xmlns:adsb-docker='http://www.airbus.com/adsb-docker'\r\n version='1.1.0' service='WFS' maxFeatures='100'>\r\n <wfs:Query typeName='adsb-docker:aircrafts' srsName='EPSG:4326'>\r\n </wfs:Query>\r\n</GetFeature>\r\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get forecast element",
+			"request": {
+				"url": "localhost:8080/api/arpege-europe/u-wind?$paginate=false&$select[]=forecastTime",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJ1c2VySWQiOiI1OTI0OGRlMzhiYjkxZDI4ZDgxNTViMzgiLCJpYXQiOjE0OTU2NTA4OTUsImV4cCI6MTQ5NTczNzI5NSwiYXVkIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImlzcyI6ImZlYXRoZXJzIiwic3ViIjoiYW5vbnltb3VzIn0.q64M1hLUIhrR6DD6Lcm7YolvkrE0coql3_xc9L9JzUM",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version='1.0' encoding='utf-8'?>\r\n<GetFeature \r\n xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\r\n xmlns:gml='http://www.opengis.net/gml'\r\n xmlns:ogc='http://www.opengis.net/ogc'\r\n xmlns:wfs='http://www.opengis.net/wfs'\r\n xmlns='http://www.opengis.net/wfs'\r\n xmlns:adsb-docker='http://www.airbus.com/adsb-docker'\r\n version='1.1.0' service='WFS' maxFeatures='100'>\r\n <wfs:Query typeName='adsb-docker:aircrafts' srsName='EPSG:4326'>\r\n </wfs:Query>\r\n</GetFeature>\r\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get users",
+			"request": {
+				"url": "localhost:8080/api/users/59123003038c0421982642e0",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJ1c2VySWQiOiI1OTEyMzAwMzAzOGMwNDIxOTgyNjQyZTAiLCJpYXQiOjE0OTQ4MzU4MTYsImV4cCI6MTQ5NDkyMjIxNiwiYXVkIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImlzcyI6ImZlYXRoZXJzIiwic3ViIjoiYW5vbnltb3VzIn0.uUChzDdhrsp1wQ8wdmmJJrfOgzHYnSu-ai7SbTFiEfM",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version='1.0' encoding='utf-8'?>\r\n<GetFeature \r\n xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\r\n xmlns:gml='http://www.opengis.net/gml'\r\n xmlns:ogc='http://www.opengis.net/ogc'\r\n xmlns:wfs='http://www.opengis.net/wfs'\r\n xmlns='http://www.opengis.net/wfs'\r\n xmlns:adsb-docker='http://www.airbus.com/adsb-docker'\r\n version='1.1.0' service='WFS' maxFeatures='100'>\r\n <wfs:Query typeName='adsb-docker:aircrafts' srsName='EPSG:4326'>\r\n </wfs:Query>\r\n</GetFeature>\r\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get probe results",
+			"request": {
+				"url": "localhost:8080/api/probe-results?probeId=59248de38bb91d28d8155b3c&forecastTime=2017-05-27T07:00:00.000Z&geometry[$near][$maxDistance]=1000000&geometry[$near][$geometry][type]=Point&geometry[$near][$geometry][coordinates][]=5&geometry[$near][$geometry][coordinates][]=43",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJ1c2VySWQiOiI1OTI0OGRlMzhiYjkxZDI4ZDgxNTViMzgiLCJpYXQiOjE0OTU2NTA4OTUsImV4cCI6MTQ5NTczNzI5NSwiYXVkIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImlzcyI6ImZlYXRoZXJzIiwic3ViIjoiYW5vbnltb3VzIn0.q64M1hLUIhrR6DD6Lcm7YolvkrE0coql3_xc9L9JzUM",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version='1.0' encoding='utf-8'?>\r\n<GetFeature \r\n xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\r\n xmlns:gml='http://www.opengis.net/gml'\r\n xmlns:ogc='http://www.opengis.net/ogc'\r\n xmlns:wfs='http://www.opengis.net/wfs'\r\n xmlns='http://www.opengis.net/wfs'\r\n xmlns:adsb-docker='http://www.airbus.com/adsb-docker'\r\n version='1.1.0' service='WFS' maxFeatures='100'>\r\n <wfs:Query typeName='adsb-docker:aircrafts' srsName='EPSG:4326'>\r\n </wfs:Query>\r\n</GetFeature>\r\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get probes",
+			"request": {
+				"url": "localhost:8080/api/probes?$paginate=false",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJ1c2VySWQiOiI1OTI0OGRlMzhiYjkxZDI4ZDgxNTViMzgiLCJpYXQiOjE0OTU2NTA4OTUsImV4cCI6MTQ5NTczNzI5NSwiYXVkIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImlzcyI6ImZlYXRoZXJzIiwic3ViIjoiYW5vbnltb3VzIn0.q64M1hLUIhrR6DD6Lcm7YolvkrE0coql3_xc9L9JzUM",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version='1.0' encoding='utf-8'?>\r\n<GetFeature \r\n xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\r\n xmlns:gml='http://www.opengis.net/gml'\r\n xmlns:ogc='http://www.opengis.net/ogc'\r\n xmlns:wfs='http://www.opengis.net/wfs'\r\n xmlns='http://www.opengis.net/wfs'\r\n xmlns:adsb-docker='http://www.airbus.com/adsb-docker'\r\n version='1.1.0' service='WFS' maxFeatures='100'>\r\n <wfs:Query typeName='adsb-docker:aircrafts' srsName='EPSG:4326'>\r\n </wfs:Query>\r\n</GetFeature>\r\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get probe",
+			"request": {
+				"url": "localhost:8080/api/probes/59248de38bb91d28d8155b37?$select[]=features",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJ1c2VySWQiOiI1OTI0OGRlMzhiYjkxZDI4ZDgxNTViMzgiLCJpYXQiOjE0OTU1NjkyNDAsImV4cCI6MTQ5NTY1NTY0MCwiYXVkIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImlzcyI6ImZlYXRoZXJzIiwic3ViIjoiYW5vbnltb3VzIn0.aP6PbVHY9L-u4CNCZ1ZCKcAtQaTQCcC1aZudX0eFAq8",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version='1.0' encoding='utf-8'?>\r\n<GetFeature \r\n xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\r\n xmlns:gml='http://www.opengis.net/gml'\r\n xmlns:ogc='http://www.opengis.net/ogc'\r\n xmlns:wfs='http://www.opengis.net/wfs'\r\n xmlns='http://www.opengis.net/wfs'\r\n xmlns:adsb-docker='http://www.airbus.com/adsb-docker'\r\n version='1.1.0' service='WFS' maxFeatures='100'>\r\n <wfs:Query typeName='adsb-docker:aircrafts' srsName='EPSG:4326'>\r\n </wfs:Query>\r\n</GetFeature>\r\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create probe",
+			"request": {
+				"url": "localhost:8080/api/probes?forecastTime=2017-05-24T12:00:00.000Z",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJ1c2VySWQiOiI1OTI0OGRlMzhiYjkxZDI4ZDgxNTViMzgiLCJpYXQiOjE0OTU1NjkyNDAsImV4cCI6MTQ5NTY1NTY0MCwiYXVkIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImlzcyI6ImZlYXRoZXJzIiwic3ViIjoiYW5vbnltb3VzIn0.aP6PbVHY9L-u4CNCZ1ZCKcAtQaTQCcC1aZudX0eFAq8",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"type\": \"FeatureCollection\",\r\n  \"forecast\": \"arpege-europe\",\r\n  \"elements\": [\"u-wind\", \"v-wind\"],\r\n  \"features\": [\r\n    {\r\n      \"type\": \"Feature\",\r\n      \"geometry\": {\r\n        \"type\": \"Point\",\r\n        \"coordinates\": [\r\n          144.29091388888889,\r\n          -5.823011111111111\r\n        ]\r\n      }\r\n    }\r\n  ]\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create probe result",
+			"request": {
+				"url": "localhost:8080/api/probe-results",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJ1c2VySWQiOiI1OTI0OGRlMzhiYjkxZDI4ZDgxNTViMzgiLCJpYXQiOjE0OTU1NjkyNDAsImV4cCI6MTQ5NTY1NTY0MCwiYXVkIjoiaHR0cHM6Ly95b3VyZG9tYWluLmNvbSIsImlzcyI6ImZlYXRoZXJzIiwic3ViIjoiYW5vbnltb3VzIn0.aP6PbVHY9L-u4CNCZ1ZCKcAtQaTQCcC1aZudX0eFAq8",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"type\": \"FeatureCollection\",\r\n  \"forecast\": \"arpege-europe\",\r\n  \"elements\": [\"u-wind\", \"v-wind\"],\r\n  \"features\": [\r\n    {\r\n      \"type\": \"Feature\",\r\n      \"geometry\": {\r\n        \"type\": \"Point\",\r\n        \"coordinates\": [\r\n          144.29091388888889,\r\n          -5.823011111111111\r\n        ]\r\n      }\r\n    }\r\n  ]\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Authenticate",
+			"request": {
+				"url": "localhost:8080/api/authentication",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"strategy\": \"local\",\n\t\"email\": \"weacast@weacast.xyz\",\n\t\"password\": \"weacast\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

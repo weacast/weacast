@@ -10,6 +10,8 @@ stages:
   if: commit_message !~ /\[skip build\]/
 - name: TEST
   if: commit_message !~ /\[skip test\]/
+- name: DOC
+  if: commit_message =~ /\[build doc\]/
 jobs:
   include:
   - stage: BUILD
@@ -41,3 +43,17 @@ jobs:
     - bash .travis.test.sh
     after_script:
     - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
+  - stage: DOC
+    language: node_js
+    node_js:
+    - '12'
+    install: true
+    script: bash .travis.doc.sh
+    deploy:
+      provider: pages
+      local-dir: packages/docs/.vuepress/dist
+      skip-cleanup: true
+      github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+      keep-history: true
+      on:
+        branch: master

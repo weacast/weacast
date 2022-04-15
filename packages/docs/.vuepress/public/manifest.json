@@ -1,0 +1,23 @@
+{
+  "name": "Weacast",
+  "short_name": "Weacast",
+  "icons": [
+    {
+      "src": "https://s3.eu-central-1.amazonaws.com/kalisioscope/weacast/weacast-logo-black-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "https://s3.eu-central-1.amazonaws.com/kalisioscope/weacast/weacast-logo-black-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://s3.eu-central-1.amazonaws.com/kalisioscope/weacast/weacast-logo-black-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/index.html",
+  "display": "standalone"
+}
