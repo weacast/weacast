@@ -2,7 +2,7 @@
 
 ## Installing
 
-### The easy way : using Docker
+### Using Docker
 
 The Weacast web application demo includes the front-end side client as well as the back-end services/API. Once run it will continuously gather forecast data from configured model providers.
 
@@ -84,7 +84,7 @@ docker-compose -f docker-compose.yml -f docker-compose.loader.yml stop weacast-a
 docker-compose -f docker-compose.yml -f docker-compose.loader.yml rm -f weacast-arpege-world weacast-gfs-world
 ```
 
-### The hard way : from source code
+### From source code
 
 First you have to ensure the same [prerequisites](./development.md#prerequisites) as for developing to build Weacast from source code. Then the following commands, assuming you have a MongoDB instance running on local host and default port (27017), should launch your local instance of Weacast:
 
