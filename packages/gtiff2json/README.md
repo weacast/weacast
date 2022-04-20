@@ -1,8 +1,6 @@
 # @weacast/gtiff2json
 
-[![Build Status](https://app.travis-ci.com/weacast/weacast.svg?branch=master)](https://app.travis-ci.com/weacast/weacast)
 [![Download Status](https://img.shields.io/npm/dm/@weacast/gtiff2json.svg?style=flat-square)](https://www.npmjs.com/package/@weacast/gtiff2json)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-gtiff2json.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-gtiff2json?ref=badge_shield)
 
 A command line utility that decodes [GeoTIFF](https://en.wikipedia.org/wiki/GeoTIFF) files as JSON.
 
@@ -17,7 +15,7 @@ This work is highly inspired from [geotiff2json](https://github.com/avgp/geotiff
 Here's an example that converts `file.tif` into a JSON array and writes it to disk as `data.json`:
 
 ```javascript
-    var geotiff2json = require('weacast-gtiff2json'),
+    var geotiff2json = require('@weacast/gtiff2json'),
     fs = require('fs')
     
     geotiff2json('file.tif').then(function(data) {
@@ -32,7 +30,7 @@ Here's an example that converts `file.tif` into a JSON array and writes it to di
 Here's an example that converts `file.tif` into an RLE value array and writes it to disk as `data.json`:
 
 ```javascript
-    var geotiff2json = require('weacast-gtiff2json'),
+    var geotiff2json = require('@weacast/gtiff2json'),
     fs = require('fs')
     
     geotiff2json('file.tif', true).then(function(data) {
@@ -65,20 +63,10 @@ So in the example above, the y-value `100` shall be repeated `10` times, the y-v
 
 ## Contribute
 
-If you find a bug or a problem or data that doesn't parse correctly, even though it should, please [report an issue here](https://github.com/weacast/weacast-gtiff2json/issues/new).
+If you find a bug or a problem or data that doesn't parse correctly, even though it should, please [report an issue here](https://github.com/weacast/issues/new).
 
 In case you found a GeoTIFF that doesn't parse correctly, please attach a link to the file or attach it to the issue directly.
 
 If you have improvement suggestions, feel free to fork this repository and submit a pull request.
 
 Thank you for your help and support.
-
-## License
-
-Copyright (c) 2022
-
-Licensed under the [MIT license](LICENSE).
-
-
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-gtiff2json.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-gtiff2json?ref=badge_large)
