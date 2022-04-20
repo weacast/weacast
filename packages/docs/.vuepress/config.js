@@ -50,7 +50,8 @@ function getArchitectureSidebar () {
     'domain-model',
     'global-architecture', 
     'component-view',
-    'data-model-view'
+    'data-model-view',
+    'dynamic-view'
   ]
 }
 

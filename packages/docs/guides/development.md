@@ -167,7 +167,7 @@ The same process applies when releasing a patch, minor or major version, i.e. th
 * generates the changelog in the git repository and push it
 
 ::: warning
-Before you publish a release take care of updating the version of all dependent plugins to the latest version published, for example perform `yarn upgrade weacast-core weacast-arpege weacast-arome weacast-probe`
+Before you publish a release take care of updating the version of all dependent plugins to the latest version published, for example perform `yarn upgrade @weacast/core @weacast/arpege @weacast/arome @weacast/probe`
 :::
 
 Depending on the release type the following command will do the job (where type is either `patch`, `minor`, `major`):
@@ -215,7 +215,7 @@ This requires you to have a NPM and GitHub account and be a team member of the W
 :::
 
 ::: warning
-Before you publish a plugin take care of updating the version of your dependent plugins to the latest version published, for example  perform `yarn upgrade weacast-core` for a plugin depending on the core plugin before publishing it.
+Before you publish a plugin take care of updating the version of your dependent plugins to the latest version published, for example  perform `yarn upgrade @weacast/core` for a plugin depending on the core plugin before publishing it.
 :::
 
 

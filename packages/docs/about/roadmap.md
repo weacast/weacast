@@ -4,20 +4,8 @@ The roadmap is available on [Github](https://github.com/orgs/weacast/projects/2)
 
 ## Release Notes
 
-Release Notes for each modules are available on Github:
-
-* [weacast](https://github.com/weacast/weacast/blob/master/CHANGELOG.md)
-* [weacast-client](https://github.com/weacast/weacast-client/blob/master/CHANGELOG.md)
-* [weacast-leafet](https://github.com/weacast/weacast-laeflet/blob/master/CHANGELOG.md)
-* [weacast-api](https://github.com/weacast/weacast-api/blob/master/CHANGELOG.md)
-* [weacast-core](https://github.com/weacast/weacast-core/blob/master/CHANGELOG.md)
-* [weacast-loader](https://github.com/weacast/weacast-loader/blob/master/CHANGELOG.md)
-* [weacast-arome](https://github.com/weacast/weacast-arome/blob/master/CHANGELOG.md)
-* [weacast-arpege](https://github.com/weacast/weacast-arpege/blob/master/CHANGELOG.md)
-* [weacast-gfs](https://github.com/weacast/weacast-gfs/blob/master/CHANGELOG.md)
-* [weacast-alert](https://github.com/weacast/weacast-alert/blob/master/CHANGELOG.md)
-* [weacast-grib2json](https://github.com/weacast/weacast-grib2json/blob/master/CHANGELOG.md)
-* [weacast-gtiff2json](https://github.com/weacast/weacast-gtiff2json/blob/master/CHANGELOG.md)
+Release Notes for each module are available on Github in the different repositories of the [weacast organisation](https://github.com/weacast), e.g.
+[weacast-loader](https://github.com/weacast/weacast-loader/blob/master/CHANGELOG.md)
 
 ## Contributing 
 

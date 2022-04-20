@@ -1,4 +1,4 @@
-# [Probe plugin](https://github.com/weacast/weacast-probe)
+# [Probe plugin](https://github.com/weacast/weacast/packages/probe)
 
 Probes are virtual sensors used to derive your own business focused data by probing forecast data at specific locations of interest (e.g. airports, cities, stores, etc.). This plugin manages two kind of probes:
 * **on-demand probing**, which allow to compute *on-demand* (e.g. by a request to the server) forecast element values for a given forecast time and a set of locations,
@@ -258,23 +258,23 @@ The following hooks are executed on the Probe service:
 
 Some additional hooks are provided by the Probe plugin.
 
-### .marshallResultQuery(hook) [source](https://github.com/weacast/weacast-probe/blob/master/src/hooks/probing.js)
+### .marshallResultQuery(hook) [source](https://github.com/weacast/weacast/packages/probe/blob/master/src/hooks/probing.js)
 
 Filter results to match the given probe object ID as query parameter.
 
-### .checkProbingType(hook) [source](https://github.com/weacast/weacast-probe/blob/master/src/hooks/probing.js)
+### .checkProbingType(hook) [source](https://github.com/weacast/weacast/packages/probe/blob/master/src/hooks/probing.js)
 
 Check if the created probe in a on-demand or a streamed probe. In the first case it will avoid creating the probe object in the database as probed values are computed on-the-fly.
 
-### .performProbing(hook) [source](https://github.com/weacast/weacast-probe/blob/master/src/hooks/probing.js)
+### .performProbing(hook) [source](https://github.com/weacast/weacast/packages/probe/blob/master/src/hooks/probing.js)
 
 Perform the probing operation, i.e. compute probed values from forecast data of each available forecast time (streamed probe) or for the given forecast time as query parameter (on-demand probe).
 
-### .removeResults(hook) [source](https://github.com/weacast/weacast-probe/blob/master/src/hooks/probing.js)
+### .removeResults(hook) [source](https://github.com/weacast/weacast/packages/probe/blob/master/src/hooks/probing.js)
 
 Remove all results matching the input probe object when it is removed from the database (streamed probe only).
 
-### .removeFeatures(hook) [source](https://github.com/weacast/weacast-probe/blob/master/src/hooks/probing.js)
+### .removeFeatures(hook) [source](https://github.com/weacast/weacast/packages/probe/blob/master/src/hooks/probing.js)
 
 Remove all features of the input probe object when not explicitly required (streamed probe only).
 

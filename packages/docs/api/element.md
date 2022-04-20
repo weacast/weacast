@@ -151,7 +151,7 @@ If you also configured your element services to generate tiles with aggregated d
 
 ## Base element mixin
 
-[source](https://github.com/weacast/weacast-core/blob/master/src/mixins/mixin.element.js)
+[source](https://github.com/weacast/weacast/packages/core/blob/master/src/mixins/mixin.element.js)
 
 This mixin includes the most basic functions shared by all forecast elements
 
@@ -165,7 +165,7 @@ Returns the nearest weather prediction model forecast date/time step for a given
 
 ## Refresh element mixin
 
-[source](https://github.com/weacast/weacast-core/blob/master/src/mixins/mixin.element.js)
+[source](https://github.com/weacast/weacast/packages/core/blob/master/src/mixins/mixin.element.js)
 
 This mixin includes the most basic functions shared by all forecast elements to help updating forecast data from providers.
 

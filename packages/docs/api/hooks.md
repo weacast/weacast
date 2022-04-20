@@ -1,6 +1,6 @@
 # Hooks
 
-Weacast [core module](https://github.com/weacast/weacast-core) and [client module](https://github.com/weacast/weacast-client) provides a collection of common [hooks](https://docs.feathersjs.com/api/hooks.html) to be used by plugins or [client applications](https://docs.feathersjs.com/api/client.html). They also rely on [Feathers common hooks](https://docs.feathersjs.com/api/hooks-common.html).
+Weacast [core module](https://github.com/weacast/weacast) provides a collection of common [hooks](https://docs.feathersjs.com/api/hooks.html) to be used by plugins or [client applications](https://docs.feathersjs.com/api/client.html). They also rely on [Feathers common hooks](https://docs.feathersjs.com/api/hooks-common.html).
 
 ::: tip
 [Hooks](https://docs.feathersjs.com/api/hooks.html) are the main way to introduce business logic into applications and plugins so we recommend to understand them well first before reading this.
@@ -8,7 +8,7 @@ Weacast [core module](https://github.com/weacast/weacast-core) and [client modul
 
 ## Data model management
 
-[source](https://github.com/weacast/weacast-core/blob/master/src/hooks/marshall.js)
+[source](https://github.com/weacast/weacast/packages/core/blob/master/src/hooks/marshall.js)
 
 ### .marshall(hook)
 
@@ -20,7 +20,7 @@ Converts back to server side types (e.g. moment dates) from basic JS types, whic
 
 ## Query management
 
-[source](https://github.com/weacast/weacast-core/blob/master/src/hooks/query.js)
+[source](https://github.com/weacast/weacast/packages/core/blob/master/src/hooks/query.js)
 
 ### .marshallQuery(hook)
 
@@ -44,7 +44,7 @@ Discard or retrieve forecast data when required depending on the query parameter
 
 ## Logging
 
-[core source](https://github.com/weacast/weacast-core/blob/master/src/hooks/logger.js), [client source](https://github.com/weacast/weacast-client/blob/master/src/hooks/logger.js)
+[core source](https://github.com/weacast/weacast/packages/core/blob/master/src/hooks/logger.js)
 
 ### .log(hook)
 
@@ -54,7 +54,7 @@ Discard or retrieve forecast data when required depending on the query parameter
 
 ## Events
 
-[source](https://github.com/weacast/weacast-client/blob/master/src/hooks/events.js)
+[source](https://github.com/weacast/weacast-app/blob/master/src/hooks/events.js)
 
 ### .emit(hook)
 
