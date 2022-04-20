@@ -2,7 +2,6 @@
 
 [![Build Status](https://app.travis-ci.com/weacast/weacast.svg?branch=master)](https://app.travis-ci.com/weacast/weacast)
 [![Download Status](https://img.shields.io/npm/dm/grib2json.svg?style=flat-square)](https://www.npmjs.com/package/@weacast/grib2json)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-grib2json.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-grib2json?ref=badge_shield)
 
 A command line utility that decodes [GRIB2](http://en.wikipedia.org/wiki/GRIB) files as JSON.
 
@@ -26,7 +25,7 @@ The project contains a *bin* folder with the latest version. The *bin* folder co
 ### Node.js CLI
 
 ```
-npm install -g weacast-grib2json
+npm install -g @weacast/grib2json
 ```
 
 ## Usage
@@ -100,7 +99,7 @@ docker run --name grib2json --rm -v /mnt/data:/usr/local/data -e "ARGS=--names -
 
 Just call the `grib2json` default export function in your code:
 ```javascript
-const grib2json = require('weacast-grib2json')
+const grib2json = require('@weacast/grib2json')
 // First arg is the input file path, second arg is CLI options as JS object
 grib2json('gfs.grib', {
   data: true,
@@ -142,7 +141,3 @@ A Docker file is also provided to get the tool ready to work within a container,
 ```
 docker build -t weacast/grib2json .
 ```
-
-
-## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast-grib2json.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fweacast%2Fweacast-grib2json?ref=badge_large)
