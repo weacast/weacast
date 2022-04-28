@@ -3,12 +3,12 @@
     "packages/*"
   ],
   "version": "2.0.1",
-  "publish": {
-    "allowBranch": [
-      "master"
-    ],
-    "message": "chore(release): publish %s",
-    "conventionalCommits": true,
-    "createRelease": "github"
+  "command": {
+    "publish": {
+      "allowBranch": [ "master" ],
+      "message": "chore(release): publish %s",
+      "conventionalCommits": true,
+      "createRelease": "github"
+    }
   }
 }
