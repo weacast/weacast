@@ -1,7 +1,7 @@
 {
   "name": "@weacast/probe",
   "description": "Probing forecast model plugin for Weacast",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "homepage": "https://github.com/weacast/weacast-probe",
   "main": "src/index.js",
   "type": "module",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@feathersjs/errors": "^5.0.0-pre.16",
-    "@weacast/core": "^2.0.1",
+    "@weacast/core": "^2.0.2",
     "debug": "^3.1.0",
     "dot-object": "^1.7.0",
     "feathers-hooks-common": "^3.0.0",
@@ -47,7 +47,7 @@
     "mubsub": "^1.4.0"
   },
   "devDependencies": {
-    "@weacast/gfs": "^2.0.1",
+    "@weacast/gfs": "^2.0.2",
     "chai": "^4.3.6",
     "chai-lint": "^0.1.1",
     "chai-spies": "^0.7.1",

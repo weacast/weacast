@@ -1,3 +1,16 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [2.0.2](https://github.com/weacast/weacast-gtiff2json/compare/v2.0.1...v2.0.2) (2022-04-28)
+
+**Note:** Version bump only for package @weacast/gtiff2json
+
+
+
+
+
 # Changelog
 
 ## [v1.1.2](https://github.com/weacast/weacast-gtiff2json/tree/v1.1.2) (2020-05-11)
