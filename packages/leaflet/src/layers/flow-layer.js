@@ -4,7 +4,7 @@ import 'leaflet-velocity/dist/leaflet-velocity.css'
 import { createColorMap } from '@weacast/core/client.js'
 import { ForecastLayer } from './forecast-layer.js'
 
-let FlowLayer = ForecastLayer.extend({
+const FlowLayer = ForecastLayer.extend({
 
   initialize (api, options) {
     // FIXME : make this dynamic, ie relative mode based on min/max when data are set
@@ -21,11 +21,11 @@ let FlowLayer = ForecastLayer.extend({
       },
       minVelocity: this.colorMap.domain()[0],
       maxVelocity: this.colorMap.domain()[1],
-      velocityScale: 0.01,      // modifier for particle animations, arbitrarily defaults to 0.005
+      velocityScale: 0.01, // modifier for particle animations, arbitrarily defaults to 0.005
       colorScale: (this.options.invertScale ? this.colorMap.colors().reverse() : this.colorMap.colors()),
-      data: null                // data will be requested on-demand
+      data: null // data will be requested on-demand
     }, options)
-    let layer = L.velocityLayer(layerOptions)
+    const layer = L.velocityLayer(layerOptions)
     ForecastLayer.prototype.initialize.call(this, api, layer, options)
 
     // Format in leaflet-velocity layer data model
@@ -61,7 +61,7 @@ let FlowLayer = ForecastLayer.extend({
 
   setForecastModel (model) {
     // Format in leaflet-velocity layer data model
-    let modelHeader = {
+    const modelHeader = {
       nx: model.size[0],
       ny: model.size[1],
       lo1: model.origin[0],

@@ -7,7 +7,7 @@
 */
 import L from 'leaflet'
 
-let WindBarbIcon = L.Icon.extend({
+const WindBarbIcon = L.Icon.extend({
   options: {
     fillColor: '#2B85C7',
     pointRadius: 8,
@@ -25,25 +25,25 @@ let WindBarbIcon = L.Icon.extend({
   },
 
   createIcon: function () {
-    var div = document.createElement('div')
-    var svg = this._createPoint()
+    const div = document.createElement('div')
+    const svg = this._createPoint()
     div.appendChild(svg)
     this._setIconStyles(div)
     return div
   },
 
   _createPoint: function () {
-    var svg, w, h, sc, sw, r, fc
-    sc = this.options.pointStroke
-    sw = this.options.strokeWidth
-    r = this.options.pointRadius
-    fc = this.options.fillColor
-    w = h = 2 * sw + 2 * r
-    var xmlns = 'http://www.w3.org/2000/svg'
-    svg = document.createElementNS(xmlns, 'svg')
+    const sc = this.options.pointStroke
+    const sw = this.options.strokeWidth
+    const r = this.options.pointRadius
+    const fc = this.options.fillColor
+    const w = 2 * sw + 2 * r
+    const h = w
+    const xmlns = 'http://www.w3.org/2000/svg'
+    const svg = document.createElementNS(xmlns, 'svg')
     svg.setAttributeNS(null, 'width', w)
     svg.setAttributeNS(null, 'height', h)
-    var c = document.createElementNS(xmlns, 'circle')
+    const c = document.createElementNS(xmlns, 'circle')
     c.setAttributeNS(null, 'stroke', sc)
     c.setAttributeNS(null, 'stroke-width', sw)
     c.setAttributeNS(null, 'fill', fc)
@@ -55,25 +55,24 @@ let WindBarbIcon = L.Icon.extend({
   },
 
   _createBarbs: function (speed) {
-    var s, b, bn, bw, bh, bs, sc, sw, sl, p, r, w, h, cx, cy, xmlns, svg, g, fd
     // We expect speed in m/s and not knots
-    s = speed / 0.514
-    b = {5: 0, 10: 0, 50: 0}
-    bs = this.options.barbSpaceing
-    bh = this.options.barbHeight
-    r = this.options.pointRadius
-    sc = this.options.strokeColor
-    sw = this.options.strokeWidth
-    sl = this.options.strokeLength
-    fd = this.options.forceDir
-    xmlns = 'http://www.w3.org/2000/svg'
-    svg = document.createElementNS(xmlns, 'svg')
-    g = document.createElementNS(xmlns, 'g')
+    let s = speed / 0.514
+    const b = { 5: 0, 10: 0, 50: 0 }
+    const bs = this.options.barbSpaceing
+    const bh = this.options.barbHeight
+    const r = this.options.pointRadius
+    const sc = this.options.strokeColor
+    const sw = this.options.strokeWidth
+    const sl = this.options.strokeLength
+    const fd = this.options.forceDir
+    const xmlns = 'http://www.w3.org/2000/svg'
+    const svg = document.createElementNS(xmlns, 'svg')
+    const g = document.createElementNS(xmlns, 'g')
 
     // Calculate number of each stroke and add path elements to svg group
     s = (s % 5) >= 2.5 ? parseInt(s / 5) * 5 + 5 : parseInt(s / 5) * 5
 
-    for (var i = s; i > 0;) {
+    for (let i = s; i > 0;) {
       if (i - 50 >= 0) {
         b[50] += 1
         i -= 50
@@ -88,9 +87,9 @@ let WindBarbIcon = L.Icon.extend({
       }
     };
 
-      // Calculate height and Width of S
-
-    bn = b[5] + b[10] + b[50]
+    // Calculate height and Width of S
+    const bn = b[5] + b[10] + b[50]
+    let bw
     if (bn === 0) {
       bw = 0
     } else {
@@ -104,21 +103,22 @@ let WindBarbIcon = L.Icon.extend({
     }
 
     // calculate additional padding needed
-    p = Math.round(Math.sqrt(bh * bh + bw * bw)) + 2
+    const p = Math.round(Math.sqrt(bh * bh + bw * bw)) + 2
 
     // calculate width and height
-    w = h = r * 2 + sw * 2 + 2 * (bw + sl) + 2 * p
+    const w = r * 2 + sw * 2 + 2 * (bw + sl) + 2 * p
+    const h = w
     // vb = h - (r * 2 + sw * 2 + bh)
 
     // calculate center of circle
-    cx = w / 2
-    cy = h / 2
+    const cx = w / 2
+    const cy = h / 2
 
     svg.setAttributeNS(null, 'width', w)
     svg.setAttributeNS(null, 'height', h)
     svg.appendChild(g)
 
-    var px, py, pt, M, H, L, path
+    let px, py, pt, M, H, L, path
     if (fd === true) {
       // set the x pointer
       px = cx - r - sw * 0.5
@@ -168,13 +168,12 @@ let WindBarbIcon = L.Icon.extend({
 
       // Check if there is a 5kn barb
       if (b[5] === 1) {
-        var bl10, ang10, bl5
         // calculate length of 10kn barb
-        bl10 = Math.sqrt((2 * bs) * (2 * bs) + (bh * bh))
+        const bl10 = Math.sqrt((2 * bs) * (2 * bs) + (bh * bh))
         // calculate angle of 10kn barb
-        ang10 = Math.atan(bh / (2 * bs))
+        const ang10 = Math.atan(bh / (2 * bs))
         // calculate length of 5kn barb
-        bl5 = bl10 / 2
+        const bl5 = bl10 / 2
         // get starting point of barb
         M = (px) + ',' + py
         // calculate x of 5kn barb using angle of 10kn barb
@@ -200,7 +199,7 @@ let WindBarbIcon = L.Icon.extend({
         }
       }
 
-      for (i = 0; i < b[10]; i++) {
+      for (let i = 0; i < b[10]; i++) {
         M = px + ',' + py
         px -= bs
         H = px
@@ -232,12 +231,11 @@ let WindBarbIcon = L.Icon.extend({
         path.setAttributeNS(null, 'd', 'M ' + M + ' H ' + H)
         g.appendChild(path)
 
-        for (i = 0; i < b[50]; i++) {
-          var p1, p2, p3
+        for (let i = 0; i < b[50]; i++) {
           pt -= bs
-          p1 = px + ',' + cy
-          p2 = pt + ',' + (cy - bh)
-          p3 = pt + ',' + cy
+          const p1 = px + ',' + cy
+          const p2 = pt + ',' + (cy - bh)
+          const p3 = pt + ',' + cy
           path = document.createElementNS(xmlns, 'polygon')
           path.setAttributeNS(null, 'stroke', sc)
           path.setAttributeNS(null, 'stroke-width', sw)
@@ -250,15 +248,15 @@ let WindBarbIcon = L.Icon.extend({
       }
     }
 
-    return {ax: cx, ay: cy, svg: svg}
+    return { ax: cx, ay: cy, svg: svg }
   },
 
   _setIconStyles: function (img, name, a) {
-    var sw, r, anchor
-    var options = this.options
-    var size = L.point(options[name === 'shadow' ? 'shadowSize' : 'iconSize'])
-    sw = this.options.strokeWidth
-    r = this.options.pointRadius
+    let anchor
+    const options = this.options
+    const size = L.point(options[name === 'shadow' ? 'shadowSize' : 'iconSize'])
+    const sw = this.options.strokeWidth
+    const r = this.options.pointRadius
 
     if (name === 'shadow') {
       anchor = a
@@ -266,10 +264,10 @@ let WindBarbIcon = L.Icon.extend({
       img.style.height = anchor.y + 'px'
     } else {
       img.style.position = 'absolute'
-      var w, h
-      w = h = 2 * sw + 2 * r
-      var x = w / 2
-      var y = h / 2
+      const w = 2 * sw + 2 * r
+      const h = w
+      const x = w / 2
+      const y = h / 2
       anchor = L.point([x, y])
     }
 
@@ -289,12 +287,11 @@ let WindBarbIcon = L.Icon.extend({
   },
 
   createShadow: function () {
-    var d, s, b
-    d = this.options.deg + 90
-    s = this.options.speed
-    b = this._createBarbs(s)
+    const d = this.options.deg + 90
+    const s = this.options.speed
+    const b = this._createBarbs(s)
 
-    var div = document.createElement('div')
+    const div = document.createElement('div')
 
     if (this.options.mirrorVel) {
       b.svg.style.transform = 'rotate(' + d + 'deg) scaleY(-1)'
@@ -310,7 +307,7 @@ let WindBarbIcon = L.Icon.extend({
 
     div.appendChild(b.svg)
 
-    var anchor = {x: b['ax'], y: b['ay']}
+    const anchor = { x: b.ax, y: b.ay }
     this._setIconStyles(div, 'shadow', anchor)
     return div
   }

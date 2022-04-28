@@ -3,7 +3,7 @@ import { FlowLayer } from './flow-layer.js'
 import { ScalarLayer } from './scalar-layer.js'
 import { WindBarbIcon } from './windbarb.js'
 
-let layers = {
+const layers = {
   ForecastLayer,
   FlowLayer,
   ScalarLayer,

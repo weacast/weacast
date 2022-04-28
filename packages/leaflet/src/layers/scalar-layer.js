@@ -3,7 +3,7 @@ import { Grid, createColorMap } from '@weacast/core/client.js'
 import { ForecastLayer } from './forecast-layer.js'
 import { GridRenderer } from '../grid-renderer.js'
 
-let ScalarLayer = ForecastLayer.extend({
+const ScalarLayer = ForecastLayer.extend({
 
   initialize (api, options) {
     // Merge options with default for undefined ones
@@ -14,7 +14,7 @@ let ScalarLayer = ForecastLayer.extend({
       mesh: true
     }, options)
     this.gridRenderer = new GridRenderer()
-    let gridOverlay = this.gridRenderer.initialize(this.options)
+    const gridOverlay = this.gridRenderer.initialize(this.options)
     ForecastLayer.prototype.initialize.call(this, api, gridOverlay, options)
   },
 

@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import { getNearestForecastTime } from '@weacast/core/common.js'
 
-let ForecastLayer = L.Layer.extend({
+const ForecastLayer = L.Layer.extend({
 
   initialize (api, layer, options) {
     this.api = api
@@ -46,7 +46,7 @@ let ForecastLayer = L.Layer.extend({
     const dm = this.colorMap.domain()[0]
     const dd = this.colorMap.domain()[1] - dm
 
-    let colorMap = []
+    const colorMap = []
     for (let i = 0; i < nbColors; i++) {
       const value = dm + ((i / (nbColors - 1)) * dd)
       colorMap.push({ value, color: this.colorMap(value) })
@@ -69,18 +69,18 @@ let ForecastLayer = L.Layer.extend({
     if (this.downloadedForecastTime && this.downloadedForecastTime.isSame(this.currentForecastTime)) return
     this.downloadedForecastTime = this.currentForecastTime.clone()
     // Query data for current time
-    let query = this.getQuery()
-    let queries = []
-    for (let element of this.forecastElements) {
+    const query = this.getQuery()
+    const queries = []
+    for (const element of this.forecastElements) {
       const serviceName = this.forecastModel.name + '/' + element
       queries.push(this.api.getService(serviceName).find(query))
     }
 
     return Promise.all(queries)
-    .then(results => {
+      .then(results => {
       // To be reactive directly set data after download, flatten because find returns an array even if a single element is selected
-      this.setData([].concat(...results))
-    })
+        this.setData([].concat(...results))
+      })
   },
 
   setForecastModel (model) {
@@ -98,14 +98,14 @@ let ForecastLayer = L.Layer.extend({
   },
 
   getBounds () {
-    let bounds = new L.LatLngBounds()
+    const bounds = new L.LatLngBounds()
     if (this.baseLayer && this.baseLayer.getBounds) {
       bounds.extend(this.baseLayer.getBounds())
     } else if (this.forecastModel) {
       let minLon = this.forecastModel.bounds[0]
-      let minLat = this.forecastModel.bounds[1]
+      const minLat = this.forecastModel.bounds[1]
       let maxLon = this.forecastModel.bounds[2]
-      let maxLat = this.forecastModel.bounds[3]
+      const maxLat = this.forecastModel.bounds[3]
       // Take care that leaflet uses [-180, 180]
       if (maxLon > 180) {
         minLon -= 180
