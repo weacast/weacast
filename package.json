@@ -4,6 +4,7 @@
   "scripts": {
     "install": "lerna bootstrap",
     "lint": "lerna run lint",
+    "publish": "lerna publish",
     "test": "c8 lerna run test"
   },
   "devDependencies": {
