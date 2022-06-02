@@ -3,7 +3,8 @@
   "version": "2.0.2",
   "description": "Converts GeoTIFF images to JSON array",
   "main": "index.js",
-  "bin": "index.js",
+  "bin": "bin.js",
+  "type": "module",
   "scripts": {
     "lint": "standard *.js test/*.js --fix",
     "mocha": "mocha --exit",
@@ -17,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/weacast/weacast-gtiff2json"
+    "url": "https://github.com/weacast/weacast"
   },
   "keywords": [
     "geotiff",
@@ -26,17 +27,17 @@
   "author": "Luc Claustres <luc.claustres@orange.fr>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/weacast/weacast-gtiff2json/issues"
+    "url": "https://github.com/weacast/weacast/issues"
   },
-  "homepage": "https://github.com/weacast/weacast-gtiff2json",
+  "homepage": "https://github.com/weacast/weacast",
   "dependencies": {
     "@kalisio/geo-pixel-stream": "https://github.com/kalisio/geo-pixel-stream#next",
     "commander": "^2.9.0"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
+    "chai": "^4.3.6",
     "chai-lint": "^0.1.1",
-    "mocha": "^6.2.0",
-    "standard": "^10.0.2"
+    "mocha": "^9.2.0",
+    "standard": "^16.0.4"
   }
 }

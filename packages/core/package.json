@@ -2,7 +2,7 @@
   "name": "@weacast/core",
   "description": "Basic utils to support Weacast and plugins",
   "version": "2.0.2",
-  "homepage": "https://github.com/weacast/weacast-core",
+  "homepage": "https://github.com/weacast/weacast",
   "main": "src/index.js",
   "type": "module",
   "keywords": [
@@ -12,7 +12,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/weacast/weacast-core.git"
+    "url": "git://github.com/weacast/weacast.git"
   },
   "author": {
     "name": "Weacast contributors",
@@ -20,7 +20,7 @@
   },
   "contributors": [],
   "bugs": {
-    "url": "https://github.com/weacast/weacast-core/issues"
+    "url": "https://github.com/weacast/weacast/issues"
   },
   "scripts": {
     "lint": "standard src/**/*.js test/**/*.js --fix",

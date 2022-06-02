@@ -1,9 +1,11 @@
-#!/usr/bin/env node
-const fs = require('fs-extra')
-const os = require('os')
-const path = require('path')
-const program = require('commander')
-const execFile = require('child_process').execFile
+import fs from 'fs-extra'
+import os from 'os'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { execFile } from 'child_process'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
 const grib2jsonCommand = process.env.GRIB2JSON ||
   path.join(__dirname, 'bin', os.platform() === 'win32' ? 'grib2json.cmd' : 'grib2json')
 
@@ -62,8 +64,7 @@ const grib2json = function (filePath, options) {
         if (options.verbose) {
           json.forEach(variable => console.log('Generated ' + variable.data.length + ' points in memory for variable ', variable.header))
         }
-        // Does not make really sense except as CLI
-        if (require.main === module) console.log(stdout)
+        console.log(stdout)
         resolve(json)
       }
     })
@@ -72,30 +73,4 @@ const grib2json = function (filePath, options) {
   return promise
 }
 
-if (require.main === module) {
-  program
-    .version(require('./package.json').version)
-    .usage('[options] <file>')
-    .option('-d, --data', 'Print GRIB record data')
-    .option('-c, --compact', 'Enable compact Json formatting')
-    .option('-fc, --filter.category <value>', 'Select records with this numeric category')
-    .option('-fs, --filter.surface <value>', 'Select records with this numeric surface type')
-    .option('-fp, --filter.parameter <value>', 'Select records with this numeric parameter')
-    .option('-fv, --filter.value <value>', 'Select records with this numeric surface value')
-    .option('-n, --names', 'Print names of numeric codes')
-    .option('-o, --output <file>', 'Output in a file instead of stdout')
-    .option('-p, --precision <precision>', 'Limit precision in output file using the given number of digits after the decimal point', -1)
-    .option('-v, --verbose', 'Enable logging to stdout')
-    .option('-bs, --bufferSize <value>', 'Largest amount of data in bytes allowed on stdout or stderr')
-    .parse(process.argv)
-
-  program.precision = parseInt(program.precision)
-
-  const inputFile = program.args[program.args.length - 1]
-  grib2json(inputFile, program.opts())
-    .catch(function (err) {
-      console.log(err)
-    })
-} else {
-  module.exports = grib2json
-}
+export default grib2json

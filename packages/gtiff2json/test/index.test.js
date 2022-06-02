@@ -1,15 +1,18 @@
-let fs = require('fs')
-let path = require('path')
-let chai = require('chai')
-let chailint = require('chai-lint')
-let gtiff2json = require('..')
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import chai from 'chai'
+import chailint from 'chai-lint'
+import gtiff2json from '../index.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('weacast-gtiff2json', () => {
   before(() => {
     chailint(chai, chai.util)
   })
 
-  it('is CommonJS compatible', () => {
+  it('is ES module compatible', () => {
     chai.expect(typeof gtiff2json).to.equal('function')
   })
 

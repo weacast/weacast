@@ -1,8 +1,11 @@
-const fs = require('fs-extra')
-const path = require('path')
-const chai = require('chai')
-const chailint = require('chai-lint')
-const grib2json = require('..')
+import fs from 'fs-extra'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import chai from 'chai'
+import chailint from 'chai-lint'
+import grib2json from '../index.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('weacast-grib2json', () => {
   const header = {
@@ -50,7 +53,7 @@ describe('weacast-grib2json', () => {
     chailint(chai, chai.util)
   })
 
-  it('is CommonJS compatible', () => {
+  it('is ES module compatible', () => {
     chai.expect(typeof grib2json).to.equal('function')
   })
 

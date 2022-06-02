@@ -3,7 +3,8 @@
   "version": "2.0.2",
   "description": "Converts GRIB V2 files to JSON array",
   "main": "index.js",
-  "bin": "index.js",
+  "bin": "bin.js",
+  "type": "module",
   "scripts": {
     "postinstall": "node set_permission",
     "lint": "standard *.js test/*.js --fix",
@@ -18,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/weacast/weacast-grib2json"
+    "url": "https://github.com/weacast/weacast"
   },
   "keywords": [
     "grib",
@@ -27,11 +28,11 @@
   "author": "Luc Claustres <luc.claustres@orange.fr>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/weacast/weacast-grib2json/issues"
+    "url": "https://github.com/weacast/weacast/issues"
   },
-  "homepage": "https://github.com/weacast/weacast-grib2json",
+  "homepage": "https://github.com/weacast/weacast",
   "dependencies": {
-    "commander": "^9.1.0",
+    "commander": "^2.9.0",
     "fs-extra": "^10.0.1"
   },
   "devDependencies": {
