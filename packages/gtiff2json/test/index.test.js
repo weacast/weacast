@@ -17,7 +17,7 @@ describe('weacast-gtiff2json', () => {
   })
 
   it('generates valid RLE json', () => {
-    let jsonArray = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'rle.json')))
+    const jsonArray = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'rle.json')))
     return gtiff2json(path.join(__dirname, 'data', 'rle.tif'), true, true).then(function (points) {
       chai.expect(points.length).to.equal(jsonArray.length)
       chai.expect(points).to.deep.equal(jsonArray)

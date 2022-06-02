@@ -1,12 +1,9 @@
 import ps from '@kalisio/geo-pixel-stream'
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
 
 function readGeoTiff (filePath, verbose) {
-  let promise = new Promise(function (resolve, reject) {
-    let readers = ps.createReadStreams(filePath)
-    let blocks = []
+  const promise = new Promise(function (resolve, reject) {
+    const readers = ps.createReadStreams(filePath)
+    const blocks = []
 
     if (verbose) {
       console.log('File metadata :')
@@ -14,8 +11,8 @@ function readGeoTiff (filePath, verbose) {
     }
 
     readers[0].on('data', function (data) {
-      let blockPoints = []
-      let blockLen = data.blockSize.x * data.blockSize.y
+      const blockPoints = []
+      const blockLen = data.blockSize.x * data.blockSize.y
 
       for (let i = 0; i < blockLen; i++) { blockPoints.push(data.buffer[i]) }
       blocks.push(blockPoints)
@@ -32,7 +29,7 @@ function readGeoTiff (filePath, verbose) {
 }
 
 function linearize (blocks, blockWidth, blocksPerRow, blockHeight, blocksPerCol, verbose) {
-  let points = []
+  const points = []
   if (verbose) {
     console.log('Found ' + blocks.length + ' blocks of ' + blocks[0].length + ' points')
     console.log('Linearize ' + blocksPerRow + ' blocks per row of width ' + blockWidth)
@@ -41,10 +38,10 @@ function linearize (blocks, blockWidth, blocksPerRow, blockHeight, blocksPerCol,
   for (let row = 0; row < blockHeight * blocksPerCol; row++) {
     for (let col = 0; col < blockWidth * blocksPerRow; col++) {
       // let col = i % (blockWidth * blocksPerRow), row = Math.floor(i / (blockHeight * blocksPerCol))
-      let block = Math.floor(col / blockWidth) + Math.floor(row / blockHeight) * blocksPerRow
+      const block = Math.floor(col / blockWidth) + Math.floor(row / blockHeight) * blocksPerRow
 
-      let colInBlock = col % blockWidth
-      let rowInBlock = row % blockHeight
+      const colInBlock = col % blockWidth
+      const rowInBlock = row % blockHeight
 
       // console.log(row, col, block, colInBlock, rowInBlock)
 
@@ -59,7 +56,7 @@ function linearize (blocks, blockWidth, blocksPerRow, blockHeight, blocksPerCol,
 }
 
 function compressRLE (points, round, verbose) {
-  let output = []
+  const output = []
   let currentValue = points[0]
   let currentLen = 1
   if (round) {
@@ -88,21 +85,21 @@ function compressRLE (points, round, verbose) {
 }
 
 const gtiff2json = function (filePath, compress, round, verbose) {
-  let promise = new Promise(function (resolve, reject) {
+  const promise = new Promise(function (resolve, reject) {
     readGeoTiff(filePath, verbose).then(function (data) {
       return linearize(data.blocks, data.metadata.blockSize.x, Math.max(1, data.metadata.width / data.metadata.blockSize.x),
-                       data.metadata.blockSize.y, Math.max(1, data.metadata.height / data.metadata.blockSize.y), verbose)
+        data.metadata.blockSize.y, Math.max(1, data.metadata.height / data.metadata.blockSize.y), verbose)
     })
-    .then(function (points) {
-      if (!compress) {
-        resolve(points)
-      } else {
-        resolve(compressRLE(points, round, verbose))
-      }
-    })
-    .catch(function (err) {
-      reject(err)
-    })
+      .then(function (points) {
+        if (!compress) {
+          resolve(points)
+        } else {
+          resolve(compressRLE(points, round, verbose))
+        }
+      })
+      .catch(function (err) {
+        reject(err)
+      })
   })
 
   return promise
