@@ -64,7 +64,7 @@ const grib2json = function (filePath, options) {
         if (options.verbose) {
           json.forEach(variable => console.log('Generated ' + variable.data.length + ' points in memory for variable ', variable.header))
         }
-        console.log(stdout)
+        //console.log(stdout)
         resolve(json)
       }
     })
