@@ -1,6 +1,5 @@
 {
   "name": "weacast",
-  "private": true,
   "scripts": {
     "install": "lerna bootstrap",
     "lint": "lerna run lint",
