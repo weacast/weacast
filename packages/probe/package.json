@@ -35,7 +35,7 @@
     ]
   },
   "dependencies": {
-    "@feathersjs/errors": "^5.0.0-pre.16",
+    "@feathersjs/errors": "^5.0.0-pre.23",
     "@weacast/core": "^2.0.3",
     "debug": "^3.1.0",
     "dot-object": "^1.7.0",
