@@ -34,5 +34,4 @@ lib/
 
 # Temporary junk
 *audit.json
-.nyc_output/
-packages/alert/test/forecast-data/
+forecast-data
