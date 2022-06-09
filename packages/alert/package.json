@@ -42,7 +42,7 @@
     "feathers-hooks-common": "^3.0.0",
     "fs-extra": "^10.0.1",
     "lodash": "^4.17.21",
-    "moment": "^2.29.1",
+    "moment": "^2.29.3",
     "sift": "^16.0.0"
   },
   "devDependencies": {

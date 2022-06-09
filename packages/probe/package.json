@@ -42,7 +42,7 @@
     "feathers-hooks-common": "^3.0.0",
     "fs-extra": "^4.0.2",
     "lodash": "^4.17.4",
-    "moment": "^2.18.1",
+    "moment": "^2.29.3",
     "mongodb": "^2.2.26",
     "mubsub": "^1.4.0"
   },
