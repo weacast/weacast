@@ -8,10 +8,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* missing dependency in gtiff2json package ([88ff187](https://github.com/weacast/weacast/commit/88ff1879cc0872c71d0fde6d4dd4b72504331aba))
-
-
-
+* Missing dependency in gtiff2json package ([88ff187](https://github.com/weacast/weacast/commit/88ff1879cc0872c71d0fde6d4dd4b72504331aba))
 
 
 # [2.1.0](https://github.com/weacast/weacast/compare/v2.0.3...v2.1.0) (2022-06-17)
@@ -21,29 +18,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * Upgrade Feathers to v5 (closes [#4](https://github.com/weacast/weacast/issues/4)) ([1ac00d1](https://github.com/weacast/weacast/commit/1ac00d10768f666cf86b684a32ea3bb55aec9232))
 * Upgrade NodeJS to v16 - latest fixes (closes [#2](https://github.com/weacast/weacast/issues/2)) ([2071454](https://github.com/weacast/weacast/commit/2071454415249f33ad16be37f5672606633250db))
-
-
-
-
-
-
-## [2.0.3](https://github.com/weacast/weacast/compare/v2.0.2...v2.0.3) (2022-06-08)
-
-**Note:** Version bump only for package @weacast/gtiff2json
-
-
-
-
-
-## [2.0.2](https://github.com/weacast/weacast-gtiff2json/compare/v2.0.1...v2.0.2) (2022-04-28)
-
-**Note:** Version bump only for package @weacast/gtiff2json
-
-
-
-
-
-# Changelog
 
 ## [v1.1.2](https://github.com/weacast/weacast-gtiff2json/tree/v1.1.2) (2020-05-11)
 

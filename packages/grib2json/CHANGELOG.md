@@ -5,33 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [2.1.0](https://github.com/weacast/weacast/compare/v2.0.3...v2.1.0) (2022-06-17)
 
-
 ### Features
 
 * Upgrade NodeJS to v16 - latest fixes (closes [#2](https://github.com/weacast/weacast/issues/2)) ([2071454](https://github.com/weacast/weacast/commit/2071454415249f33ad16be37f5672606633250db))
-
-
-
-
-
-
-## [2.0.3](https://github.com/weacast/weacast/compare/v2.0.2...v2.0.3) (2022-06-08)
-
-**Note:** Version bump only for package @weacast/grib2json
-
-
-
-
-
-## [2.0.2](https://github.com/weacast/weacast-grib2json/compare/v2.0.1...v2.0.2) (2022-04-28)
-
-**Note:** Version bump only for package @weacast/grib2json
-
-
-
-
-
-# Changelog
 
 ## [v1.0.3](https://github.com/weacast/weacast-grib2json/tree/v1.0.3) (2020-10-19)
 
