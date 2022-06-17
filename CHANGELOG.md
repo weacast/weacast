@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/weacast/weacast/compare/v2.1.0...v2.1.1) (2022-06-17)
+
+
+### Bug Fixes
+
+* missing dependency in gtiff2json package ([88ff187](https://github.com/weacast/weacast/commit/88ff1879cc0872c71d0fde6d4dd4b72504331aba))
+
+
+
+
+
 # [2.1.0](https://github.com/weacast/weacast/compare/v2.0.3...v2.1.0) (2022-06-17)
 
 
