@@ -1,7 +1,7 @@
 {
   "name": "@weacast/alert",
   "description": "Alerting plugin for Weacast",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "homepage": "https://github.com/weacast/weacast",
   "main": "src/index.js",
   "type": "module",
@@ -35,8 +35,8 @@
     ]
   },
   "dependencies": {
-    "@weacast/core": "^2.0.3",
-    "@weacast/probe": "^2.0.3",
+    "@weacast/core": "^2.1.0",
+    "@weacast/probe": "^2.1.0",
     "cron": "^1.8.2",
     "debug": "^4.3.4",
     "feathers-hooks-common": "^3.0.0",
@@ -46,7 +46,7 @@
     "sift": "^16.0.0"
   },
   "devDependencies": {
-    "@weacast/gfs": "^2.0.3",
+    "@weacast/gfs": "^2.1.0",
     "chai": "^4.3.6",
     "chai-lint": "^0.1.1",
     "chai-spies": "^0.7.1",

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/weacast/weacast/compare/v2.0.3...v2.1.0) (2022-06-17)
+
+
+### Features
+
+* Upgrade NodeJS to v16 - latest fixes (closes [#2](https://github.com/weacast/weacast/issues/2)) ([2071454](https://github.com/weacast/weacast/commit/2071454415249f33ad16be37f5672606633250db))
+
+
+
+
+
+
 ## [2.0.3](https://github.com/weacast/weacast/compare/v2.0.2...v2.0.3) (2022-06-08)
 
 **Note:** Version bump only for package @weacast/arome
