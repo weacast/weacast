@@ -10,49 +10,73 @@ This work is highly inspired from [geotiff2json](https://github.com/avgp/geotiff
 * simple JSON conversion without RLE encoding
 * any block size in TIFF files (not just squares)
 
+## Installation
+
+```
+npm install -g @weacast/gtiff2json
+```
+
 ## Usage
+
+### As CLI
+
+The `gtiff2json` CLI can be used similarly from the native OS CLI or from Node.
+
+```
+> grib2json --help (or node bin.js --help)
+Usage: grib2json (or node bin.js) [options] <file>
+  -V, --version                output the version number
+  -c, --compress               Output RLE compressed JSON
+  -r, --round                  Round values to nearest integer when performing RLE compression
+  -p, --precision <precision>  Limit precision in JSON using the given number of digits after the decimal point (default: -1)
+  -o, --output <file>          Output in a file instead of stdout
+  -v, --verbose                Verbose mode for debug purpose
+  -h, --help                   output usage information
+```
+
+### As module
 
 Here's an example that converts `file.tif` into a JSON array and writes it to disk as `data.json`:
 
 ```javascript
-    var geotiff2json = require('@weacast/gtiff2json'),
-    fs = require('fs')
-    
-    geotiff2json('file.tif').then(function(data) {
-      fs.writeFile('data.json', JSON.stringify(data), function(err) {
-        if(err) {
-          console.error('Oh no, writing failed!', err)
-          return
-        }
-      })
+  const geotiff2json = require('@weacast/gtiff2json')
+  const fs = require('fs')
+  
+  geotiff2json('file.tif').then(function(data) {
+    fs.writeFile('data.json', JSON.stringify(data), function(err) {
+      if(err) {
+        console.error('Oh no, writing failed!', err)
+        return
+      }
     })
+  })
 ```
 
 Here's an example that converts `file.tif` into an RLE value array and writes it to disk as `data.json`:
 
 ```javascript
-    var geotiff2json = require('@weacast/gtiff2json'),
-    fs = require('fs')
-    
-    geotiff2json('file.tif', true).then(function(data) {
-      fs.writeFile('data.json', JSON.stringify(data), function(err) {
-        if(err) {
-          console.error('Oh no, writing failed!', err)
-          return
-        }
-        console.log('wrote ' + (data.length / 2) + ' tuples into file.')
-    })
+  const geotiff2json = require('@weacast/gtiff2json')
+  const fs = require('fs')
+  
+  geotiff2json('file.tif', true).then(function(data) {
+    fs.writeFile('data.json', JSON.stringify(data), function(err) {
+      if(err) {
+        console.error('Oh no, writing failed!', err)
+        return
+      }
+      console.log('wrote ' + (data.length / 2) + ' tuples into file.')
+  })
 ```
 
 The output file's content will look similar to this:
 
 ```json
-    [
-      100,10,
-      132,1,
-      80,5,
-      ...
-    ]
+  [
+    100,10,
+    132,1,
+    80,5,
+    ...
+  ]
 ```
 Note: The linebreaks and whitespace have been added for better readability, the file won't contain those to reduce size.
 

@@ -35,19 +35,21 @@ npm install -g @weacast/grib2json
 The `grib2json` CLI can be used similarly from the native OS CLI or from Node.
 
 ```
-> grib2json --help (or node index.js --help)
-Usage: grib2json (or node index.js) [options] FILE
-	[--compact -c] : enable compact Json formatting
-	[--data -d] : print GRIB record data
-	[--filter.category --fc value] : select records with this numeric category
-	[--filter.parameter --fp value] : select records with this numeric parameter
-	[--filter.surface --fs value] : select records with this numeric surface type
-	[--filter.value --fv value] : select records with this numeric surface value
-	[--help -h] : display this help
-	[--names -n] : print names of numeric codes
-	[--output -o value] : write output to the specified file (default is stdout)
-	[--precision -p value] : limit precision in output file using the given number of digits after the decimal point
-    	[--verbose -v] : enable logging to stdout
+> grib2json --help (or node bin.js --help)
+Usage: grib2json (or node bin.js) [options] <file>
+  -V, --version                    output the version number
+  -d, --data                       Print GRIB record data
+  -c, --compact                    Enable compact Json formatting
+  -fc, --filter.category <value>   Select records with this numeric category
+  -fs, --filter.surface <value>    Select records with this numeric surface type
+  -fp, --filter.parameter <value>  Select records with this numeric parameter
+  -fv, --filter.value <value>      Select records with this numeric surface value
+  -n, --names                      Print names of numeric codes
+  -o, --output <file>              Output in a file instead of stdout
+  -p, --precision <precision>      Limit precision in output file using the given number of digits after the decimal point (default: -1)
+  -v, --verbose                    Enable logging to stdout
+  -bs, --bufferSize <value>        Largest amount of data in bytes allowed on stdout or stderr
+  -h, --help                       output usage information
 ```
 
 For example, the following command outputs to stdout the records for parameter 2 (U-component_of_wind), with
