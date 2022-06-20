@@ -1,7 +1,7 @@
 {
   "name": "@weacast/arome",
   "description": "AROME weather forecast model plugin for Weacast",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "homepage": "https://github.com/weacast/weacast",
   "main": "src/index.js",
   "type": "module",
@@ -35,7 +35,7 @@
     ]
   },
   "dependencies": {
-    "@weacast/arpege": "^2.1.2",
+    "@weacast/arpege": "^2.1.3",
     "@weacast/core": "^2.1.2"
   },
   "devDependencies": {
