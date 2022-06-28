@@ -45,11 +45,11 @@
     ]
   },
   "dependencies": {
-    "@feathersjs/authentication": "^5.0.0-pre.16",
-    "@feathersjs/authentication-local": "^5.0.0-pre.16",
-    "@feathersjs/errors": "^5.0.0-pre.16",
-    "@feathersjs/express": "^5.0.0-pre.16",
-    "@kalisio/feathers-distributed": "^1.0.5",
+    "@feathersjs/authentication": "^5.0.0-pre.22",
+    "@feathersjs/authentication-local": "^5.0.0-pre.22",
+    "@feathersjs/errors": "^5.0.0-pre.22",
+    "@feathersjs/express": "^5.0.0-pre.22",
+    "@kalisio/feathers-distributed": "^2.0.0",
     "@weacast/alert": "^2.1.3",
     "@weacast/arome": "^2.1.3",
     "@weacast/arpege": "^2.1.3",

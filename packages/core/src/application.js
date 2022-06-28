@@ -234,7 +234,12 @@ export default function weacast () {
   }
   // This avoid managing the API path before each service name
   app.getService = function (path) {
-    return app.service(app.get('apiPath') + '/' + path)
+    try {
+      return app.service(app.get('apiPath') + '/' + path)
+    } catch {
+      // We return a false-y value in case the service wasn't found
+      return null
+    }
   }
   // This is used to create standard services
   app.createService = async function (name, modelsPath, servicesPath, options) {
