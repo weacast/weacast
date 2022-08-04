@@ -24,7 +24,7 @@ module.exports = {
     },
     jwtOptions: {
       header: {
-        typ: 'access'
+        type: 'access'
       },
       audience: 'https://yourdomain.com',
       issuer: 'feathers',
