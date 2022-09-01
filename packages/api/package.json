@@ -57,7 +57,7 @@
     "@weacast/gfs": "^2.1.3",
     "@weacast/probe": "^2.1.3",
     "containerized": "^1.0.2",
-    "feathers-hooks-common": "^3.5.0",
+    "feathers-hooks-common": "^5.0.6",
     "fs-extra": "^10.0.1",
     "http-proxy-middleware": "^2.0.4",
     "lodash": "^4.17.21"
@@ -72,5 +72,8 @@
     "nodemon": "^2.0.15",
     "shx": "^0.3.4",
     "standard": "^16.0.4"
+  },
+  "resolutions": {
+    "@feathersjs/commons": "^5.0.0-pre.28"
   }
 }

@@ -70,5 +70,8 @@
     "nock": "^13.2.4",
     "shx": "^0.3.4",
     "standard": "^16.0.4"
+  },
+  "resolutions": {
+    "@feathersjs/commons": "^5.0.0-pre.28"
   }
 }

@@ -39,7 +39,7 @@
     "@weacast/core": "^2.1.2",
     "debug": "^3.1.0",
     "dot-object": "^1.7.0",
-    "feathers-hooks-common": "^3.0.0",
+    "feathers-hooks-common": "^5.0.6",
     "fs-extra": "^4.0.2",
     "lodash": "^4.17.4",
     "moment": "^2.29.3",
