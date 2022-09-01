@@ -43,7 +43,7 @@
     "fs-extra": "^4.0.2",
     "lodash": "^4.17.4",
     "moment": "^2.29.3",
-    "mongodb": "^2.2.26",
+    "mongodb": "^3.1.13",
     "mubsub": "^1.4.0"
   },
   "devDependencies": {
