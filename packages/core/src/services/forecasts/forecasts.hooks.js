@@ -1,4 +1,4 @@
-import feathersHooks from 'feathers-hooks-common'
+import * as feathersHooks from 'feathers-hooks-common'
 import * as hooks from '../../hooks/index.js'
 
 export default {

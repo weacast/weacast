@@ -1,4 +1,4 @@
-import feathersHooks from 'feathers-hooks-common'
+import * as feathersHooks from 'feathers-hooks-common'
 import _ from 'lodash'
 import { hooks } from '@feathersjs/authentication-local'
 import gravatar from '../../hooks/gravatar.js'

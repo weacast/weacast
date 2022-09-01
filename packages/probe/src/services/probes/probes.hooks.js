@@ -1,4 +1,4 @@
-import feathersHooks from 'feathers-hooks-common'
+import * as feathersHooks from 'feathers-hooks-common'
 import { hooks } from '@weacast/core'
 import { checkProbingType, performProbing, removeResults, removeFeatures } from '../../hooks/index.js'
 

@@ -1,4 +1,4 @@
-import feathersHooks from 'feathers-hooks-common'
+import * as feathersHooks from 'feathers-hooks-common'
 import * as hooks from '../../hooks/index.js'
 
 // Marshall/Unmarshall should be always first so that we have a consistent data format in other hooks

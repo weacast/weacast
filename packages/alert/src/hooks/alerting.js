@@ -1,5 +1,5 @@
 // import makeDebug from 'debug'
-import feathersHooks from 'feathers-hooks-common'
+import * as feathersHooks from 'feathers-hooks-common'
 import { hooks } from '@weacast/core'
 // const debug = makeDebug('weacast:weacast-core')
 

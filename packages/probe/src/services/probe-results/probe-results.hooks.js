@@ -1,4 +1,4 @@
-import feathersHooks from 'feathers-hooks-common'
+import * as feathersHooks from 'feathers-hooks-common'
 import _ from 'lodash'
 import { hooks } from '@weacast/core'
 import { marshallResultsQuery, aggregateResultsQuery } from '../../hooks/index.js'

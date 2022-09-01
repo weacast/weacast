@@ -1,9 +1,8 @@
 // import makeDebug from 'debug'
-import feathersHooks from 'feathers-hooks-common'
+import { getItems, replaceItems, discard } from 'feathers-hooks-common'
 import mongo from 'mongodb'
 import _ from 'lodash'
 
-const { getItems, replaceItems, discard } = feathersHooks
 const { ObjectID } = mongo
 
 // const debug = makeDebug('weacast:weacast-probe')

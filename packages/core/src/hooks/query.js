@@ -3,11 +3,10 @@ import fs from 'fs-extra'
 import _ from 'lodash'
 import path from 'path'
 import makeDebug from 'debug'
-import feathersHooks from 'feathers-hooks-common'
+import { getItems, replaceItems, discard } from 'feathers-hooks-common'
 import { marshallTime } from './marshall.js'
 import { Grid } from '../common/grid.js'
 
-const { getItems, replaceItems, discard } = feathersHooks
 const debug = makeDebug('weacast:weacast-core')
 const discardDataField = discard('data')
 const discardFilepathField = discard('filePath')

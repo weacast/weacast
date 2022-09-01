@@ -1,8 +1,6 @@
 import moment from 'moment'
 import _ from 'lodash'
-import feathersHooks from 'feathers-hooks-common'
-
-const { getItems, replaceItems } = feathersHooks
+import { getItems, replaceItems } from 'feathers-hooks-common'
 
 // Helper function to convert time objects or array of time objects
 export function marshallTime (item, property) {
