@@ -113,28 +113,43 @@ This will lint and fix issues in the code according to [JS standard](https://git
 
 Use [Chrome DevTools](https://medium.com/@paul_irish/debugging-node-js-nightlies-with-chrome-devtools-7c4a1b95ae27).
 
-#### Testing Docker image
+#### Testing Docker images
 
-Because Weacast web app is also released as a Docker image you can build it like this in development mode (i.e. with all modules linked to their `master` branch version):
+Because Weacast API and demo application are also released as Docker images, you can build it manually like this in development mode (i.e. with all modules linked to their `master` branch version):
 
 ```bash
+// API
+cd packages/api
+docker build -f dockerfile.dev -t weacast/weacast-api:dev .
+// Demo application
+cd weacast-app
 docker build -f dockerfile.dev -t weacast/weacast:dev .
 ```
-Then test it like this:
 
+::: tip
+The demo application image depends on the weacast API image so that the build order is important.
+:::
+
+Then test it like this:
 ```
+// API
+cd packages/api
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+// Demo application
+cd weacast-app
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
-Then release it if you'd like as current dev version to share progress with others:
-
+You can release it manually if you'd like as current dev version to share progress with others:
 ```bash
 docker login
 docker push weacast/weacast:dev
 ```
 
+**However, our Travis CI should build the development images for you as you commit**
+
 ::: tip
-When building the image all modules are retrieved from their respective repository (`master` branch), only the local source code of the web app is pushed into the image.
+When building the image all modules are retrieved from their respective repository (`master` branch), only the local source code of the demo web app is pushed into the image.
 
 This requires you to have a DockerHub account and be a team member of the Weacast organization, if you'd like to become a maintainer please tell us
 :::
@@ -153,39 +168,44 @@ To speed-up things even more run a single test suite with: `$ npm run mocha -- -
 
 ## Publish
 
-### Prerequisites
+### Modules and plugins
 
-#### Install Change log generator
+We rely on [Lerna](https://lerna.js.org/) to handle the publishing process, including version number update, changelog generation based on conventional commits, etc. It should take care of updating the version of all dependent plugins to the latest version published. Use the following command:
+```bash
+yarn run publish
+```
 
-This [gem](https://github.com/skywinder/github-changelog-generator) generates a change log file based on **tags**, **issues** and merged **pull requests** (and splits them into separate lists according to labels) from :octocat: GitHub Issue Tracker. This requires you to install (e.g. for Windows) [Ruby](http://rubyinstaller.org/downloads/) and its [DevKit](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit).
-
-### Weacast
-
-The same process applies when releasing a patch, minor or major version, i.e. the following tasks are done:
-* increase the package version number in the **package.json** file (frontend and backend API)
-* create a tag accordingly in the git repository and push it
-* generates the changelog in the git repository and push it
-
-::: warning
-Before you publish a release take care of updating the version of all dependent plugins to the latest version published, for example perform `yarn upgrade @weacast/core @weacast/arpege @weacast/arome @weacast/probe`
+::: tip
+This requires you to have a NPM and GitHub account and be a team member of the Weacast organization, if you'd like to become a maintainer please tell us.
 :::
 
-Depending on the release type the following command will do the job (where type is either `patch`, `minor`, `major`):
-```bash
-npm run release:type
-```
+### Docker images
 
-Because Weacast demo app is also released as a Docker image you can build it manually like this:
+Because Weacast API and demo application are also released as Docker images, you can build it manually like this in release mode (i.e. with all modules linked to their latest version):
+
 ```bash
+// API
+cd packages/api
+docker build -t weacast/weacast-api .
+// Demo application
+cd weacast-app
 docker build -t weacast/weacast .
 ```
+
+::: tip
+The demo application image depends on the weacast API image so that the build order is important.
+:::
+
 Then release it as latest version:
 ```bash
 docker login
+docker push weacast/weacast-api
 docker push weacast/weacast
 ```
 And tag it (`version_tag` being the current version number like `1.1.2`)
 ```bash
+docker tag weacast/weacast-api weacast/weacast-api:version_tag
+docker push weacast/weacast-api:version_tag
 docker tag weacast/weacast weacast/weacast:version_tag
 docker push weacast/weacast:version_tag
 ```
@@ -194,28 +214,4 @@ docker push weacast/weacast:version_tag
 This requires you to have a DockerHub account and be a team member of the Weacast organization, if you'd like to become a maintainer please tell us
 :::
 
-**However, our Travis CI should build the image for you as you push the tag of the release**
-
-When testing in development you can build a Docker image that will automatically use the master branch of all modules like this:
-```bash
-docker build -t weacast/weacast:dev -f dockerfile.dev .
-```
-Then release it as latest dev version:
-```bash
-docker login
-docker push weacast/weacast:dev
-```
-
-### Plugins
-
-The same process applies as for the web app but in addition the module is published on the NPM registry.
-
-::: tip
-This requires you to have a NPM and GitHub account and be a team member of the Weacast organization, if you'd like to become a maintainer please tell us.
-:::
-
-::: warning
-Before you publish a plugin take care of updating the version of your dependent plugins to the latest version published, for example  perform `yarn upgrade @weacast/core` for a plugin depending on the core plugin before publishing it.
-:::
-
-
+**However, our Travis CI should build the images for you as you push the tag of the release**
