@@ -33,8 +33,7 @@ Then point your browser to [localhost:8081](http://localhost:8081).
 If running Docker under Windows in a virtual machine first redirect the port 8081 of your virtual machine to your host
 :::
 
-You can also use [docker-compose](https://docs.docker.com/compose/) and the [docker compose file](https://github.com/weacast/weacast/blob/master/docker-compose.yml).
-The following commands should do the job:
+You can also use [docker-compose](https://docs.docker.com/compose/) and the [docker compose file](https://github.com/weacast/weacast/blob/master/docker-compose.yml) provided in our [demo application](https://github.com/weacast/weacast-app). The following commands should do the job:
 
 ```bash
 docker pull weacast/weacast
