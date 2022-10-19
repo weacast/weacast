@@ -5,5 +5,5 @@ if [[ -z "$TRAVIS_TAG" ]]
 then
 	export VERSION=latest
 else
-	export VERSION=$(node -p -e "require('./package.json').version")
+	export VERSION=$(node -p -e "require('./packages/api/package.json').version")
 fi
