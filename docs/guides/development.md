@@ -172,6 +172,8 @@ To speed-up things even more run a single test suite with: `$ npm run mocha -- -
 
 We rely on [Lerna](https://lerna.js.org/) to handle the publishing process, including version number update, changelog generation based on conventional commits, etc. It should take care of updating the version of all dependent plugins to the latest version published. Use the following command:
 ```bash
+// Your GitHub authentication token
+export GH_TOKEN=xxx
 yarn run publish
 ```
 
