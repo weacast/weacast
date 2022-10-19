@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.4](https://github.com/weacast/weacast/compare/v2.1.3...v2.1.4) (2022-10-19)
+
+
+### Bug Fixes
+
+* API image not correctly tagged in the DockerHub (closes [#23](https://github.com/weacast/weacast/issues/23)) ([6010afc](https://github.com/weacast/weacast/commit/6010afcdf09ff3fd66a03c5ca70b6a21619047e4))
+
+
+
+
+
 ## [2.1.3](https://github.com/weacast/weacast/compare/v2.1.2...v2.1.3) (2022-06-20)
 
 **Note:** Version bump only for package weacast
