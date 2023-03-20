@@ -23,7 +23,7 @@ In order to be able to switch easily between different versions of Node.js we re
 :::
 
 ::: warning
-Weacast modules are expected to work with Node.js version 16.x
+At the time of writing Weacast modules v2.x (`master` branch) are expected to work with Node.js 16.x and Weacast modules v1.x are expected to work with Node.js 12.x
 :::
 
 #### Install Git
@@ -44,7 +44,7 @@ There are many resources available for installing it.
 - [Windows.](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/)
 
 ::: warning
-Weacast modules are expected to work with MongoDB version 4.x
+At the time of writing the Weacast modules v2.x (`master` branch) are expected to work with MongoDB 4.x and Weacast modules v1.x are expected to work with MongoDB 3.x
 :::
 
 #### Install Yarn

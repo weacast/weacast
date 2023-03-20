@@ -85,27 +85,29 @@ module.exports = {
       expiresIn: '1d'
     },
     oauth: {
-      redirect: '/',
+      // Dev
+      redirect: 'http://localhost:8080',
       github: {
-        clientID: process.env.GITHUB_CLIENT_ID || '20da06587907b8048edb',
-        clientSecret: process.env.GITHUB_CLIENT_SECRET || '22029773f71829af8eaba6c0d6599843026cbf15',
-        callbackURL: domain + '/auth/github/callback',
-        successRedirect: domain + '/'
+        key: process.env.GITHUB_CLIENT_ID || '20da06587907b8048edb',
+        secret: process.env.GITHUB_CLIENT_SECRET || '22029773f71829af8eaba6c0d6599843026cbf15',
+        scope: ['openid'],
+        nonce: true
       },
       google: {
-        clientID: process.env.GOOGLE_CLIENT_ID || '879164794322-ed4nl0j3sdsr00bjbrsqdcskon1k7go4.apps.googleusercontent.com',
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'mZZejuVZ4_oG9WpoGPXTJKFe',
-        callbackURL: domain + '/auth/google/callback',
-        successRedirect: domain + '/',
-        scope: ['profile', 'email']
+        key: process.env.GOOGLE_CLIENT_ID || '879164794322-ed4nl0j3sdsr00bjbrsqdcskon1k7go4.apps.googleusercontent.com',
+        secret: process.env.GOOGLE_CLIENT_SECRET || 'mZZejuVZ4_oG9WpoGPXTJKFe',
+        scope: ['openid', 'email', 'profile'],
+        nonce: true
       },
       cognito: {
-        clientID: process.env.COGNITO_CLIENT_ID || '1vmieaua4phmqr4tt0v664aqq5',
-        clientSecret: process.env.COGNITO_CLIENT_SECRET || 'kp5v6511tsn1tss6mka3chnekaifs6aemt9un2sg3m2ja2veuoa',
-        clientDomain: 'https://weacast.auth.eu-west-1.amazoncognito.com',
-        callbackURL: domain + '/auth/cognito/callback',
-        successRedirect: domain + '/',
-        region: 'eu-west-1'
+        key: process.env.COGNITO_CLIENT_ID || '1vmieaua4phmqr4tt0v664aqq5',
+        secret: process.env.COGNITO_CLIENT_SECRET || 'kp5v6511tsn1tss6mka3chnekaifs6aemt9un2sg3m2ja2veuoa',
+        oauth: 2,
+        scope: ['openid'],
+        authorize_url: 'https://weacast.auth.eu-west-1.amazoncognito.com/oauth2/authorize',
+        access_url: 'https://weacast.auth.eu-west-1.amazoncognito.com/oauth2/token',
+        profile_url: 'https://weacast.auth.eu-west-1.amazoncognito.com/oauth2/userInfo',
+        nonce: true
       }
     },
     defaultUsers: [
