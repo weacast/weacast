@@ -12,31 +12,29 @@ FROM  node:16-buster-slim
 
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
 
-# Install Java
-RUN apt-get update -y
-# See http://debian.2.n7.nabble.com/Bug-863199-error-creating-symbolic-link-usr-share-man-man1-rmid-1-gz-dpkg-tmp-td4120571.html#a4283276
-RUN mkdir -p /usr/share/man/man1
-RUN apt install -y openjdk-11-jre-headless
-RUN apt-get clean
+# Install Java & GDAL
+# curl for healthcheck
+RUN \
+  DEBIAN_FRONTEND=noninteractive && \
+  apt-get update && \
+  apt-get --no-install-recommends --yes install \
+    openjdk-11-jre-headless \
+    ca-certificates \
+    curl \
+    gdal-bin && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
+
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
 RUN $JAVA_HOME/bin/java -version
 
-# Install GDAL
-RUN apt-get update && apt-get -y install gdal-bin
-# Install curl for healthcheck
-RUN apt-get -y install curl
+COPY --from=Build --chown=node:node /opt/kalisio /opt/kalisio
+COPY --from=Build --chown=node:node /opt/weacast /opt/weacast
 
-COPY --from=Build /opt/kalisio /opt/kalisio
-COPY --from=Build /opt/weacast /opt/weacast
-
+USER node
 WORKDIR /opt/kalisio/feathers-distributed
-
 RUN yarn link
-
 WORKDIR /opt/weacast/weacast/packages/api
-
 RUN yarn link @kalisio/feathers-distributed
-
 EXPOSE 8081
-
 CMD [ "npm", "run", "prod" ]
