@@ -1,11 +1,13 @@
 import _ from 'lodash'
 import makeDebug from 'debug'
+import errors from '@feathersjs/errors'
 import { AuthenticationService, JWTStrategy } from '@feathersjs/authentication'
 import { LocalStrategy } from '@feathersjs/authentication-local'
 import OAuth from '@feathersjs/authentication-oauth'
 
 const debug = makeDebug('weacast:weacast-core:authentication')
 const { oauth, OAuthStrategy } = OAuth
+const { NotAuthenticated } = errors
 
 export class AuthenticationProviderStrategy extends OAuthStrategy {
   async getEntityData (profile, entity) {
@@ -48,10 +50,12 @@ export class AuthenticationProviderStrategy extends OAuthStrategy {
 // However, it has been rewritten to work simultaneously with:
 // - a stateless or user attached JWT
 // - a socket or a rest transport
+// It also supports token given as query parameter
 export class JWTAuthenticationStrategy extends JWTStrategy {
   async authenticate (authentication, params) {
     const { accessToken } = authentication
     const { entity } = this.configuration
+    const renewJwt = _.get(this.configuration, 'renewJwt', true)
 
     if (!accessToken) {
       throw new NotAuthenticated('No access token')
@@ -68,6 +72,7 @@ export class JWTAuthenticationStrategy extends JWTStrategy {
         payload
       }
     }
+    if (!renewJwt) result.accessToken = accessToken
 
     // Second key trick
     // Return user attached to the token if any
@@ -83,6 +88,21 @@ export class JWTAuthenticationStrategy extends JWTStrategy {
     }
 
     return result
+  }
+
+  async parse (req) {
+    const { jwt } = req.query
+    if (jwt) {
+      debug('Found parsed query value')
+      delete req.query.jwt
+      return {
+        strategy: 'jwt',
+        accessToken: jwt
+      }
+    } else {
+      const result = await super.parse(req)
+      return result
+    }
   }
 }
 
@@ -102,11 +122,16 @@ export function extractJwtFromQuery (req, res, next) {
 export default function auth (app) {
   const config = app.get('authentication')
   if (!config) return
+  // Having undefined providers causes an issue in feathers but we'd like to be able
+  // to set providers undefined in config file based on some conditions (eg env vars)
+  if (config.oauth) config.oauth = _.omitBy(config.oauth, _.isNil)
+  app.set('authentication', config)
 
   const authentication = new AuthenticationService(app)
 
-  authentication.register('jwt', new JWTStrategy())
-  authentication.register('local', new LocalStrategy())
+  const strategies = config.authStrategies || []
+  if (strategies.includes('jwt')) authentication.register('jwt', new JWTStrategy())
+  if (strategies.includes('local')) authentication.register('local', new LocalStrategy())
   if (config.oauth) {
     app.authenticationProviders = _.keys(_.omit(config.oauth, ['redirect', 'origins', 'defaults']))
     for (const provider of app.authenticationProviders) {

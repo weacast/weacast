@@ -13,7 +13,7 @@ export default {
   },
 
   after: {
-    all: [hooks.skipEvents],
+    all: [feathersHooks.iff(feathersHooks.isProvider('external'), feathersHooks.discard('token')), hooks.skipEvents],
     find: [],
     get: [],
     create: [],
