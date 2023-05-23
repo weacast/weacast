@@ -49,7 +49,7 @@
     "@feathersjs/authentication-local": "^5.0.5",
     "@feathersjs/errors": "^5.0.5",
     "@feathersjs/express": "^5.0.5",
-    "@kalisio/feathers-distributed": "^2.0.2",
+    "@kalisio/feathers-distributed": "^2.2.0",
     "@weacast/alert": "^2.1.4",
     "@weacast/arome": "^2.1.4",
     "@weacast/arpege": "^2.1.4",
