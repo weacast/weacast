@@ -1,7 +1,7 @@
 {
   "name": "@weacast/arpege",
   "description": "ARPEGE weather forecast model plugin for Weacast",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "homepage": "https://github.com/weacast/weacast",
   "main": "src/index.js",
   "type": "module",
@@ -35,8 +35,8 @@
     ]
   },
   "dependencies": {
-    "@weacast/core": "^2.1.5",
-    "@weacast/gtiff2json": "^2.1.5",
+    "@weacast/core": "^2.1.6",
+    "@weacast/gtiff2json": "^2.1.6",
     "debug": "^4.3.4",
     "fs-extra": "^10.0.1"
   },
