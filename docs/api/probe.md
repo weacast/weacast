@@ -1,4 +1,4 @@
-# [Probe plugin](https://github.com/weacast/weacast/packages/probe)
+# [Probe plugin](https://github.com/weacast/weacast/tree/master/packages/probe)
 
 Probes are virtual sensors used to derive your own business focused data by probing forecast data at specific locations of interest (e.g. airports, cities, stores, etc.). This plugin manages two kind of probes:
 * **on-demand probing**, which allow to compute *on-demand* (e.g. by a request to the server) forecast element values for a given forecast time and a set of locations,
