@@ -45,10 +45,10 @@
     ]
   },
   "dependencies": {
-    "@feathersjs/authentication": "^5.0.5",
-    "@feathersjs/authentication-local": "^5.0.5",
-    "@feathersjs/errors": "^5.0.5",
-    "@feathersjs/express": "^5.0.5",
+    "@feathersjs/authentication": "^5.0.8",
+    "@feathersjs/authentication-local": "^5.0.8",
+    "@feathersjs/errors": "^5.0.8",
+    "@feathersjs/express": "^5.0.8",
     "@kalisio/feathers-distributed": "^2.2.1",
     "@weacast/alert": "^2.1.6",
     "@weacast/arome": "^2.1.6",

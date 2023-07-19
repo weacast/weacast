@@ -35,7 +35,7 @@
     ]
   },
   "dependencies": {
-    "@feathersjs/errors": "^5.0.5",
+    "@feathersjs/errors": "^5.0.8",
     "@weacast/core": "^2.1.6",
     "@weacast/grib2json": "^2.1.5",
     "debug": "^4.3.4",
