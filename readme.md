@@ -8,9 +8,9 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/weacast/weacast-api.svg)](https://hub.docker.com/r/weacast/weacast-api/)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fweacast%2Fweacast.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fweacast%2Fweacast?ref=badge_shield)
 
-This is the Weacast monorepo with all packages that are published under the `@weacast` npm organization, which is a work in progress.
+This is the Weacast monorepo with all packages that are published under the `@weacast` npm organization, they were previously provided as stand-alone repositories and packages under the `weacast-xxx` naming.
 
-> It was previously the repository of the weacast demo application you can now find here: https://github.com/weacast/weacast-app. Docs will be updated soon accordingly, sorry for the inconvenience.
+> It was previously the repository of the weacast demo application you can now find here: https://github.com/weacast/weacast-app.
 
 To get started, clone the repository and run:
 ```
