@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/weacast/weacast",
   "dependencies": {
-    "@kalisio/geo-pixel-stream": "https://github.com/kalisio/geo-pixel-stream#next",
+    "@kalisio/geo-pixel-stream": "https://github.com/kalisio/geo-pixel-stream#gdal-async",
     "commander": "^2.9.0",
     "fs-extra": "^10.0.1"
   },
