@@ -12,6 +12,10 @@ FROM  node:16-buster-slim
 
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
 
+# https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/1998065
+RUN rmdir /etc/ssl/certs/java
+RUN mkdir /etc/ssl/certs/java
+
 # Install Java & GDAL
 # curl for healthcheck
 RUN \
