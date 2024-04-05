@@ -62,7 +62,7 @@ begin_group "Building container ..."
 
 docker login --username "$KALISIO_DOCKERHUB_USERNAME" --password-stdin < "$KALISIO_DOCKERHUB_PASSWORD"
 # DOCKER_BUILDKIT is here to be able to use Dockerfile specific dockerginore (app.Dockerfile.dockerignore)
-DOCKER_BUILDKIT=1 docker build -f $DOCKERFILE \
+DOCKER_BUILDKIT=1 docker build -f "$ROOT_DIR/packages/api/$DOCKERFILE" \
     -t "$IMAGE_NAME:$IMAGE_TAG" \
     "$ROOT_DIR/packages/api"
 
