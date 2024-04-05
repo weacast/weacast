@@ -20,7 +20,7 @@ while getopts "pr:" option; do
             ;;
         r) # report outcome to slack
             CI_STEP_NAME=$OPTARG
-            trap 'slack_ci_report "$ROOT_DIR" "$CI_STEP_NAME" "$?" "$SLACK_WEBHOOK_JOBS"' EXIT
+            trap 'slack_ci_report "$ROOT_DIR" "$CI_STEP_NAME" "$?" "$SLACK_WEBHOOK_SERVICES"' EXIT
             ;;
         *)
             ;;
@@ -64,7 +64,7 @@ docker login --username "$KALISIO_DOCKERHUB_USERNAME" --password-stdin < "$KALIS
 # DOCKER_BUILDKIT is here to be able to use Dockerfile specific dockerginore (app.Dockerfile.dockerignore)
 DOCKER_BUILDKIT=1 docker build -f $DOCKERFILE \
     -t "$IMAGE_NAME:$IMAGE_TAG" \
-    "$WORKSPACE_DIR/packages/api"
+    "$ROOT_DIR/packages/api"
 
 if [ "$PUBLISH" = true ]; then
     docker push "$IMAGE_NAME:$IMAGE_TAG"
