@@ -1,11 +1,11 @@
-FROM  node:16-buster AS Build
+FROM  node:16-bookworm AS Build
 
 WORKDIR /opt/weacast-api
 COPY . /opt/weacast-api
 
 RUN yarn install
 
-FROM  node:16-buster-slim
+FROM  node:16-bookworm-slim
 
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
 
@@ -17,14 +17,14 @@ RUN \
   DEBIAN_FRONTEND=noninteractive && \
   apt-get update && \
   apt-get --no-install-recommends --yes install \
-    openjdk-11-jre-headless \
+    openjdk-17-jre-headless \
     ca-certificates \
     curl \
     gdal-bin && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
 RUN $JAVA_HOME/bin/java -version
 
 USER node

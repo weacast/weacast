@@ -1,4 +1,4 @@
-FROM  node:16-buster AS Build
+FROM  node:16-bookworm AS Build
 
 WORKDIR /opt/kalisio
 
@@ -8,13 +8,9 @@ WORKDIR /opt/weacast
 
 RUN git clone https://github.com/weacast/weacast.git -b master --single-branch && cd weacast && yarn install && cd ..
 
-FROM  node:16-buster-slim
+FROM  node:16-bookworm-slim
 
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
-
-# https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/1998065
-RUN rmdir /etc/ssl/certs/java
-RUN mkdir /etc/ssl/certs/java
 
 # Install Java & GDAL
 # curl for healthcheck
@@ -22,14 +18,14 @@ RUN \
   DEBIAN_FRONTEND=noninteractive && \
   apt-get update && \
   apt-get --no-install-recommends --yes install \
-    openjdk-11-jre-headless \
+    openjdk-17-jre-headless \
     ca-certificates \
     curl \
     gdal-bin && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
 RUN $JAVA_HOME/bin/java -version
 
 COPY --from=Build --chown=node:node /opt/kalisio /opt/kalisio
