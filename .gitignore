@@ -35,3 +35,7 @@ lib/
 # Temporary junk
 *audit.json
 forecast-data
+
+# vitepress
+docs/.vitepress/cache
+docs/.vitepress/dist

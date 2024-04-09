@@ -9,7 +9,7 @@ If you are not familiar with those technologies and want to develop for Weacast,
 
 ### Prerequisites
 
-#### Install Node.js
+### Install Node.js
 
 [Node](https://nodejs.org/en/) is a server platform which runs JavaScript.
 It's lightweight and efficient.
@@ -26,7 +26,7 @@ In order to be able to switch easily between different versions of Node.js we re
 At the time of writing Weacast modules v2.x (`master` branch) are expected to work with Node.js 16.x and Weacast modules v1.x are expected to work with Node.js 12.x
 :::
 
-#### Install Git
+### Install Git
 
 [git](https://git-scm.com/) is the version control system most frequently used in open source.
 There are many resources available for installing it.
@@ -35,7 +35,7 @@ There are many resources available for installing it.
 - [macOS.](https://www.atlassian.com/git/tutorials/install-git#mac-os-x)
 - [Windows.](https://www.atlassian.com/git/tutorials/install-git#windows)
 
-#### Install MongoDB
+### Install MongoDB
 
 [Mongo](https://www.mongodb.com/) is an open-source, document database designed for ease of development and scaling.
 
@@ -47,7 +47,7 @@ There are many resources available for installing it.
 At the time of writing the Weacast modules v2.x (`master` branch) are expected to work with MongoDB 4.x and Weacast modules v1.x are expected to work with MongoDB 3.x
 :::
 
-#### Install Yarn
+### Install Yarn
 
 Due to some [changes](http://codetunnel.io/npm-5-changes-to-npm-link/) in the way `npm` manages linked modules we prefer to use [Yarn](https://yarnpkg.com) as a package manager.
 
@@ -78,7 +78,7 @@ yarn install
 
 ### Weacast
 
-#### Running for development
+### Running for development
 
 Run the server-side app (from `weacast/packages/api` project folder): `$ npm run dev`
 
@@ -86,7 +86,7 @@ Then run the frontend app (from `weacast-app` root project folder): `$ npm run d
 
 Then point your browser to [localhost:8080](http://localhost:8080).
 
-#### Building for production
+### Building for production
 
 Build the server-side app (from `weacast/packages/api` project folder): `$ npm run compile`
 
@@ -94,7 +94,7 @@ Then build the frontend app (from `weacast-app` root project folder): `$ npm run
 
 This generates a `dist` folder **to be copied into** the `weacast/packages/api` root project folder.
 
-#### Running in production
+### Running in production
 
 ::: tip
 Make sure you built your app first
@@ -104,16 +104,16 @@ Run the server-side app (from `weacast/packages/api` root project folder), this 
 
 Then point your browser to [localhost:8081](http://localhost:8081).
 
-#### Running test
+### Running test
 
 Run the server-side tests (from `weacast` root project folder): `$ npm run test`
 This will lint and fix issues in the code according to [JS standard](https://github.com/feross/standard), then execute tests using [Mocha](https://mochajs.org/) and compute code coverage using [c8](https://github.com/bcoe/c8).
 
-#### Debug
+### Debug
 
 Use [Chrome DevTools](https://medium.com/@paul_irish/debugging-node-js-nightlies-with-chrome-devtools-7c4a1b95ae27).
 
-#### Testing Docker images
+### Testing Docker images
 
 Because Weacast API and demo application are also released as Docker images, you can build it manually like this in development mode (i.e. with all modules linked to their `master` branch version):
 
@@ -158,7 +158,7 @@ This requires you to have a DockerHub account and be a team member of the Weacas
 
 Weacast plugins are [Feathers plugins](https://docs.feathersjs.com/guides/advanced/creating-a-plugin.html), so you will find most of the required information in the linked Feathers documentation. 
 
-#### Running tests
+### Running tests
 
 To run the module tests including linting and coverage : `$ npm run test`
 

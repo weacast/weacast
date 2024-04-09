@@ -46,7 +46,7 @@ docker-compose down
 docker-compose down -v
 ```
 
-#### Domain binding
+### Domain binding
 
 In production you can use [nginx-proxy](https://github.com/jwilder/nginx-proxy) to map the domain to the web app. Using `docker-compose` this requires to connect the Weacast network to the [reverse proxy](https://github.com/jwilder/nginx-proxy#multiple-networks) first.
 
@@ -59,7 +59,7 @@ docker-compose up -d
 
 As stated in the documentation of the reverse proxy you app container should define the `VIRTUAL_HOST` and `VIRTUAL_PORT` environment variables with your domain and the port your application is running on. You can have a look to our [docker compose file](https://github.com/weacast/weacast/blob/master/docker-compose.yml) as an example.
 
-#### Using data loaders
+### Using data loaders
 
 The demo app can either work as a monolithic application using local [forecast model plugins](../api/plugin.md) (default mode) or with independent [data download services](../api/loader.md) available as Docker containers, for more details see the [architecture section](../architecture/global-architecture.md). To deploy the local loaders set the `LOADERS` environment variable to a comma-separated list of plugins you'd like to use like `arpege,gfs`. Otherwise to deploy the download services use the additional [docker compose file](https://github.com/weacast/weacast/blob/master/docker-compose.loader.yml):
 
