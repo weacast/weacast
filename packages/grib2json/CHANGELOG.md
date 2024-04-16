@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.7](https://github.com/weacast/weacast/compare/v2.1.6...v2.1.7) (2024-04-16)
+
+**Note:** Version bump only for package @weacast/grib2json
+
+
+
+
+
 ## [2.1.5](https://github.com/weacast/weacast/compare/v2.1.4...v2.1.5) (2023-05-23)
 
 **Note:** Version bump only for package @weacast/grib2json

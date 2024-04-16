@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.7](https://github.com/weacast/weacast/compare/v2.1.6...v2.1.7) (2024-04-16)
+
+
+### Reverts
+
+* Revert "deps: updated geo-pixel-stream" ([39ca35d](https://github.com/weacast/weacast/commit/39ca35d33191c7f86a306a0abec19acf69236674))
+
+
+
+
+
 ## [2.1.6](https://github.com/weacast/weacast/compare/v2.1.5...v2.1.6) (2023-05-30)
 
 **Note:** Version bump only for package @weacast/gtiff2json
