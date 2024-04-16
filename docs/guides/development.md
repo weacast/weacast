@@ -216,4 +216,4 @@ docker push weacast/weacast:version_tag
 This requires you to have a DockerHub account and be a team member of the Weacast organization, if you'd like to become a maintainer please tell us
 :::
 
-**However, our Travis CI should build the images for you as you push the tag of the release**
+**However, our GitHub CI should build the images for you as you push the tag of the release**
