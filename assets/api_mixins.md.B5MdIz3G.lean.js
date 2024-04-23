@@ -1,0 +1,1 @@
+import{_ as s,c as a,o as i,ak as e}from"./chunks/framework.B3JW-Vb0.js";const d=JSON.parse('{"title":"Mixins","description":"","frontmatter":{},"headers":[],"relativePath":"api/mixins.md","filePath":"api/mixins.md"}'),n={name:"api/mixins.md"},t=e("",9),l=[t];function r(p,h,k,o,E,c){return i(),a("div",null,l)}const y=s(n,[["render",r]]);export{d as __pageData,y as default};

@@ -1,0 +1,1 @@
+import{_ as e,c as a,o,ak as r}from"./chunks/framework.B3JW-Vb0.js";const k=JSON.parse('{"title":"Hooks","description":"","frontmatter":{},"headers":[],"relativePath":"api/hooks.md","filePath":"api/hooks.md"}'),t={name:"api/hooks.md"},s=r("",31),h=[s];function l(i,n,c,m,d,p){return o(),a("div",null,h)}const b=e(t,[["render",l]]);export{k as __pageData,b as default};

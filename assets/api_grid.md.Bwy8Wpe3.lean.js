@@ -1,0 +1,1 @@
+import{_ as i,c as a,o as s,ak as e}from"./chunks/framework.B3JW-Vb0.js";const c=JSON.parse('{"title":"Grid","description":"","frontmatter":{},"headers":[],"relativePath":"api/grid.md","filePath":"api/grid.md"}'),t={name:"api/grid.md"},n=e("",14),r=[n];function l(o,h,d,p,g,k){return s(),a("div",null,r)}const E=i(t,[["render",l]]);export{c as __pageData,E as default};
