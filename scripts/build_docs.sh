@@ -34,4 +34,3 @@ done
 ##
 
 build_docs "$ROOT_DIR" "weacast/weacast" "$PUBLISH"
-
