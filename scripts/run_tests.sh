@@ -45,12 +45,4 @@ done
 ## Run tests
 ##
 
-send_coverage_to_cc() {
-    local CC_TEST_REPORTER_ID=$1
-    echo "$(pwd)"
-    ls -alh
-    ~/.local/bin/cc-test-reporter format-coverage -t lcov coverage/lcov.info
-    ~/.local/bin/cc-test-reporter upload-coverage -r "$CC_TEST_REPORTER_ID"
-}
-
 run_lib_tests "$ROOT_DIR" "$CODE_COVERAGE" "$NODE_VER" "$MONGO_VER"
