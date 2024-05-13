@@ -1,7 +1,7 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs-extra'
-import mubsub from 'mubsub'
+import mubsub from 'mubsub-es'
 import _ from 'lodash'
 import makeDebug from 'debug'
 
