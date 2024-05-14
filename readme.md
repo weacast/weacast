@@ -1,7 +1,7 @@
 # Weacast
 
 [![Latest Release](https://img.shields.io/github/v/tag/weacast/weacast?sort=semver&label=latest)](https://github.com/weacast/weacast/releases)
-[![Build Status](https://github.com/kalisio/kfs/actions/workflows/main.yaml/badge.svg)](https://github.com/kalisio/kfs/actions/workflows/main.yaml)
+[![Build Status](https://github.com/weacast/weacast/actions/workflows/main.yaml/badge.svg)](https://github.com/weacast/weacast/actions/workflows/main.yaml)
 [![Code Climate](https://codeclimate.com/github/weacast/weacast/badges/gpa.svg)](https://codeclimate.com/github/weacast/weacast)
 [![Test Coverage](https://codeclimate.com/github/weacast/weacast/badges/coverage.svg)](https://codeclimate.com/github/weacast/weacast/coverage)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast/)
