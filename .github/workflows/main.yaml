@@ -1,4 +1,4 @@
-name: CI
+name: ci
 on: [ push, workflow_dispatch ]
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
         run: bash ./scripts/init_runner.sh ${{ github.job }}
       - name: Setup workspace
         env:
-          GITHUB_DEVELOPMENT_PAT: ${{ secrets.GH_DEVELOPMENT_PAT }}
+          GITHUB_DEVELOPMENT_TOKEN: ${{ secrets.GH_DEVELOPMENT_PAT }}
         run: bash ./scripts/setup_workspace.sh
       - name: Run tests
         env:
@@ -31,7 +31,7 @@ jobs:
         exclude:
           - node: 16
             mongo: 4
-    name: Additional tests (node ${{ matrix.node }}, mongo ${{ matrix.mongo }})
+    name: Additional tests
     if: ${{ contains(github.event.head_commit.message, 'additional tests') }}
     runs-on: ubuntu-22.04
     steps:
@@ -43,7 +43,7 @@ jobs:
         run: bash ./scripts/init_runner.sh ${{ github.job }}
       - name: Setup workspace
         env:
-          GITHUB_DEVELOPMENT_PAT: ${{ secrets.GH_DEVELOPMENT_PAT }}
+          GITHUB_DEVELOPMENT_TOKEN: ${{ secrets.GH_DEVELOPMENT_PAT }}
         run: bash ./scripts/setup_workspace.sh -n ${{ matrix.node }}
       - name: Run tests
         env:
@@ -63,7 +63,7 @@ jobs:
         run: bash ./scripts/init_runner.sh ${{ github.job }}
       - name: Setup workspace
         env:
-          GITHUB_DEVELOPMENT_PAT: ${{ secrets.GH_DEVELOPMENT_PAT }}
+          GITHUB_DEVELOPMENT_TOKEN: ${{ secrets.GH_DEVELOPMENT_PAT }}
         run: bash ./scripts/setup_workspace.sh
       - name: Build app
         env:
@@ -72,7 +72,7 @@ jobs:
 
   build_docs:
     name: Build docs
-    if: ${{ contains(github.event.head_commit.message, 'build doc') }}
+    if: ${{ startsWith(github.event.head_commit.message, 'docs:') }}
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repo
@@ -83,7 +83,7 @@ jobs:
         run: bash ./scripts/init_runner.sh ${{ github.job }}
       - name: Setup workspace
         env:
-          GITHUB_DEVELOPMENT_PAT: ${{ secrets.GH_DEVELOPMENT_PAT }}
+          GITHUB_DEVELOPMENT_TOKEN: ${{ secrets.GH_DEVELOPMENT_PAT }}
         run: bash ./scripts/setup_workspace.sh
       - name: Build docs
         env:
