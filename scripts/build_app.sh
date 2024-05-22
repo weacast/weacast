@@ -38,12 +38,6 @@ APP=$(get_lib_name)
 VERSION=$(get_lib_version)
 GIT_TAG=$(get_lib_tag)
 
-if [[ -z "$GIT_TAG" ]]; then
-    echo "About to build ${APP} development version..."
-else
-    echo "About to build ${APP} v${VERSION}..."
-fi
-
 load_env_files "$WORKSPACE_DIR/development/common/kalisio_dockerhub.enc.env"
 load_value_files "$WORKSPACE_DIR/development/common/KALISIO_DOCKERHUB_PASSWORD.enc.value"
 
