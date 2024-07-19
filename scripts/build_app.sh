@@ -12,10 +12,20 @@ WORKSPACE_DIR="$(dirname "$ROOT_DIR")"
 ## Parse options
 ##
 
+DEFAULT_NODE_VER=20
+DEFAULT_DEBIAN_VER=bookworm
+NODE_VER=$DEFAULT_NODE_VER
+DEBIAN_VER=$DEFAULT_DEBIAN_VER
 PUBLISH=false
 CI_STEP_NAME="Build app"
-while getopts "pr:" option; do
+while getopts "d:n:pr:" option; do
     case $option in
+        d) # defines debian version
+            DEBIAN_VER=$OPTARG
+            ;;
+        n) # defines node version
+            NODE_VER=$OPTARG
+             ;;
         p) # publish app
             PUBLISH=true
             ;;
@@ -46,23 +56,31 @@ load_value_files "$WORKSPACE_DIR/development/common/KALISIO_DOCKERHUB_PASSWORD.e
 
 IMAGE_NAME="$KALISIO_DOCKERHUB_URL/weacast/weacast-api"
 if [[ -z "$GIT_TAG" ]]; then
-    IMAGE_TAG=dev
+    IMAGE_SHORT_TAG=dev
     DOCKERFILE=dockerfile.dev
 else
-    IMAGE_TAG=$VERSION
+    IMAGE_SHORT_TAG=$VERSION
     DOCKERFILE=dockerfile
 fi
+
+IMAGE_TAG="$IMAGE_SHORT_TAG-node$NODE_VER-$DEBIAN_VER"
 
 begin_group "Building container $IMAGE_NAME:$IMAGE_TAG ..."
 
 docker login --username "$KALISIO_DOCKERHUB_USERNAME" --password-stdin "$KALISIO_DOCKERHUB_URL" < "$KALISIO_DOCKERHUB_PASSWORD"
 # DOCKER_BUILDKIT is here to be able to use Dockerfile specific dockerginore (app.Dockerfile.dockerignore)
 DOCKER_BUILDKIT=1 docker build -f "$ROOT_DIR/packages/api/$DOCKERFILE" \
+    --build-arg NODE_VERSION="$NODE_VER" \
+    --build-arg DEBIAN_VERSION="$DEBIAN_VER" \
     -t "$IMAGE_NAME:$IMAGE_TAG" \
     "$ROOT_DIR/packages/api"
 
 if [ "$PUBLISH" = true ]; then
     docker push "$IMAGE_NAME:$IMAGE_TAG"
+    if [ "$NODE_VER" = "$DEFAULT_NODE_VER" ] && [ "$DEBIAN_VER" = "$DEFAULT_DEBIAN_VER" ]; then
+        docker tag "$IMAGE_NAME:$IMAGE_TAG" "$IMAGE_NAME:$IMAGE_SHORT_TAG"
+        docker push "$IMAGE_NAME:$IMAGE_SHORT_TAG"
+    fi
 fi
 
 docker logout "$KALISIO_DOCKERHUB_URL"
