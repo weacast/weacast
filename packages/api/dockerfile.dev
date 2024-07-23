@@ -1,4 +1,6 @@
-FROM  node:16-bookworm AS Build
+ARG DEBIAN_VERSION=bookworm
+ARG NODE_VERSION=20
+FROM node:${NODE_VERSION}-${DEBIAN_VERSION} AS Build
 
 WORKDIR /opt/kalisio
 
@@ -8,7 +10,7 @@ WORKDIR /opt/weacast
 
 RUN git clone https://github.com/weacast/weacast.git -b master --single-branch && cd weacast && yarn install && cd ..
 
-FROM  node:16-bookworm-slim
+FROM node:${NODE_VERSION}-${DEBIAN_VERSION}-slim
 
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
 

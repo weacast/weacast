@@ -1,11 +1,13 @@
-FROM  node:16-bookworm AS Build
+ARG DEBIAN_VERSION=bookworm
+ARG NODE_VERSION=20
+FROM node:${NODE_VERSION}-${DEBIAN_VERSION} AS Build
 
 WORKDIR /opt/weacast-api
 COPY . /opt/weacast-api
 
 RUN yarn install
 
-FROM  node:16-bookworm-slim
+FROM node:${NODE_VERSION}-${DEBIAN_VERSION}-slim
 
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
 
