@@ -12,8 +12,8 @@ WORKSPACE_DIR="$(dirname "$ROOT_DIR")"
 ## Parse options
 ##
 
-NODE_VER=16
-MONGO_VER=4
+NODE_VER=20
+MONGO_VER=7
 CI_STEP_NAME="Run tests"
 CODE_COVERAGE=false
 while getopts "m:n:cr:" option; do
