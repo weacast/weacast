@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/weacast/weacast/compare/v2.1.7...v2.2.0) (2024-09-03)
+
+
+### Features
+
+* Upgrade NodeJS to v20 and MongoDB to v7 ([#76](https://github.com/weacast/weacast/issues/76)/[#77](https://github.com/weacast/weacast/issues/77)) [additional tests] ([8990de1](https://github.com/weacast/weacast/commit/8990de121b06f0d01b3299f92168f458330993f6))
+
+
+
+
+
 ## [2.1.7](https://github.com/weacast/weacast/compare/v2.1.6...v2.1.7) (2024-04-16)
 
 **Note:** Version bump only for package @weacast/arome

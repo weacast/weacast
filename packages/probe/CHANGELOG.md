@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/weacast/weacast/compare/v2.1.7...v2.2.0) (2024-09-03)
+
+
+### Features
+
+* Replace or update mubsub (closes [#9](https://github.com/weacast/weacast/issues/9)) ([f2f3876](https://github.com/weacast/weacast/commit/f2f3876d1e13ae6ae52262867a6b7f959adff82c))
+
+
+
+
+
 ## [2.1.7](https://github.com/weacast/weacast/compare/v2.1.6...v2.1.7) (2024-04-16)
 
 **Note:** Version bump only for package @weacast/probe
