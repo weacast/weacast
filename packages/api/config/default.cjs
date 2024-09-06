@@ -55,7 +55,7 @@ module.exports = {
   pluginPath: path.join(__dirname, '..', 'src', 'plugin.js'),
   distribution: {
     // Distribute every service except those related to authentication
-    services: (service) => !service.path.endsWith('users') && !service.path.endsWith('authentication'),
+    services: (service) => !service.path.endsWith('users') && !service.path.endsWith('authentication') && !service.path.endsWith(':provider'),
     // We only produce services we don't consume any
     remoteServices: (service) => false,
     // When called internally from remote service do not authenticate,
