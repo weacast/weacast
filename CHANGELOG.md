@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.2](https://github.com/weacast/weacast/compare/v2.2.1...v2.2.2) (2024-09-06)
+
+
+### Bug Fixes
+
+* OAuth callback service is distributed while authentication related services should not (closes [#78](https://github.com/weacast/weacast/issues/78)) ([e784362](https://github.com/weacast/weacast/commit/e784362a638ededc5fff2b3ed4d3a12aeab163e1))
+
+
+
+
+
 ## [2.2.1](https://github.com/weacast/weacast/compare/v2.2.0...v2.2.1) (2024-09-06)
 
 

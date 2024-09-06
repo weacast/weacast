@@ -1,7 +1,7 @@
 {
   "name": "@weacast/api",
   "description": "Weacast Microservice",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "homepage": "https://github.com/weacast/weacast",
   "main": "src/main.js",
   "bin": "src/main.js",
