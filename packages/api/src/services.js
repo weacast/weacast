@@ -1,5 +1,7 @@
 import path from 'path'
+import _ from 'lodash'
 import { fileURLToPath } from 'url'
+import errors from '@feathersjs/errors'
 import core, { initializeElements } from '@weacast/core'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -9,12 +11,38 @@ const servicePath = path.join(__dirname, 'services')
 export default async function () {
   const app = this
   const authConfig = app.get('authentication')
+  const servicesConfig = app.get('services')
+  const healthcheckInterval = _.get(servicesConfig, 'healthcheckInterval', 30) * 1000
+  let lastError, checkRunning, checkCount
+  // Check the whole chain from DB to services on a regular basis.
+  async function checkServices () {
+    const forecastsService = app.getService('forecasts')
+    try {
+      if (!forecastsService) throw new errors.GeneralError('Services check failed as forecasts service is not available')
+      const forecasts = await forecastsService.find({ query: {}, paginate: false })
+      const forecast = _.get(forecasts, '[0]', {})
+      const element = _.get(forecast, 'elements[0]', {})
+      const elementService = app.getService(`${forecast.name}/${element.name}`)
+      if (!elementService) throw new errors.GeneralError('Services check failed as element service is not available')
+      // Run a quick request to check for some item
+      await elementService.find({ query: { $limit: 1 } })
+      lastError = null
+    } catch (error) {
+      lastError = error
+    }
+  }
   // Setup app services
   try {
-    // Healthcheck
-    app.get(app.get('apiPath') + '/healthcheck', (req, res) => {
+    // We monitor the whole chain from DB to services on a regular basis (30s by default).
+    // This cannot be directly done inside the healthcheck endpoint as any
+    // error will be catched by the unhandledRejection event instead.
+    setInterval(checkServices, healthcheckInterval)
+    // Healthcheck endpoint
+    app.get(app.get('apiPath') + '/healthcheck', async (req, res) => {
       res.set('Content-Type', 'application/json')
-      return res.status(200).json({ isRunning: true })
+      return (lastError ?
+        res.status(500).json({ isRunning: true, areServicesRunning: false, error: lastError }) :
+        res.status(200).json({ isRunning: true, areServicesRunning: true }))
     })
     if (authConfig) await app.createService('users', modelPath, servicePath)
     await app.configure(core)

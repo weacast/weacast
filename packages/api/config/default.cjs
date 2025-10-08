@@ -146,7 +146,8 @@ module.exports = {
     // Different apps might use different forecasts but target the same element database
     // forecasts: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) },
     elements: { dbName: (process.env.DATA_DB_URL ? 'data' : undefined) },
-    'probe-results': { ttl: 6 * 3600 }
+    'probe-results': { ttl: 6 * 3600 },
+    healthcheckInterval: 30 // Every 30s
   },
   loaders,
   plugins,

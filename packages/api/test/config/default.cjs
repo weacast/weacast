@@ -10,5 +10,6 @@ const config = require(path.join(__dirname, '../../config/default.cjs'))
 config.logs.DailyRotateFile.dirname = path.join(__dirname, '..', 'logs')
 config.db.url = config.db.url.replace('weacast', 'weacast-test')
 delete config.authentication.defaultUsers
+config.services.healthcheckInterval = 2
 
 module.exports = config
