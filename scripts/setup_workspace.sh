@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-set -x
+# set -x
 
 THIS_FILE=$(readlink -f "${BASH_SOURCE[0]}")
 THIS_DIR=$(dirname "$THIS_FILE")
