@@ -20,15 +20,14 @@ while getopts "pr:" OPT; do
             PUBLISH=true
             ;;
         r) # report outcome to slack
-            load_env_files "$WORKSPACE_DIR/development/common/SLACK_WEBHOOK_SERVICES.enc.env"
             CI_STEP_NAME=$OPTARG
+            load_env_files "$WORKSPACE_DIR/development/common/SLACK_WEBHOOK_SERVICES.enc.env"
             trap 'slack_ci_report "$ROOT_DIR" "$CI_STEP_NAME" "$?" "$SLACK_WEBHOOK_SERVICES"' EXIT
             ;;
         *)
             ;;
     esac
 done
-
 
 ## Build docs
 ##
