@@ -71,7 +71,6 @@ export default {
     }
     // Setup request with URL, token, subset parameters for WCS
     const queryParameters = {
-      apikey: this.forecast.token,
       REQUEST: 'GetCoverage',
       coverageid: this.element.coverageid + '___' + runTime.format() + suffix,
       subset: []
@@ -85,7 +84,10 @@ export default {
     return {
       url: this.forecast.wcsBaseUrl,
       qs: queryParameters,
-      qsStringifyOptions: { arrayFormat: 'repeat' }
+      qsStringifyOptions: { arrayFormat: 'repeat' },
+      headers: {
+        apikey: this.forecast.token
+      }
     }
   }
 }
