@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/weacast/weacast/compare/v2.2.2...v2.3.0) (2025-10-10)
+
+
+### Bug Fixes
+
+* Make healthcheck aware of database connection errors (closes [#81](https://github.com/weacast/weacast/issues/81)) ([32e5f11](https://github.com/weacast/weacast/commit/32e5f11ca08d087cfbf472628a7dffca4eca61d3))
+* removed code climate reporting to make tests run ([8fb0a51](https://github.com/weacast/weacast/commit/8fb0a51a31be581af9445e26a78a20e425b0ff8e))
+
+
+### Features
+
+* Move from query parameter to header for Météo France token (closes [#82](https://github.com/weacast/weacast/issues/82)) ([a50d6f3](https://github.com/weacast/weacast/commit/a50d6f35b8eac9d23e5cbb842d84f3dc696d5bea))
+
+
+### Reverts
+
+* Revert "chore: tried to fix CI" ([d815ccf](https://github.com/weacast/weacast/commit/d815ccf0177c7ab08e468982cdcf1f1f2423c073))
+
+
+
+
+
 ## [2.2.2](https://github.com/weacast/weacast/compare/v2.2.1...v2.2.2) (2024-09-06)
 
 

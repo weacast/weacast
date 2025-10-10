@@ -1,6 +1,6 @@
 {
   "name": "@weacast/grib2json",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Converts GRIB V2 files to JSON array",
   "main": "index.js",
   "bin": "bin.js",
