@@ -8,6 +8,11 @@ on:
         default: false
         required: false
         type: boolean
+      additional_tests:
+        description: "Additional tests"
+        default: false
+        required: false
+        type: boolean
       build_app:
         description: "Build app"
         default: false
@@ -42,15 +47,14 @@ jobs:
       - name: Run tests
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
-        #run: bash ./scripts/run_tests.sh -c -r ${{ github.job }}
-        run: bash ./scripts/run_tests.sh -r ${{ github.job }}
+        run: bash ./scripts/run_tests.sh -s -r ${{ github.job }}
 
   additional_tests:
     strategy:
       fail-fast: false
       matrix:
-        node: [ 18, 22 ]
-        mongo: [ 5, 6, 7 ]
+        node: [ 20, 22 ]
+        mongo: [ 7, 8 ]
         exclude:
           - node: 20
             mongo: 7
