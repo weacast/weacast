@@ -2,6 +2,7 @@
 
 [![Latest Release](https://img.shields.io/github/v/tag/weacast/weacast?sort=semver&label=latest)](https://github.com/weacast/weacast/releases)
 [![Build Status](https://github.com/weacast/weacast/actions/workflows/main.yaml/badge.svg)](https://github.com/weacast/weacast/actions/workflows/main.yaml)
+[![Quality Gate Status](https://sonar.portal.kalisio.com/api/project_badges/measure?project=kalisio-weacast&metric=alert_status&token=sqb_85e62a60b77ed3349b33366a595c8386063f28b8)](https://sonar.portal.kalisio.com/dashboard?id=kalisio-weacast)
 [![Maintainability Issues](https://sonar.portal.kalisio.com/api/project_badges/measure?project=kalisio-weacast&metric=software_quality_maintainability_issues&token=sqb_85e62a60b77ed3349b33366a595c8386063f28b8)](https://sonar.portal.kalisio.com/dashboard?id=kalisio-weacast)
 [![Coverage](https://sonar.portal.kalisio.com/api/project_badges/measure?project=kalisio-weacast&metric=coverage&token=sqb_85e62a60b77ed3349b33366a595c8386063f28b8)](https://sonar.portal.kalisio.com/dashboard?id=kalisio-weacast)
 [![Documentation](https://img.shields.io/badge/documentation-available-brightgreen.svg)](https://weacast.github.io/weacast/)
