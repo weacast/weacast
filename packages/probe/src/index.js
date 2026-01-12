@@ -42,7 +42,9 @@ export default async function init () {
     const defaultElementFilter = (forecast) => forecast.elements.map(element => element.name)
     const probes = await probesService.find({ paginate: false, query: { $select: ['_id', 'name', 'forecast'] } })
     for (const defaultProbe of defaultProbes) {
-      const probeName = path.parse(defaultProbe.fileName).name
+      const probeName = defaultProbe.fileName 
+        ? path.parse(defaultProbe.fileName).name 
+        : path.parse(new URL(defaultProbe.url).pathname).name;
       for (const forecast of app.get('forecasts')) {
         const createdProbe = probes.find(probe => (probe.name === probeName) && (probe.forecast === forecast.name))
         if (!createdProbe) {
