@@ -48,20 +48,28 @@ export default async function init () {
         if (!createdProbe) {
           // One probe for each forecast model and elements except if custom filter provided
           const elementFilter = defaultProbe.filter || defaultElementFilter
-          app.logger.info('Initializing default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name)
           const options = Object.assign({
             name: probeName,
             forecast: forecast.name,
             elements: elementFilter(forecast)
           }, defaultProbe.options)
+          app.logger.info('Initializing default probe for forecast model ' + forecast.name)
+          let geojson;
+          if (defaultProbe.url) {
+            const response = await fetch(defaultProbe.url);
+            geojson = await response.json();
+            app.logger.info('Initializing default probe ' + geojson.name + ' for forecast model ' + forecast.name)
+          } else {
+            geojson = fs.readJsonSync(defaultProbe.fileName);
+          }
+
           if (options.elements.length > 0) {
-            const geojson = fs.readJsonSync(defaultProbe.fileName)
             Object.assign(geojson, options)
             const probe = await probesService.create(geojson)
-            app.logger.info('Initialized default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name)
+            app.logger.info('Initialized default probe for forecast model ' + forecast.name)
             probes.push(probe)
           } else {
-            app.logger.info('Skipping default probe ' + defaultProbe.fileName + ' for forecast model ' + forecast.name + ' (no target elements)')
+            app.logger.info('Skipping default probe for forecast model ' + forecast.name + ' (no target elements)')
           }
         }
       }
