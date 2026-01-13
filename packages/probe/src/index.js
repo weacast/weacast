@@ -44,7 +44,7 @@ export default async function init () {
     for (const defaultProbe of defaultProbes) {
       const probeName = defaultProbe.fileName 
         ? path.parse(defaultProbe.fileName).name 
-        : path.parse(new URL(defaultProbe.url).pathname).name;
+        : path.parse(new URL(defaultProbe.url).pathname).name
       for (const forecast of app.get('forecasts')) {
         const createdProbe = probes.find(probe => (probe.name === probeName) && (probe.forecast === forecast.name))
         if (!createdProbe) {
@@ -56,13 +56,13 @@ export default async function init () {
             elements: elementFilter(forecast)
           }, defaultProbe.options)
           app.logger.info('Initializing default probe for forecast model ' + forecast.name)
-          let geojson;
+          let geojson
           if (defaultProbe.url) {
-            const response = await fetch(defaultProbe.url);
-            geojson = await response.json();
+            const response = await fetch(defaultProbe.url)
+            geojson = await response.json()
             app.logger.info('Initializing default probe ' + geojson.name + ' for forecast model ' + forecast.name)
           } else {
-            geojson = fs.readJsonSync(defaultProbe.fileName);
+            geojson = fs.readJsonSync(defaultProbe.fileName)
           }
 
           if (options.elements.length > 0) {
