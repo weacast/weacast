@@ -42,9 +42,13 @@ export default async function init () {
     const defaultElementFilter = (forecast) => forecast.elements.map(element => element.name)
     const probes = await probesService.find({ paginate: false, query: { $select: ['_id', 'name', 'forecast'] } })
     for (const defaultProbe of defaultProbes) {
-      const probeName = defaultProbe.fileName 
-        ? path.parse(defaultProbe.fileName).name 
-        : path.parse(new URL(defaultProbe.url).pathname).name
+      let probeName;
+      if (defaultProbe.name) {
+        probeName = defaultProbe.name
+      } else if (defaultProbe.fileName) {
+        probeName = path.parse(defaultProbe.fileName).name
+      }
+
       for (const forecast of app.get('forecasts')) {
         const createdProbe = probes.find(probe => (probe.name === probeName) && (probe.forecast === forecast.name))
         if (!createdProbe) {
@@ -55,12 +59,11 @@ export default async function init () {
             forecast: forecast.name,
             elements: elementFilter(forecast)
           }, defaultProbe.options)
-          app.logger.info('Initializing default probe for forecast model ' + forecast.name)
+          app.logger.info('Initializing default probe ' + probeName + ' for forecast model ' + forecast.name)
           let geojson
           if (defaultProbe.url) {
             const response = await fetch(defaultProbe.url)
             geojson = await response.json()
-            app.logger.info('Initializing default probe ' + geojson.name + ' for forecast model ' + forecast.name)
           } else {
             geojson = fs.readJsonSync(defaultProbe.fileName)
           }
@@ -68,10 +71,10 @@ export default async function init () {
           if (options.elements.length > 0) {
             Object.assign(geojson, options)
             const probe = await probesService.create(geojson)
-            app.logger.info('Initialized default probe for forecast model ' + forecast.name)
+            app.logger.info('Initialized default probe ' + probeName + ' for forecast model ' + forecast.name)
             probes.push(probe)
           } else {
-            app.logger.info('Skipping default probe for forecast model ' + forecast.name + ' (no target elements)')
+            app.logger.info('Skipping default probe ' + probeName + ' for forecast model ' + forecast.name + ' (no target elements)')
           }
         }
       }
