@@ -42,11 +42,15 @@ export default async function init () {
     const defaultElementFilter = (forecast) => forecast.elements.map(element => element.name)
     const probes = await probesService.find({ paginate: false, query: { $select: ['_id', 'name', 'forecast'] } })
     for (const defaultProbe of defaultProbes) {
-      let probeName;
-      if (defaultProbe.name) {
-        probeName = defaultProbe.name
-      } else if (defaultProbe.fileName) {
-        probeName = path.parse(defaultProbe.fileName).name
+      // Use provided name if available
+      let probeName = defaultProbe.name
+      if (!probeName) {
+        // Otherwise try deduce a useful name
+        if (defaultProbe.fileName) {
+          probeName = path.parse(defaultProbe.fileName).name
+        } else if (defaultProbe.url) {
+          probeName = path.parse(new URL(defaultProbe.url).pathname).name
+        }
       }
 
       for (const forecast of app.get('forecasts')) {
