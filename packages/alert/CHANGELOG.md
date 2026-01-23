@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1](https://github.com/weacast/weacast/compare/v2.3.0...v2.3.1) (2026-01-23)
+
+
+### Bug Fixes
+
+* comment test to validate CI and implement SonarQube ([60725da](https://github.com/weacast/weacast/commit/60725dac5a5acaa09e24b32af93b876180c3cc1b))
+* improve code sources and coverage for SonarQube ([5785b6a](https://github.com/weacast/weacast/commit/5785b6ad59e09aff1da59473edbf408ad19e9d31))
+* restore commented tests ([9fbbb68](https://github.com/weacast/weacast/commit/9fbbb68eabb28e3d287dfc1e4fb04c1a3404358f))
+
+
+
+
+
 # [2.3.0](https://github.com/weacast/weacast/compare/v2.2.2...v2.3.0) (2025-10-10)
 
 **Note:** Version bump only for package @weacast/alert
