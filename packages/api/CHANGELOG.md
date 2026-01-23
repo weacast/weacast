@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.2](https://github.com/weacast/weacast/compare/v2.3.1...v2.3.2) (2026-01-23)
+
+
+### Bug Fixes
+
+* override config package version. ([311331c](https://github.com/weacast/weacast/commit/311331c094fe452e142a90216f61da1c3bf34ed4))
+
+
+
+
+
 ## [2.3.1](https://github.com/weacast/weacast/compare/v2.3.0...v2.3.1) (2026-01-23)
 
 
