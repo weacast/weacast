@@ -38,7 +38,7 @@ describe('weacast-core:elements', () => {
   async function cleanup () {
     for (let i = 0; i < services.length; i++) {
       const service = services[i]
-      await service.Model.deleteMany({})
+      await service.options.Model.deleteMany({})
       // GridFS collections
       if (service.element.dataStore === 'gridfs') {
         await app.db.collection(service.forecast.name + '/' + service.element.name + '.chunks', 'elements').deleteMany({})
@@ -112,7 +112,7 @@ describe('weacast-core:elements', () => {
     const findPromises = []
     services.forEach(service => {
       findPromises.push(
-        service.find()
+        service.find({ query: {} })
           .then(response => {
             expect(response.data.length).to.equal(nbSteps)
             // Ensure correct data filtering
@@ -316,7 +316,7 @@ describe('weacast-core:elements', () => {
 
   // Cleanup
   after(async () => {
-    await app.getService('forecasts').Model.drop()
+    await app.getService('forecasts').options.Model.drop()
     await cleanup()
   })
 })

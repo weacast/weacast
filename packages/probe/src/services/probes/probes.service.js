@@ -140,7 +140,7 @@ export default {
     }
     // Run DB updates
     try {
-      const response = await resultService.Model.bulkWrite(operations)
+      const response = await resultService.options.Model.bulkWrite(operations)
 
       this.app.logger.verbose(`Produced ${response.upsertedCount + response.modifiedCount} results (${response.upsertedCount} creates - ${response.modifiedCount} updates)
         for probe ${probe._id} on element ${elementService.forecast.name + '/' + elementService.element.name}

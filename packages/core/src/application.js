@@ -67,8 +67,8 @@ async function configureService (name, service, servicesPath) {
 }
 
 export async function createService (name, app, modelsPath, servicesPath, options) {
-  const feathersServiceModule = await import('feathers-' + app.db.adapter)
-  const createFeathersService = feathersServiceModule.default
+  const feathersServiceModule = await import('@feathersjs/' + app.db.adapter)
+  const createFeathersService = app.db.adapter === 'mongodb' ? feathersServiceModule.MongoDBService : feathersServiceModule.default
   const modelModule = await import(pathToFileURL(path.join(modelsPath, name + '.model.' + app.db.adapter + '.js')))
   const configureModel = modelModule.default
 
@@ -76,13 +76,14 @@ export async function createService (name, app, modelsPath, servicesPath, option
   const serviceOptions = Object.assign({
     name: name,
     paginate,
-    whitelist: ['$exists']
+    multi: true,
+    operators: ['$exists', '$near', '$geometry', '$maxDistance']
   }, options || {})
   if (serviceOptions.disabled) return undefined
   configureModel(app, serviceOptions)
 
   // Initialize our service with any options it requires
-  let service = createFeathersService(serviceOptions)
+  let service = new createFeathersService(serviceOptions)
   // Get our initialized service so that we can register hooks and filters
   service = declareService(name, app, service)
   // Register hooks and filters
@@ -109,8 +110,8 @@ export async function createService (name, app, modelsPath, servicesPath, option
 }
 
 export async function createElementService (forecast, element, app, servicesPath, options) {
-  const feathersServiceModule = await import('feathers-' + app.db.adapter)
-  const createFeathersService = feathersServiceModule.default
+  const feathersServiceModule = await import('@feathersjs/' + app.db.adapter)
+  const createFeathersService = app.db.adapter === 'mongodb' ? feathersServiceModule.MongoDBService : feathersServiceModule.default
   const modelModule = await import(pathToFileURL(path.join(__dirname, 'models', 'elements.model.' + app.db.adapter + '.js')))
   const configureModel = modelModule.default
   const serviceName = forecast.name + '/' + element.name
@@ -119,13 +120,15 @@ export async function createElementService (forecast, element, app, servicesPath
   const paginate = app.get('paginate')
   const serviceOptions = Object.assign({
     name: serviceName,
-    paginate
+    paginate,
+    multi: true,
+    operators: ['$exists', '$geoIntersects', '$geometry']
   }, options || {})
   if (serviceOptions.disabled) return undefined
   if (!isService) configureModel(forecast, element, app, serviceOptions)
 
   // Initialize our service with any options it requires
-  let service = (isService ? servicesPath : createFeathersService(serviceOptions))
+  let service = (isService ? servicesPath : new createFeathersService(serviceOptions))
   // Get our initialized service so that we can register hooks and filters
   service = declareService(serviceName, app, service)
   // Register hooks and filters

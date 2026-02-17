@@ -29,7 +29,7 @@ describe('weacast-gfs', () => {
 
   it('performs the element download process', () => {
     // Clear any previous data
-    service.Model.remove()
+    service.options.Model.deleteMany()
     fs.emptyDirSync(app.get('forecastPath'))
 
     return service.updateForecastData()
@@ -45,8 +45,8 @@ describe('weacast-gfs', () => {
 
   // Cleanup
   after(() => {
-    app.getService('forecasts').Model.drop()
-    service.Model.drop()
+    app.getService('forecasts').options.Model.drop()
+    service.options.Model.drop()
     fs.removeSync(app.get('forecastPath'))
   })
 })

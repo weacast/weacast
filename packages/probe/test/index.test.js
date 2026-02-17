@@ -30,7 +30,8 @@ describe('weacast-probe', () => {
       .then(_ => {
       // Disable TTL because we keep past forecast times so that the number of forecasts is predictable for tests
       // but otherwise MongoDB will remove them automatically
-        app.db._db.executeDbAdminCommand({ setParameter: 1, ttlMonitorEnabled: false })
+        // app.db._db.executeDbAdminCommand({ setParameter: 1, ttlMonitorEnabled: false })
+        app.db._db.admin().command({ setParameter: 1, ttlMonitorEnabled: false })
       })
   })
 
@@ -58,8 +59,8 @@ describe('weacast-probe', () => {
 
   it('performs element download process', async () => {
     // Clear any previous data
-    uService.Model.remove()
-    vService.Model.remove()
+    uService.options.Model.deleteMany()
+    vService.options.Model.deleteMany()
     fs.emptyDirSync(app.get('forecastPath'))
     // download both elements in parallel
     return Promise.all([
@@ -277,7 +278,7 @@ describe('weacast-probe', () => {
   })
 
   it('performs probing element on forecast update', (done) => {
-    uService.Model.drop()
+    uService.options.Model.drop()
       .then(_ => uService.updateForecastData())
     // We need to register to results update event to know when to proceed
     let updateCount = 0
@@ -437,13 +438,13 @@ describe('weacast-probe', () => {
 
   // Cleanup
   after(() => {
-    app.db._db.executeDbAdminCommand({ setParameter: 1, ttlMonitorEnabled: true })
-    app.getService('forecasts').Model.drop()
+    app.db._db.admin().command({ setParameter: 1, ttlMonitorEnabled: true })
+    app.getService('forecasts').options.Model.drop()
     probeService.removeAllListeners()
-    probeService.Model.drop()
-    probeResultService.Model.drop()
-    uService.Model.drop()
-    vService.Model.drop()
+    probeService.options.Model.drop()
+    probeResultService.options.Model.drop()
+    uService.options.Model.drop()
+    vService.options.Model.drop()
     fs.removeSync(app.get('forecastPath'))
   })
 })
