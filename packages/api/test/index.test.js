@@ -77,7 +77,7 @@ describe('weacast-api', () => {
     // Let enough time to process
     this.timeout(5000)
     // Already done in healthcheck test
-    //await server.app.db.db().dropDatabase()
+    // await server.app.db.db().dropDatabase()
     fs.emptyDirSync(path.join(__dirname, 'logs'))
     await server.app.db.disconnect()
   })
