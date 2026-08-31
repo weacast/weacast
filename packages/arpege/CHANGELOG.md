@@ -3,17 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.3.3](https://github.com/weacast/weacast/compare/v2.3.2...v2.3.3) (2026-08-31)
-
-
-### Bug Fixes
-
-* ARPEGE world 0.25° model data are shifted by 180° (closes [#85](https://github.com/weacast/weacast/issues/85)) ([0837dee](https://github.com/weacast/weacast/commit/0837dee0ffb263368cc8e42ea47e0bb0fc16ec6f))
-
-
-
-
-
 ## [2.3.1](https://github.com/weacast/weacast/compare/v2.3.0...v2.3.1) (2026-01-23)
 
 
