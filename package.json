@@ -3,7 +3,7 @@
   "scripts": {
     "install": "lerna bootstrap",
     "lint": "lerna run lint",
-    "publish": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > ~/.npmrc && lerna publish --force-publish; rm -f ~/.npmrc",
+    "publish": "lerna publish --force-publish",
     "test": "c8 lerna run test"
   },
   "devDependencies": {
