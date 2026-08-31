@@ -203,8 +203,8 @@ const arpege025 = {
   model: 'arpege',
   token: process.env.METEO_FRANCE_TOKEN,
   wcsBaseUrl: 'https://public-api.meteofrance.fr/public/arpege/1.0/wcs/MF-NWP-GLOBAL-ARPEGE-025-GLOBE-WCS/GetCoverage?SERVICE=WCS&version=2.0.1',
-  bounds: [0, -90, 360, 90],
-  origin: [0, 90],
+  bounds: [-180, -90, 180, 90],
+  origin: [-180, 90],
   size: [1440, 721],
   resolution: [0.25, 0.25],
   tileResolution: [10, 10],
@@ -215,9 +215,9 @@ const arpege025 = {
   lowerLimit: 0, // From T0
   upperLimit: 102 * 3600, // Up to T0+102
   updateInterval: 15 * 60, // Check for update every 15 minutes
-  elements: arpegeGroundElements.map(element => _.merge({ subsets: { long: [0, 360], lat: [-90, 90] } }, element))
+  elements: arpegeGroundElements.map(element => _.merge({ subsets: { long: [-180, 180], lat: [-90, 90] } }, element))
 }
-const arpege025IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ subsets: { long: [0, 360], lat: [-90, 90] } }, element))
+const arpege025IsobaricElements = arpegeIsobaricElements.map(element => _.merge({ subsets: { long: [-180, 180], lat: [-90, 90] } }, element))
 
 const arpege01 = {
   name: 'arpege-europe',
