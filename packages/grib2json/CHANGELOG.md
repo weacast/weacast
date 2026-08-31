@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.3](https://github.com/weacast/weacast/compare/v2.3.2...v2.3.3) (2026-08-31)
+
+
+### Reverts
+
+* Revert "chore(release): publish v2.3.3" ([26dca23](https://github.com/weacast/weacast/commit/26dca231851bbf4c670af09b4977ee80d11aab3c))
+* Revert "chore(release): publish v2.3.3" ([891f88d](https://github.com/weacast/weacast/commit/891f88da679b70f77388cb764d4cb4054585acd3))
+* Revert "chore(release): publish v2.3.3" ([f9683d0](https://github.com/weacast/weacast/commit/f9683d0ab2a30064c9911470c79019f11891f3b2))
+* Revert "chore(release): publish v2.3.4" ([96d7e92](https://github.com/weacast/weacast/commit/96d7e92ab3c894b2b418b3a0ec4c381271fa5e28))
+
+
+
+
+
 ## [2.3.1](https://github.com/weacast/weacast/compare/v2.3.0...v2.3.1) (2026-01-23)
 
 
