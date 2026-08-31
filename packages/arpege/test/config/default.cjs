@@ -43,8 +43,8 @@ module.exports = {
       model: 'arpege',
       token: process.env.METEO_FRANCE_TOKEN,
       wcsBaseUrl: 'https://public-api.meteofrance.fr/public/arpege/1.0/wcs/MF-NWP-GLOBAL-ARPEGE-025-GLOBE-WCS/GetCoverage?service=WCS&version=2.0.1',
-      bounds: [0, -90, 360, 90],
-      origin: [0, 90],
+      bounds: [-180, -90, 180, 90],
+      origin: [-180, 90],
       size: [1440, 721],
       resolution: [0.25, 0.25],
       runInterval: 6 * 3600, // Produced every 6h
@@ -60,7 +60,7 @@ module.exports = {
           coverageid: 'TEMPERATURE__SPECIFIC_HEIGHT_LEVEL_ABOVE_GROUND',
           subsets: {
             height: 2,
-            long: [0, 360],
+            long: [-180, 180],
             lat: [-90, 90]
           },
           dataStore: 'fs' // So that we can check for output files
