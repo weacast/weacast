@@ -39,6 +39,3 @@ forecast-data
 # vitepress
 docs/.vitepress/cache
 docs/.vitepress/dist
-
-# publishing
-.npmrc
