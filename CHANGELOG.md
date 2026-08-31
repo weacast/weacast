@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.3](https://github.com/weacast/weacast/compare/v2.3.2...v2.3.3) (2026-08-31)
+
+
+### Bug Fixes
+
+* ARPEGE world 0.25° model data are shifted by 180° (closes [#85](https://github.com/weacast/weacast/issues/85)) ([0837dee](https://github.com/weacast/weacast/commit/0837dee0ffb263368cc8e42ea47e0bb0fc16ec6f))
+* ARPEGE world 0.25° model data are shifted by 180° (closes [#85](https://github.com/weacast/weacast/issues/85)) ([23e798e](https://github.com/weacast/weacast/commit/23e798eb70553c6aaeb345e6ae9d7202b603160c))
+* Removed test server key/cert ([31bf516](https://github.com/weacast/weacast/commit/31bf516ead94a30a408f45ce0ff5bf40ad37a75f))
+
+
+### Reverts
+
+* Revert "chore(release): publish v2.3.3" ([45efd94](https://github.com/weacast/weacast/commit/45efd94dab147977e4289a8bc9284c889ce8ef34))
+* Revert "chore(release): publish v2.3.4" ([96d7e92](https://github.com/weacast/weacast/commit/96d7e92ab3c894b2b418b3a0ec4c381271fa5e28))
+
+
+
+
+
 ## [2.3.2](https://github.com/weacast/weacast/compare/v2.3.1...v2.3.2) (2026-01-23)
 
 
